@@ -26,11 +26,19 @@ export interface AgentStep {
   createdAt: string;
 }
 
-/** File agent ghi ra trong lượt chạy, ví dụ `cv/main.tex`. */
+/**
+ * Thứ agent ghi ra trong lượt chạy.
+ *
+ * Hai loại, và giao diện phải mở chúng theo hai đường khác nhau: có
+ * `documentId` thì đây là một `Document` thật - sửa được, đổi mẫu được, tải
+ * PDF được; không có thì là một file rời trong Storage, chỉ đọc được chữ.
+ */
 export interface AgentArtifact {
   name: string;
   key: string;
   bytes: number;
+  documentId?: string;
+  kind?: "CV" | "COVER_LETTER";
 }
 
 export interface AgentRunResult {
@@ -38,6 +46,17 @@ export interface AgentRunResult {
   artifacts?: AgentArtifact[];
   finishReason?: string;
 }
+
+/**
+ * Vòng phản biện chạy NỀN, sau khi lượt chạy đã trả kết quả.
+ *
+ * `null` nghĩa là kịch bản này không có phản biện; `PENDING` nghĩa là có và
+ * đang tới - hai chuyện khác nhau, và giao diện phải nói khác nhau.
+ */
+export type AgentReview =
+  | { status: "PENDING" }
+  | { status: "DONE"; critique: string; at: string }
+  | { status: "FAILED"; error: string; at: string };
 
 export interface AgentRunRecord {
   id: string;
@@ -47,6 +66,7 @@ export interface AgentRunRecord {
   jobId: string | null;
   input: { jobUrl?: string | null; jobDescription?: string | null };
   result: AgentRunResult | null;
+  review: AgentReview | null;
   /** Có giá trị khi và chỉ khi status là WAITING_USER. */
   question: string | null;
   answer: string | null;
@@ -82,6 +102,8 @@ export interface AgentRunSummary {
 export type AgentRunInput = {
   workflow: string;
   note?: string;
+  /** Soạn kèm thư xin việc. Mặc định KHÔNG - phần lớn tin không đòi. */
+  coverLetter?: boolean;
 } & ({ jobId: string } | { jobUrl: string } | { jobDescription: string });
 
 /** Bộ lọc danh sách lượt chạy. Bỏ trống thì lấy mọi lượt của người dùng. */
@@ -100,6 +122,14 @@ export const agentService = {
 
   get: (id: string) =>
     api.get<AgentRunRecord>(`/agent-runs/${id}`).then((r) => r.data),
+
+  /** Nội dung một file agent đã ghi. Đọc được ngay khi nó vừa lưu xong. */
+  artifact: (id: string, name: string) =>
+    api
+      .get<{ name: string; content: string }>(`/agent-runs/${id}/artifact`, {
+        params: { name },
+      })
+      .then((r) => r.data),
 
   list: (query?: AgentRunListQuery) =>
     api
@@ -126,4 +156,9 @@ export const agentService = {
 
   /** Tên các kịch bản có trong `.claude/commands/`. */
   workflows: () => api.get<string[]>("/agent-runs/workflows").then((r) => r.data),
+
+  openInterviewStream: (jobId: string) =>
+    api
+      .post<{ runId?: string }>("/agent-runs/interview/open-stream", { jobId })
+      .then((r) => r.data),
 };

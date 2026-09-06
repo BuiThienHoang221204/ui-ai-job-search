@@ -7,7 +7,11 @@ import { agentService, jobsService } from "@/services";
 import { useAgentRun } from "@/hooks/use-agent-run";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { invalidateAfter, keys } from "@/lib/query-keys";
-import { InterviewStreamError, streamInterviewTurn } from "@/lib/interview-stream";
+import {
+  InterviewStreamError,
+  streamInterviewOpen,
+  streamInterviewTurn,
+} from "@/lib/interview-stream";
 
 const WORKFLOW = "interview";
 
@@ -74,11 +78,30 @@ export function useMockInterview(jobId: string) {
     [refresh, queryClient],
   );
 
-  const start = () =>
-    void send(
-      () => agentService.start({ workflow: WORKFLOW, jobId }),
-      "Không bắt đầu được buổi luyện",
-    );
+  const start = () => {
+    setSending(true);
+    setSendError(null);
+    setStreaming("");
+    void streamInterviewOpen({
+      jobId,
+      onText: setStreaming,
+      onRunId: setStartedId,
+    })
+      .then(() => {
+        refresh();
+        setStreaming(null);
+        invalidateAfter(queryClient, "agentRun");
+      })
+      .catch((cause: unknown) => {
+        setStreaming(null);
+        setSendError(
+          cause instanceof InterviewStreamError
+            ? cause.message
+            : apiErrorMessage(cause, "Không bắt đầu được buổi luyện"),
+        );
+      })
+      .finally(() => setSending(false));
+  };
 
   /**
    * Trả lời một lượt: gửi rồi ĐỌC CHỮ CHẢY DẦN, không xếp hàng đợi.

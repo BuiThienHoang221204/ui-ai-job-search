@@ -12,7 +12,9 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { Alert, PageError } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
+import { AgentFilesCard } from "./agent-files-card";
 import { AgentHistory } from "./agent-history";
+import { AgentReviewCard } from "./agent-review-card";
 import { AgentQuestionCard } from "./agent-question-card";
 import { AgentResultCard } from "./agent-result-card";
 import { AgentStartCard } from "./agent-start-card";
@@ -147,6 +149,17 @@ export function ApplyView() {
           )}
         </Alert>
       )}
+
+      {run && (
+        <AgentFilesCard
+          runId={run.id}
+          jobId={run.jobId}
+          artifacts={run.result?.artifacts ?? []}
+          running={busy}
+        />
+      )}
+
+      {run && <AgentReviewCard review={run.review} />}
 
       {run && <AgentTimeline run={run} />}
       {run?.status === "DONE" && <AgentResultCard run={run} />}

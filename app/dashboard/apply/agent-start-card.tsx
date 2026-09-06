@@ -36,6 +36,7 @@ export function AgentStartCard({
   const [jobDescription, setJobDescription] = useDraftState("agent-jd");
   const [jobUrl, setJobUrl] = useDraftState("agent-url");
   const [note, setNote] = useDraftState("agent-note");
+  const [coverLetter, setCoverLetter] = useState(false);
 
   const jd = jobDescription.trim();
   const url = jobUrl.trim();
@@ -43,7 +44,11 @@ export function AgentStartCard({
 
   const handleStart = () => {
     if (disabled || !ready) return;
-    const common = { workflow: "apply", note: note.trim() || undefined };
+    const common = {
+      workflow: "apply",
+      note: note.trim() || undefined,
+      coverLetter,
+    };
     onStart(
       source === "paste"
         ? { ...common, jobDescription: jd }
@@ -57,7 +62,7 @@ export function AgentStartCard({
       icon={Robot}
       iconClassName="size-4"
       title="Chạy quy trình ứng tuyển"
-      description="AI sẽ tự đánh giá độ phù hợp, hỏi ý bạn, soạn CV và thư, rồi nhờ một chuyên gia phản biện đọc lại trước khi kết luận."
+      description="AI sẽ tự đánh giá độ phù hợp, hỏi ý bạn và soạn CV. Một chuyên gia tuyển dụng đọc lại và góp ý ngay sau đó, bạn không phải đợi."
       className="border-slate-200/90"
     >
       <Tabs
@@ -112,9 +117,28 @@ export function AgentStartCard({
         />
       </div>
 
+      <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-slate-200 bg-white p-3.5 text-sm text-slate-700">
+        <input
+          type="checkbox"
+          className="accent-primary-600 mt-0.5 size-4 cursor-pointer"
+          checked={coverLetter}
+          disabled={disabled}
+          onChange={(event) => setCoverLetter(event.target.checked)}
+        />
+        <span>
+          Soạn kèm thư xin việc
+          <span className="mt-0.5 block text-xs text-slate-500">
+            Phần lớn tin trên TopCV, ITviec hay VietnamWorks không đòi thư. Bật
+            lên thì lượt chạy lâu hơn khoảng một phần tư.
+          </span>
+        </span>
+      </label>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs text-slate-500">
-          Một lượt chạy mất khoảng 3-5 phút và tốn nhiều lượt gọi model.
+          {coverLetter
+            ? "Soạn cả CV lẫn thư nên mất lâu hơn. CV xong là hiện ra ngay, không phải đợi hết lượt."
+            : "CV xong là hiện ra ngay, không phải đợi hết lượt chạy."}
         </p>
         <Button onClick={handleStart} loading={disabled} disabled={!ready}>
           <Sparkle className="size-4.5" />

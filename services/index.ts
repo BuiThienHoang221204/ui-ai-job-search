@@ -39,6 +39,7 @@ export type {
 } from "./jobs";
 export type {
   AgentArtifact,
+  AgentReview,
   AgentRunInput,
   AgentRunRecord,
   AgentRunStatus,

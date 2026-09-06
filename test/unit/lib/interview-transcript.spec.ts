@@ -35,6 +35,7 @@ function run(steps: AgentStep[], partial: Partial<AgentRunRecord> = {}): AgentRu
     status: "WAITING_USER",
     input: {},
     result: null,
+    review: null,
     question: null,
     answer: null,
     modelId: "mimo-v2.5-free",

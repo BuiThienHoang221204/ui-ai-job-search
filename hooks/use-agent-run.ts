@@ -29,9 +29,17 @@ export interface AgentRunView {
   refresh: () => void;
 }
 
-/** Lượt chạy còn động hay đã dừng hẳn. */
+/**
+ * Lượt chạy còn động hay đã dừng hẳn.
+ *
+ * `DONE` CHƯA chắc là hết: vòng phản biện chạy nền sau đó và ghi vào cùng bản
+ * ghi. Dừng hỏi ngay lúc DONE thì góp ý chỉ hiện ra khi người dùng tự tải lại
+ * trang - tức là gần như không bao giờ.
+ */
 const isRunning = (run: AgentRunRecord | null): boolean =>
-  run?.status === "PENDING" || run?.status === "RUNNING";
+  run?.status === "PENDING" ||
+  run?.status === "RUNNING" ||
+  run?.review?.status === "PENDING";
 
 /**
  * Bám theo một lượt chạy agent cho tới khi nó dừng.
