@@ -1,18 +1,16 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
-import { jobs } from "@/lib/mock-data";
-import { PageHeader } from "@/components/dashboard/page-header";
-import { JobList } from "./job-list";
+import { JobsView } from "./jobs-view";
 
-export const metadata: Metadata = { title: "Việc làm phù hợp — AI Career Agent" };
+// Giữ trang này là server component chỉ để khai metadata — Next không cho
+// export metadata từ client component. Toàn bộ phần tải dữ liệu nằm ở JobsView.
+export const metadata: Metadata = { title: "Việc làm phù hợp — Careelot" };
 
 export default function JobsPage() {
+  // useSearchParams cần Suspense, nếu không `next build` dừng ở bước prerender.
   return (
-    <div>
-      <PageHeader
-        title="Việc làm phù hợp"
-        subtitle={`${jobs.length} việc làm được AI xếp hạng theo hồ sơ của bạn`}
-      />
-      <JobList jobs={jobs} />
-    </div>
+    <Suspense>
+      <JobsView />
+    </Suspense>
   );
 }
