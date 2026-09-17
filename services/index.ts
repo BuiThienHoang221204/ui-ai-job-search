@@ -35,6 +35,8 @@ export type {
   OccupationOption,
   FilterOption,
   RequirementCheck,
+  SalaryBasis,
+  SalaryGuide,
   SystemMatch,
 } from "./jobs";
 export type {

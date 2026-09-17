@@ -12,6 +12,7 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { Alert, PageError } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/toast";
 import { AgentFilesCard } from "./agent-files-card";
 import { AgentHistory } from "./agent-history";
 import { AgentReviewCard } from "./agent-review-card";
@@ -33,9 +34,9 @@ const PAGE_SIZE = 10;
  */
 export function ApplyView() {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [runId, setRunId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
 
   const { run, error, timedOut, refresh } = useAgentRun(runId, LOGIN_NEXT);
@@ -61,19 +62,18 @@ export function ApplyView() {
   const send = useCallback(
     async (action: () => Promise<{ runId: string }>, fallback: string) => {
       setSending(true);
-      setSendError(null);
       try {
         const receipt = await action();
         setRunId(receipt.runId);
         refresh();
         invalidateAfter(queryClient, "agentRun");
       } catch (err) {
-        setSendError(apiErrorMessage(err, fallback));
+        toast.danger(apiErrorMessage(err, fallback));
       } finally {
         setSending(false);
       }
     },
-    [refresh, queryClient],
+    [refresh, queryClient, toast],
   );
 
   const start = (input: AgentRunInput) =>
@@ -103,7 +103,6 @@ export function ApplyView() {
 
       <AgentStartCard disabled={busy} onStart={start} />
 
-      {sendError && <Alert tone="danger">{sendError}</Alert>}
       {error && <Alert tone="danger">{error}</Alert>}
 
       {timedOut && (

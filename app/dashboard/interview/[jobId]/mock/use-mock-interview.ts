@@ -7,6 +7,7 @@ import { agentService, jobsService } from "@/services";
 import { useAgentRun } from "@/hooks/use-agent-run";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { invalidateAfter, keys } from "@/lib/query-keys";
+import { useToast } from "@/components/ui/toast";
 import {
   InterviewStreamError,
   streamInterviewOpen,
@@ -30,9 +31,9 @@ export const isClosed = (status: string) => status === "DONE" || status === "FAI
  * vì mặc định bày ra nút bắt đầu.
  */
 export function useMockInterview(jobId: string) {
+  const toast = useToast();
   const [startedId, setStartedId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState<string | null>(null);
   /** Câu hỏi đang chảy về. `null` = không có lượt nào đang chạy. */
   const [streaming, setStreaming] = useState<string | null>(null);
 
@@ -62,7 +63,6 @@ export function useMockInterview(jobId: string) {
   const send = useCallback(
     async (action: () => Promise<{ runId: string }>, fallback: string) => {
       setSending(true);
-      setSendError(null);
       try {
         const receipt = await action();
         setStartedId(receipt.runId);
@@ -70,17 +70,16 @@ export function useMockInterview(jobId: string) {
         // Danh sách buổi luyện ở màn Chuẩn bị phỏng vấn vừa có thêm một dòng.
         invalidateAfter(queryClient, "agentRun");
       } catch (err) {
-        setSendError(apiErrorMessage(err, fallback));
+        toast.danger(apiErrorMessage(err, fallback));
       } finally {
         setSending(false);
       }
     },
-    [refresh, queryClient],
+    [refresh, queryClient, toast],
   );
 
   const start = () => {
     setSending(true);
-    setSendError(null);
     setStreaming("");
     void streamInterviewOpen({
       jobId,
@@ -94,7 +93,7 @@ export function useMockInterview(jobId: string) {
       })
       .catch((cause: unknown) => {
         setStreaming(null);
-        setSendError(
+        toast.danger(
           cause instanceof InterviewStreamError
             ? cause.message
             : apiErrorMessage(cause, "Không bắt đầu được buổi luyện"),
@@ -115,7 +114,6 @@ export function useMockInterview(jobId: string) {
    */
   const answer = (text: string) => {
     setSending(true);
-    setSendError(null);
     setStreaming("");
 
     void streamInterviewTurn({
@@ -131,7 +129,7 @@ export function useMockInterview(jobId: string) {
         // Nửa câu hỏi tệ hơn không có câu nào: người dùng không biết câu hỏi đã
         // hết chưa và có thể trả lời một câu chưa hỏi xong. Xoá sạch, hiện lỗi.
         setStreaming(null);
-        setSendError(
+        toast.danger(
           cause instanceof InterviewStreamError
             ? `${cause.message} Câu trả lời của bạn chưa được ghi nhận, gửi lại giúp nhé.`
             : apiErrorMessage(cause, "Không gửi được câu trả lời"),
@@ -148,7 +146,6 @@ export function useMockInterview(jobId: string) {
     timedOut,
     refresh,
     sending,
-    sendError,
     streaming,
     start,
     answer,

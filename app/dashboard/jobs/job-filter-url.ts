@@ -14,13 +14,10 @@ import type { JobFilterValue } from "@/components/dashboard/job-filter-bar";
  */
 export const SORTS: JobSort[] = ["newest", "salary", "match"];
 
-/** Màn hình "đã chấm" mặc định xếp theo điểm; màn hình thường xếp theo ngày. */
-export const defaultSort = (scored: boolean): JobSort =>
-  scored ? "match" : "newest";
+export const DEFAULT_SORT: JobSort = "newest";
 
 export function readFilter(
   params: URLSearchParams,
-  scored: boolean,
 ): JobFilterValue {
   const sort = params.get("sort");
   return {
@@ -31,7 +28,7 @@ export function readFilter(
     postedWithin: Number(params.get("postedWithin") ?? 0) || 0,
     sort: SORTS.includes(sort as JobSort)
       ? (sort as JobSort)
-      : defaultSort(scored),
+      : DEFAULT_SORT,
     saved: params.get("saved") === "1",
     applied: params.get("applied") === "1",
     subOccupation: params.getAll("subOccupation"),
@@ -62,7 +59,7 @@ export function writeFilter(
     params.set("postedWithin", String(filter.postedWithin));
   if (filter.saved) params.set("saved", "1");
   if (filter.applied) params.set("applied", "1");
-  if (filter.sort !== defaultSort(scored)) params.set("sort", filter.sort);
+  if (filter.sort !== DEFAULT_SORT) params.set("sort", filter.sort);
   if (offset) params.set("offset", String(offset));
   return params.toString();
 }

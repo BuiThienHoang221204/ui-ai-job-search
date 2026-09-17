@@ -21,7 +21,6 @@ export function UploadCvView() {
     retrying,
     selected,
     applying,
-    applied,
     rows,
     running,
     partial,
@@ -74,7 +73,6 @@ export function UploadCvView() {
           onToggle={toggle}
           onApply={() => void apply()}
           applying={applying}
-          applied={applied}
         />
       ) : null}
     </div>

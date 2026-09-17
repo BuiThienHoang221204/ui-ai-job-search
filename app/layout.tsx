@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Google_Sans_Flex } from "next/font/google";
 import { QueryProvider } from "@/lib/query-client";
+import { ToastProvider } from "@/components/ui/toast";
 import { FONT_SCALE_BOOTSTRAP } from "@/lib/font-scale";
 import { SIDEBAR_BOOTSTRAP } from "@/lib/sidebar";
 import { THEME_BOOTSTRAP } from "@/lib/theme";
@@ -38,7 +39,9 @@ export default function RootLayout({
         máy chủ như cũ.
       */}
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </QueryProvider>
       </body>
     </html>
   );

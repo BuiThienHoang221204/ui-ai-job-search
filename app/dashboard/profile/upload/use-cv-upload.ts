@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { PartialProposal } from "@/lib/profile-partial";
 import { ModelStreamError, streamModel } from "@/lib/model-stream";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
+import { useToast } from "@/components/ui/toast";
 import {
   defaultSelection,
   proposalRows,
@@ -41,12 +42,12 @@ export function useCvUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [partial, setPartial] = useState<PartialProposal | null>(null);
   const [uploading, setUploading] = useState(false);
+  const toast = useToast();
   const [waiting, setWaiting] = useState(false);
   const [retrying, setRetrying] = useState(false);
 
   const [selected, setSelected] = useState<ApplicableField[]>([]);
   const [applying, setApplying] = useState(false);
-  const [applied, setApplied] = useState(false);
 
   useEffect(() => {
     mounted.current = true;
@@ -141,7 +142,6 @@ export function useCvUpload() {
     if (!file) return;
     setUploading(true);
     setError(null);
-    setApplied(false);
 
     try {
       const receipt = await profileDraftService.uploadCv(file, true);
@@ -218,15 +218,15 @@ export function useCvUpload() {
       const updated = await profileDraftService.apply(draft.id, selected);
       if (!mounted.current) return;
       setDraft(updated);
-      setApplied(true);
       setProfile(await profileService.get().catch(() => profile));
+      toast.success("Đã ghi những trường bạn chọn vào hồ sơ.");
     } catch (err) {
       if (!mounted.current) return;
       if (apiErrorStatus(err) === 401) {
         router.replace(LOGIN_NEXT);
         return;
       }
-      setError(apiErrorMessage(err, "Không áp dụng được vào hồ sơ"));
+      toast.danger(apiErrorMessage(err, "Không áp dụng được vào hồ sơ"));
     } finally {
       if (mounted.current) setApplying(false);
     }
@@ -254,7 +254,6 @@ export function useCvUpload() {
     retrying,
     selected,
     applying,
-    applied,
     rows,
     partial,
     running,

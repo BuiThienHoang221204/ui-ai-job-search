@@ -11,9 +11,10 @@ import { profileDraftService, profileService } from "@/services";
 import type { ProfileDraftRecord, ProfileRecord } from "@/services";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { useSession } from "@/components/dashboard/session";
-import { Alert, PageError } from "@/components/ui/alert";
+import { PageError } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/toast";
 import {
   buildChanges,
   toDraft,
@@ -41,10 +42,9 @@ export function ProfileView() {
   const [draft, setDraft] = useState<ProfileDraft | null>(null);
   /** Bản hồ sơ mà `draft` được gieo từ đó. Dùng để biết khi nào phải gieo lại. */
   const [draftOf, setDraftOf] = useState<ProfileRecord | null>(null);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [tab, setTab] = useState("identity");
+  const toast = useToast();
 
   const { data, error } = useApiQuery(
     keys.profile(),
@@ -93,9 +93,6 @@ export function ProfileView() {
     value: ProfileDraft[K],
   ): void => {
     setDraft((current) => (current ? { ...current, [key]: value } : current));
-    // Người dùng gõ tiếp nghĩa là thông báo của lần lưu trước đã hết ý nghĩa.
-    setSaved(false);
-    setSaveError(null);
   };
 
   const handleSave = async (): Promise<void> => {
@@ -105,15 +102,13 @@ export function ProfileView() {
     try {
       changes = buildChanges(draft, profile);
     } catch (err) {
-      setSaveError(
+      toast.danger(
         err instanceof Error ? err.message : "Dữ liệu nhập chưa hợp lệ",
       );
       return;
     }
 
     setSaving(true);
-    setSaveError(null);
-    setSaved(false);
     try {
       const updated = await profileService.update(changes);
       // Lấy nguyên bản backend trả về: `completion` được tính lại ở đó, tự dựng
@@ -127,11 +122,13 @@ export function ProfileView() {
       );
       setDraftOf(updated);
       setDraft(toDraft(updated));
-      setSaved(true);
+      toast.success(
+        "Đã lưu hồ sơ. Mức hoàn thiện được tính lại theo dữ liệu mới.",
+      );
       // Ô "mức độ hoàn thiện hồ sơ" trên Tổng quan tính lại sau mỗi lần lưu.
       invalidateAfter(queryClient, "saveProfile");
     } catch (err) {
-      setSaveError(apiErrorMessage(err, "Không lưu được hồ sơ"));
+      toast.danger(apiErrorMessage(err, "Không lưu được hồ sơ"));
     } finally {
       setSaving(false);
     }
@@ -184,14 +181,6 @@ export function ProfileView() {
           </>
         }
       />
-
-      {saveError && <Alert tone="danger">{saveError}</Alert>}
-
-      {saved && (
-        <Alert tone="success">
-          Đã lưu hồ sơ. Mức hoàn thiện được tính lại theo dữ liệu mới.
-        </Alert>
-      )}
 
       <ProfileSummary profile={profile} user={user} />
 

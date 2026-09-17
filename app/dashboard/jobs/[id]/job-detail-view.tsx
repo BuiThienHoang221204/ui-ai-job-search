@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import type { JobMatchDetail, JobRecord, ProfileRecord } from "@/services";
-import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
+import { apiErrorStatus } from "@/lib/axios";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { invalidateAfter, keys } from "@/lib/query-keys";
 import {
@@ -16,18 +16,20 @@ import {
 import { toJobCard } from "@/lib/adapters";
 import { Alert } from "@/components/ui/alert";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
-import { Toast } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/toast";
 import { CompanyBriefPanel } from "./company-brief-panel";
 import { JobDescriptionCard } from "./job-description-card";
 import { JobDetailHeader } from "./job-detail-header";
 import { InsightList } from "./match-insights";
 import { MatchPanel } from "./match-panel";
+import { SalaryGuidePanel } from "./salary-guide-panel";
 import {
   MatchStreamError,
   streamMatchEvaluation,
   type PartialEvaluation,
 } from "@/lib/match-stream";
 const SCORE_POLL_MS = 2_500;
+const APPLY_TOAST_DURATION = 60_000;
 const SCORE_TIMEOUT_MS = 180_000;
 
 interface JobDetailViewProps {
@@ -46,8 +48,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
   const [scoring, setScoring] = useState(false);
   const [partial, setPartial] = useState<PartialEvaluation | null>(null);
   const [savePending, setSavePending] = useState<boolean | null>(null);
-  const [toast, setToast] = useState(false);
-  const [appliedId, setAppliedId] = useState<string | null>(null);
+  const toast = useToast();
 
   const key = keys.job(jobId);
   const { data, error } = useApiQuery(
@@ -141,10 +142,21 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
     }
     try {
       const result = await applicationsService.create(jobId, { skipDocuments: true });
-      setAppliedId(result.id);
       invalidateAfter(queryClient, "applicationStatus");
       if (job?.url) window.open(job.url, "_blank", "noopener");
-      setToast(true);
+      toast.success((dismiss) => (
+        <span>
+          Việc làm này đã được chuyển sang trạng thái Đang tiến hành trong{" "}
+          <button
+            type="button"
+            onClick={() => void markApplied(result.id, dismiss)}
+            className="font-medium text-primary-600 underline hover:text-primary-700"
+          >
+            Đã nhấp vào ứng tuyển
+          </button>
+          .
+        </span>
+      ), { position: "bottom-right", duration: APPLY_TOAST_DURATION });
     } catch (err) {
       if (apiErrorStatus(err) === 401) {
         router.replace(`/login?next=/dashboard/jobs/${jobId}`);
@@ -154,12 +166,11 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
     }
   };
 
-  const handleMarkApplied = async () => {
-    if (!appliedId) return;
+  const markApplied = async (applicationId: string, dismiss: () => void) => {
     try {
-      await applicationsService.updateStatus(appliedId, "APPLIED");
+      await applicationsService.updateStatus(applicationId, "APPLIED");
       invalidateAfter(queryClient, "applicationStatus");
-      setToast(false);
+      dismiss();
     } catch {}
   };
 
@@ -182,24 +193,6 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
 
   return (
     <div className="space-y-6">
-      {toast && (
-        <Toast
-          message={
-            <span>
-              Việc làm này đã được chuyển sang trạng thái Đang tiến hành trong{" "}
-              <button
-                type="button"
-                onClick={handleMarkApplied}
-                className="font-medium text-primary-600 underline hover:text-primary-700"
-              >
-                Đã nhấp vào ứng tuyển
-              </button>
-              .
-            </span>
-          }
-          onClose={() => setToast(false)}
-        />
-      )}
       <JobDetailHeader
         card={card}
         job={job}
@@ -246,6 +239,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
         </div>
 
         <div className="space-y-6">
+          <SalaryGuidePanel guide={job.salaryGuide} />
           <CompanyBriefPanel jobId={jobId} />
         </div>
       </div>

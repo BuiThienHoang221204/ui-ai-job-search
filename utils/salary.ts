@@ -27,3 +27,36 @@ export function formatMonthlyVnd(value: number): string {
   });
   return `${amount} triệu`;
 }
+
+export const SALARY_MILLION = 1_000_000;
+
+const DECIMAL_MILLION = /^\d{1,3}[.,]\d{1,2}$/;
+
+export function parseMonthlySalary(input: string): number | null {
+  const text = input.trim();
+  if (!text) return null;
+
+  const compact = text.replace(/[^\d.,]/g, "");
+  if (!compact) return null;
+
+  if (DECIMAL_MILLION.test(compact)) {
+    const amount = Number(compact.replace(",", "."));
+    return Number.isFinite(amount) && amount > 0
+      ? Math.round(amount * SALARY_MILLION)
+      : null;
+  }
+
+  const digits = compact.replace(/[.,]/g, "");
+  if (!digits) return null;
+
+  const amount = Number(digits);
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+
+  return amount < 1000 ? amount * SALARY_MILLION : amount;
+}
+
+export function formatSalaryInput(input: string): string | null {
+  const amount = parseMonthlySalary(input);
+  if (amount === null) return null;
+  return `= ${amount.toLocaleString("vi-VN")} ₫/tháng`;
+}

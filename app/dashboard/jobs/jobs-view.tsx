@@ -32,8 +32,8 @@ export function JobsView() {
   const params = useSearchParams();
   const scored = params.get("scored") === "1";
   const filter = useMemo(
-    () => readFilter(new URLSearchParams(params.toString()), scored),
-    [params, scored],
+    () => readFilter(new URLSearchParams(params.toString())),
+    [params],
   );
   const offset = Number(params.get("offset") ?? 0) || 0;
   const selected = params.get("job");

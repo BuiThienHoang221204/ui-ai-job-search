@@ -16,7 +16,14 @@ export {
   LOCATION_UNKNOWN,
   type DisplayLocation,
 } from "./location";
-export { formatJobSalary, formatMonthlyVnd, formatSalary } from "./salary";
+export {
+  formatJobSalary,
+  formatMonthlyVnd,
+  formatSalary,
+  formatSalaryInput,
+  parseMonthlySalary,
+  SALARY_MILLION,
+} from "./salary";
 export {
   matchTone,
   matchToneClasses,

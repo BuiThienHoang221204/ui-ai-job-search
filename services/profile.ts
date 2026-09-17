@@ -15,6 +15,8 @@ export interface ProfileRecord {
   remotePreference: string | null;
   commuteConstraint: string | null;
   willingToRelocate: boolean;
+  currentSalary: number | null;
+  expectedSalary: number | null;
   languages: string[];
   primarySkills: string[];
   secondarySkills: string[];

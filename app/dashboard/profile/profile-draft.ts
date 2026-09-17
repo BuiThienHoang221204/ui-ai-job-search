@@ -1,5 +1,5 @@
 import type { ProfileRecord, profileService } from "@/services";
-import { joinList, parseList, toJsonText } from "@/utils";
+import { joinList, parseList, parseMonthlySalary, toJsonText } from "@/utils";
 
 /** Chỉ những trường `update()` nhận — id, userId, completion và mốc thời gian do backend giữ. */
 export type ProfileUpdate = Parameters<typeof profileService.update>[0];
@@ -23,6 +23,8 @@ export interface ProfileDraft {
   remotePreference: string;
   commuteConstraint: string;
   willingToRelocate: boolean;
+  currentSalary: string;
+  expectedSalary: string;
   languages: string;
   primarySkills: string;
   secondarySkills: string;
@@ -84,6 +86,11 @@ const TEXT_FIELDS = [
   "commuteConstraint",
 ] as const;
 
+const SALARY_FIELDS = ["currentSalary", "expectedSalary"] as const;
+
+const toSalaryText = (value: number | null) =>
+  value === null || value <= 0 ? "" : value.toLocaleString("vi-VN");
+
 const LIST_FIELDS = [
   "languages",
   "primarySkills",
@@ -135,6 +142,8 @@ export const toDraft = (profile: ProfileRecord): ProfileDraft => ({
   remotePreference: profile.remotePreference ?? "",
   commuteConstraint: profile.commuteConstraint ?? "",
   willingToRelocate: profile.willingToRelocate,
+  currentSalary: toSalaryText(profile.currentSalary),
+  expectedSalary: toSalaryText(profile.expectedSalary),
   languages: joinList(profile.languages),
   primarySkills: joinList(profile.primarySkills),
   secondarySkills: joinList(profile.secondarySkills),
@@ -202,6 +211,12 @@ export function buildChanges(
     } catch {
       throw new Error(`Khối "${JSON_LABELS[key]}" không phải JSON hợp lệ`);
     }
+  }
+
+  for (const key of SALARY_FIELDS) {
+    const next = parseMonthlySalary(draft[key]);
+    if (next === null) continue;
+    if (next !== profile[key]) assign(changes, key, next);
   }
 
   if (draft.willingToRelocate !== profile.willingToRelocate) {

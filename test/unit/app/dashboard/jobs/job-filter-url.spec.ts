@@ -1,34 +1,34 @@
 import { describe, expect, it } from "vitest";
 import type { JobFilterValue } from "@/components/dashboard/job-filter-bar";
 import {
-  defaultSort,
+  DEFAULT_SORT,
   readFilter,
   writeFilter,
 } from "@/app/dashboard/jobs/job-filter-url";
 
-const empty = (scored = false): JobFilterValue => ({
+const empty = (): JobFilterValue => ({
   q: "",
   province: [],
   occupation: [],
   subOccupation: [],
   salaryMin: 0,
   postedWithin: 0,
-  sort: defaultSort(scored),
+  sort: DEFAULT_SORT,
   saved: false,
   applied: false,
 });
 
 const roundTrip = (filter: JobFilterValue, scored = false): JobFilterValue =>
-  readFilter(new URLSearchParams(writeFilter(filter, 0, scored)), scored);
+  readFilter(new URLSearchParams(writeFilter(filter, 0, scored)));
 
 describe("writeFilter", () => {
   it("bỏ giá trị rỗng và giá trị mặc định khỏi URL", () => {
     expect(writeFilter(empty(), 0, false)).toBe("");
   });
 
-  it("bỏ sort khi nó trùng mặc định của màn hình", () => {
+  it("bỏ sort khi nó trùng mặc định, kể cả trên màn hình đã chấm điểm", () => {
     expect(writeFilter({ ...empty(), sort: "newest" }, 0, false)).toBe("");
-    expect(writeFilter({ ...empty(true), sort: "match" }, 0, true)).toBe(
+    expect(writeFilter({ ...empty(), sort: "newest" }, 0, true)).toBe(
       "scored=1",
     );
   });
@@ -63,14 +63,12 @@ describe("readFilter", () => {
   it("lùi về mặc định khi sort trên URL không hợp lệ", () => {
     const params = new URLSearchParams("sort=xoa-so-tui-tien");
 
-    expect(readFilter(params, false).sort).toBe("newest");
-    expect(readFilter(params, true).sort).toBe("match");
+    expect(readFilter(params).sort).toBe("newest");
   });
 
   it("đọc số hỏng thành 0 chứ không thành NaN", () => {
     const filter = readFilter(
       new URLSearchParams("salaryMin=abc&postedWithin="),
-      false,
     );
 
     expect(filter.salaryMin).toBe(0);
@@ -78,8 +76,8 @@ describe("readFilter", () => {
   });
 
   it("cờ chỉ bật khi đúng chuỗi '1'", () => {
-    expect(readFilter(new URLSearchParams("saved=1"), false).saved).toBe(true);
-    expect(readFilter(new URLSearchParams("saved=true"), false).saved).toBe(
+    expect(readFilter(new URLSearchParams("saved=1")).saved).toBe(true);
+    expect(readFilter(new URLSearchParams("saved=true")).saved).toBe(
       false,
     );
   });
@@ -107,7 +105,7 @@ describe("khứ hồi", () => {
   });
 
   it("giữ nguyên trên màn hình đã chấm điểm", () => {
-    const scoredFilter: JobFilterValue = { ...empty(true), q: "backend" };
+    const scoredFilter: JobFilterValue = { ...empty(), q: "backend" };
 
     expect(roundTrip(scoredFilter, true)).toEqual(scoredFilter);
   });

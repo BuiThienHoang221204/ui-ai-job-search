@@ -32,7 +32,6 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
     timedOut,
     refresh,
     sending,
-    sendError,
     streaming,
     start,
     answer,
@@ -71,7 +70,6 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
         }
       />
 
-      {sendError && <Alert tone="danger">{sendError}</Alert>}
       {error && <Alert tone="danger">{error}</Alert>}
 
       {run?.status === "FAILED" && (

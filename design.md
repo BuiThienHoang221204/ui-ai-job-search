@@ -90,6 +90,21 @@ Biến thể `collapsed:` **chỉ áp từ 64rem trở lên**. Dưới ngưỡng
 - Focus visible 2px offset ring
 - Active pressed-down feel (`active:translate-y-[1px]`)
 
+## Thông báo: toast hay Alert trên trang
+
+Chốt 17/09/2026. Phân theo **sự kiện hay trạng thái**, không theo mức độ nghiêm trọng:
+
+- **Kết quả của một hành động ghi** — lưu hồ sơ, áp dụng bản đọc từ CV, gửi đơn,
+  gửi lượt trả lời phỏng vấn — đi bằng `useToast()` (`components/ui/toast.tsx`),
+  nổi ở **giữa trên**. Không đặt top-right: đúng chỗ đó là nút hành động chính
+  của `PageHeader`.
+- **Trạng thái kéo dài** — không tải được dữ liệu, lượt chạy hỏng giữa chừng,
+  không đọc được CV — vẫn là `<Alert>` nằm trong luồng trang, vì người dùng cần
+  đọc lại nó bất cứ lúc nào chứ không phải trong 5 giây.
+
+Toast nhận `ReactNode`, hoặc một hàm `(dismiss) => ReactNode` khi nội dung có nút
+tự đóng nó.
+
 ## CTA voice
 - Primary CTA: Solid AI Violet fill (`bg-accent text-accent-ink`), rounded-lg, font-medium
 - Secondary CTA: Crisp border (`border border-rule bg-paper hover:bg-paper-2`)

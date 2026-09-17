@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   CheckCircle,
   FileText,
@@ -23,7 +22,6 @@ export function ReviewCard({
   onToggle,
   onApply,
   applying,
-  applied,
 }: {
   draft: ProfileDraftRecord;
   rows: ProposalRow[];
@@ -31,7 +29,6 @@ export function ReviewCard({
   onToggle: (field: ApplicableField) => void;
   onApply: () => void;
   applying: boolean;
-  applied: boolean;
 }) {
   if (isProposalEmpty(draft.proposal)) {
     return (
@@ -49,19 +46,6 @@ export function ReviewCard({
 
   return (
     <div className="space-y-4">
-      {applied && (
-        <Alert tone="success" title="Đã cập nhật hồ sơ" icon={CheckCircle}>
-          Những trường bạn chọn đã được ghi vào hồ sơ.{" "}
-          <Link
-            href="/dashboard/profile"
-            className="font-semibold underline underline-offset-2"
-          >
-            Mở hồ sơ để xem
-          </Link>
-          .
-        </Alert>
-      )}
-
       <SectionCard
         title="AI đề xuất — bạn chọn nhận phần nào"
         icon={FileText}

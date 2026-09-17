@@ -11,10 +11,10 @@ import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 import { isBriefPending } from "@/lib/company-brief";
 import { apiErrorMessage } from "@/lib/axios";
-import { Alert } from "@/components/ui/alert";
 
 import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/ui/section-card";
+import { useToast } from "@/components/ui/toast";
 
 /** Một lượt tìm hiểu đi qua ba câu tìm kiếm, năm trang và một lời gọi model. */
 const POLL_MS = 2_500;
@@ -37,10 +37,10 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
    * gọi `setState` giữa lúc render. Mốc này còn phân biệt được "làm mới" với
    * "tra lần đầu" - bản cũ vẫn hiện trong lúc bản mới đang chạy.
    */
+  const toast = useToast();
   const [pendingSince, setPendingSince] = useState<string | null | undefined>(
     undefined,
   );
-  const [requestError, setRequestError] = useState<string | null>(null);
   const [partial, setPartial] = useState<PartialBrief | null>(null);
 
   const { data, error, reload } = useApiQuery(
@@ -58,7 +58,6 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
   const waiting = isBriefPending(pendingSince, brief?.updatedAt ?? null);
 
   async function research(force: boolean) {
-    setRequestError(null);
     setPendingSince(brief?.updatedAt ?? null);
     setPartial(null);
     try {
@@ -79,7 +78,7 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
         reload();
       } catch {
         setPendingSince(undefined);
-        setRequestError(apiErrorMessage(err, "Không xếp được lượt tìm hiểu"));
+        toast.danger(apiErrorMessage(err, "Không xếp được lượt tìm hiểu"));
       }
     } finally {
       setPartial(null);
@@ -94,7 +93,6 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
       compact
       actions={brief ? <Signals brief={brief} /> : null}
     >
-      {requestError && <Alert tone="danger">{requestError}</Alert>}
 
       {!brief && waiting && <BriefLiveProgress partial={partial} />}
 

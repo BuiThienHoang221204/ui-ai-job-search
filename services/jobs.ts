@@ -33,9 +33,33 @@ export type JobListItem = JobMatchWithJob["job"] & {
   systemMatch: SystemMatch | null;
 };
 export type JobMatchDetail = Omit<JobMatchWithJob, "job">;
+export type SalaryBasis = "POSITION" | "SUB_OCCUPATION";
+
+export interface SalaryGuide {
+  floor: number;
+  target: number;
+  ceiling: number;
+  currency: string;
+  basis: SalaryBasis;
+  label: string;
+  positionCount: number;
+  experienceLabel: string | null;
+  experienceSource: "PROFILE" | "POSTING" | null;
+  candidateYears: number | null;
+  requiredYears: number | null;
+  experienceGap: boolean;
+  anchoredOnCurrentSalary: boolean;
+  cappedByPosting: boolean;
+  expectedSalary: number | null;
+  expectedAboveCeiling: boolean;
+  expectedBelowFloor: boolean;
+  positionSlug: string | null;
+}
+
 export type JobRecord = Omit<JobListItem, "match"> & {
   description: string;
   match: JobMatchDetail | null;
+  salaryGuide: SalaryGuide | null;
 };
 export type JobSort = "newest" | "salary" | "match";
 export interface JobListParams {

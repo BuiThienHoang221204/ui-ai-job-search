@@ -34,7 +34,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Toast } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/toast";
 import { CountTabs } from "@/components/ui/tabs";
 import { CvPicker, type CvOption } from "@/components/dashboard/cv-picker";
 import {
@@ -64,7 +64,7 @@ export default function ApplicationsPage() {
   const [cvPickerOpen, setCvPickerOpen] = useState(false);
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
   const [uploadedCv, setUploadedCv] = useState<CvOption | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     profileDraftService
@@ -158,9 +158,9 @@ export default function ApplicationsPage() {
         cvDocumentId: option.type === "uploaded" ? option.id : undefined,
       });
       invalidateAfter(queryClient, "applicationStatus");
-      setToast("Đã cập nhật CV thành công");
+      toast.success("Đã cập nhật CV thành công");
     } catch (err) {
-      setToast(apiErrorMessage(err, "Không cập nhật được CV"));
+      toast.danger(apiErrorMessage(err, "Không cập nhật được CV"));
     }
     setCvPickerOpen(false);
     setSelectedAppId(null);
@@ -168,7 +168,6 @@ export default function ApplicationsPage() {
 
   return (
     <div className="space-y-6">
-      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
       <CvPicker
         open={cvPickerOpen}
         onClose={() => {
