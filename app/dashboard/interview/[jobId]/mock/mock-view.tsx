@@ -12,7 +12,7 @@ import {
 
 import { buildTranscript, pendingTurn } from "@/lib/interview-transcript";
 
-import { AgentStatusBadge } from "@/components/dashboard/agent-status-badge";
+import { InterviewStatusBadge } from "@/components/dashboard/interview-status-badge";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Alert, PageError } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -120,7 +120,7 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
               ? `${transcript.turns.length} lượt hỏi`
               : "Người phỏng vấn ảo đang soạn câu hỏi đầu tiên"
           }
-          actions={<AgentStatusBadge status={run.status} />}
+          actions={<InterviewStatusBadge status={run.status} />}
         >
           {transcript?.intro && (
             <Markdown text={transcript.intro} className="text-slate-600" />

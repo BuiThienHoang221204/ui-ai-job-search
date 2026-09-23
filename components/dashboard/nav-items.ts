@@ -8,7 +8,6 @@ import {
   Gear,
   GraduationCap,
   Question,
-  Robot,
   Sparkle,
   SquaresFour,
   Stack,
@@ -27,7 +26,6 @@ export const navItems = [
   { label: "Tra cứu lương", href: "/dashboard/salary", icon: CurrencyCircleDollar },
   { label: "CV đã tạo", href: "/dashboard/cv-optimizer", icon: FileText },
   { label: "Thư đã viết", href: "/dashboard/cover-letter", icon: Envelope },
-  { label: "Ứng tuyển tự động", href: "/dashboard/apply", icon: Robot },
   { label: "Lịch sử ứng tuyển", href: "/dashboard/applications", icon: ClockCounterClockwise },
   { label: "Chuẩn bị phỏng vấn", href: "/dashboard/interview", icon: ChatText },
   // Đặt NGAY SAU mục trên vì hai thứ đi cùng một việc: bộ đề chuẩn bị bám theo

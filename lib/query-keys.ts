@@ -68,8 +68,9 @@ export const keys = {
 
   upskill: () => ["upskill", "latest"] as const,
 
-  agentRuns: () => ["agent-runs"] as const,
-  agentRunList: (scope: unknown) => ["agent-runs", "list", scope] as const,
+  mockInterviews: () => ["mock-interviews"] as const,
+  mockInterviewList: (scope: unknown) =>
+    ["mock-interviews", "list", scope] as const,
 
   admin: () => ["admin"] as const,
   adminReport: (days: number) => ["admin", "report", days] as const,
@@ -94,8 +95,8 @@ const AFFECTED: Record<string, readonly (readonly string[])[]> = {
   createDocument: [keys.documents()],
   /** Chấm điểm lại đổi cả thẻ trong danh sách lẫn số trên Tổng quan. */
   scoreJob: [keys.matches(), keys.jobs(), ["job"], keys.dashboard()],
-  /** Bắt đầu hoặc trả lời một lượt agent thì lịch sử chạy có dòng mới. */
-  agentRun: [keys.agentRuns()],
+  /** Mở buổi hoặc trả lời một lượt thì lịch sử buổi luyện có dòng mới. */
+  mockInterview: [keys.mockInterviews()],
 };
 
 export type WriteAction = keyof typeof AFFECTED;

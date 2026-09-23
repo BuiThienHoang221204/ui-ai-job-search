@@ -3,8 +3,8 @@
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { apiErrorMessage } from "@/lib/axios";
-import { agentService, jobsService } from "@/services";
-import { useAgentRun } from "@/hooks/use-agent-run";
+import { mockInterviewService, jobsService } from "@/services";
+import { useMockInterviewRun } from "@/hooks/use-mock-interview-run";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { invalidateAfter, keys } from "@/lib/query-keys";
 import { useToast } from "@/components/ui/toast";
@@ -43,11 +43,11 @@ export function useMockInterview(jobId: string) {
   const job = useApiQuery(keys.jobRecord(jobId), () => jobsService.get(jobId), {
     errorMessage: "Không tải được thông tin công việc",
   });
-  // Buổi ĐANG chạy do `useAgentRun` bên dưới hỏi lại theo nhịp; ở đây chỉ là
+  // Buổi ĐANG chạy do `useMockInterviewRun` bên dưới hỏi lại theo nhịp; ở đây chỉ là
   // câu hỏi "công việc này đã có buổi nào chưa", và câu đó cache được.
   const history = useApiQuery(
-    keys.agentRunList({ jobId, workflow: WORKFLOW, limit: 1 }),
-    () => agentService.list({ jobId, workflow: WORKFLOW, limit: 1 }),
+    keys.mockInterviewList({ jobId, workflow: WORKFLOW, limit: 1 }),
+    () => mockInterviewService.list({ jobId, workflow: WORKFLOW, limit: 1 }),
     { errorMessage: "Không tải được buổi luyện đã có" },
   );
 
@@ -58,7 +58,7 @@ export function useMockInterview(jobId: string) {
    * màn hình nói khác với database.
    */
   const runId = startedId ?? history.data?.items[0]?.id ?? null;
-  const { run, error, timedOut, refresh } = useAgentRun(runId, loginNext);
+  const { run, error, timedOut, refresh } = useMockInterviewRun(runId, loginNext);
 
   const send = useCallback(
     async (action: () => Promise<{ runId: string }>, fallback: string) => {
@@ -68,7 +68,7 @@ export function useMockInterview(jobId: string) {
         setStartedId(receipt.runId);
         refresh();
         // Danh sách buổi luyện ở màn Chuẩn bị phỏng vấn vừa có thêm một dòng.
-        invalidateAfter(queryClient, "agentRun");
+        invalidateAfter(queryClient, "mockInterview");
       } catch (err) {
         toast.danger(apiErrorMessage(err, fallback));
       } finally {
@@ -89,7 +89,7 @@ export function useMockInterview(jobId: string) {
       .then(() => {
         refresh();
         setStreaming(null);
-        invalidateAfter(queryClient, "agentRun");
+        invalidateAfter(queryClient, "mockInterview");
       })
       .catch((cause: unknown) => {
         setStreaming(null);

@@ -17,6 +17,22 @@ export type ApplicationEmailInput =
   | { jobDescription: string; company: string; title: string };
 
 /**
+ * Nguồn tin tuyển dụng cho CV. Khác `ApplicationEmailInput` đúng một nhánh:
+ * KHÔNG nguồn nào cũng hợp lệ - đó là "CV tổng quát", sinh từ hồ sơ mà không
+ * nhắm vị trí nào.
+ */
+export type CvSourceInput =
+  | { jobId?: string }
+  | { jobDescription: string; company: string; title: string };
+
+/** Tin tuyển dụng bóc ra từ một đường dẫn, để người dùng soát rồi mới dùng. */
+export interface ExtractedJob {
+  company: string;
+  title: string;
+  description: string;
+}
+
+/**
  * Nội dung CV gửi lên để LƯU. Khác `CvContent` trong `lib/document-content`: bên
  * đó dùng `string | null` để hiển thị an toàn, còn ở đây backend từ chối `null`.
  */
@@ -154,9 +170,23 @@ export const documentsService = {
   },
 
   /** Không có jobId thì sinh CV tổng quát; có thì sinh CV theo vị trí. */
-  createCv: (jobId?: string, stream = false, language: CvLanguage = "vi") =>
+  createCv: (
+    source: CvSourceInput = {},
+    stream = false,
+    language: CvLanguage = "vi",
+  ) =>
     api
-      .post<QueuedDocument>("/documents/cv", { jobId, stream, language })
+      .post<QueuedDocument>("/documents/cv", { ...source, stream, language })
+      .then((r) => r.data),
+
+  /**
+   * Bóc tin tuyển dụng từ một đường dẫn. Trả về để NGƯỜI DÙNG soát, không tạo
+   * tài liệu — portal đổi giao diện và model đọc nhầm tên công ty là chuyện có
+   * thật.
+   */
+  extractJobFromUrl: (url: string) =>
+    api
+      .post<ExtractedJob>("/documents/job-from-url", { url })
       .then((r) => r.data),
 
   createCoverLetter: (jobId: string, stream = false) =>

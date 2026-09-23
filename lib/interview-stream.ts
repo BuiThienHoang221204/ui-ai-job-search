@@ -44,7 +44,7 @@ export async function streamInterviewOpen({
   signal?: AbortSignal;
   onRunId?: (runId: string) => void;
 }): Promise<string> {
-  const response = await fetch(`${API}/agent-runs/interview/open-stream`, {
+  const response = await fetch(`${API}/mock-interviews`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -99,7 +99,7 @@ export async function streamInterviewTurn({
   onText,
   signal,
 }: StreamTurnOptions): Promise<string> {
-  const response = await fetch(`${API}/agent-runs/${runId}/turn`, {
+  const response = await fetch(`${API}/mock-interviews/${runId}/turn`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
