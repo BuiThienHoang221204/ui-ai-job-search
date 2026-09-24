@@ -1,6 +1,7 @@
 import { api } from "@/lib/axios";
 import { blobErrorToError, textErrorToError } from "./blob-error";
 import type { Paginated, QueuedDocument, WorkStatus } from "./types";
+import type { AiFailureKind } from "@/lib/failure-message";
 
 export type DocumentKind =
   | "CV"
@@ -111,7 +112,7 @@ export interface DocumentRecord {
   language: "VI" | "EN";
   modelId: string | null;
   generatedAt: string | null;
-  error: string | null;
+  failureKind: AiFailureKind | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,5 +1,6 @@
 import { api } from "@/lib/axios";
 import type { Paginated } from "./types";
+import type { AiFailureKind } from "@/lib/failure-message";
 
 /**
  * Trạng thái một lượt chạy agent.
@@ -49,7 +50,7 @@ export interface MockInterviewRecord {
   question: string | null;
   answer: string | null;
   modelId: string | null;
-  error: string | null;
+  failureKind: AiFailureKind | null;
   createdAt: string;
   finishedAt: string | null;
   steps: InterviewStep[];
@@ -62,7 +63,7 @@ export interface MockInterviewSummary {
   status: MockInterviewStatus;
   question: string | null;
   modelId: string | null;
-  error: string | null;
+  failureKind: AiFailureKind | null;
   createdAt: string;
   finishedAt: string | null;
   jobId: string | null;

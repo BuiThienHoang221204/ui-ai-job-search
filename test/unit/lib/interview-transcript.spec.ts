@@ -37,7 +37,7 @@ function run(steps: InterviewStep[], partial: Partial<MockInterviewRecord> = {})
     question: null,
     answer: null,
     modelId: "mimo-v2.5-free",
-    error: null,
+    failureKind: null,
     createdAt: "2026-08-21T09:00:00.000Z",
     finishedAt: null,
     steps,

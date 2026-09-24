@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { authService } from "@/services";
+import { safeNextPath } from "@/utils";
 
 /**
  * Khớp với `MinLength(8)` của `RegisterDto` ở backend.
@@ -22,11 +23,7 @@ function RegisterForm() {
   const params = useSearchParams();
   // Cùng cách chặn như trang đăng nhập: chỉ nhận đường dẫn nội bộ, nếu không
   // "?next=https://ke-gian.com" biến trang này thành bàn đạp chuyển hướng.
-  const rawNext = params.get("next") ?? "/dashboard";
-  const next =
-    rawNext.startsWith("/") && !rawNext.startsWith("//")
-      ? rawNext
-      : "/dashboard";
+  const next = safeNextPath(params.get("next"), "/dashboard");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

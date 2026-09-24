@@ -8,16 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { authService } from "@/services";
+import { safeNextPath } from "@/utils";
 
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   // Chỉ nhận đường dẫn nội bộ. Không kiểm tra thì "?next=https://ke-gian.com"
   // sẽ biến trang đăng nhập thành bàn đạp chuyển hướng cho trang lừa đảo.
-  const rawNext = params.get("next") ?? "/dashboard";
-  const next = rawNext.startsWith("/") && !rawNext.startsWith("//")
-    ? rawNext
-    : "/dashboard";
+  const next = safeNextPath(params.get("next"), "/dashboard");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -1,9 +1,11 @@
+import { failureMessage, type AiFailureKind } from "@/lib/failure-message";
+
 export class ModelStreamError extends Error {}
 
 export type ModelStreamEvent<T> =
   | { type: "partial"; data: unknown }
   | { type: "done"; result: T }
-  | { type: "error"; message: string };
+  | { type: "error"; message: string; failureKind?: AiFailureKind };
 
 export interface StreamModelOptions<P> {
   path: string;
@@ -56,7 +58,11 @@ export async function streamModel<T, P = unknown>({
     }
     if (event.type === "partial") onPartial(event.data as P);
     else if (event.type === "done") done = event.result;
-    else throw new ModelStreamError(event.message);
+    // Có failureKind nghĩa là lỗi AI đã được phân loại; không có là câu server cố ý nói với người dùng.
+    else
+      throw new ModelStreamError(
+        event.failureKind ? failureMessage(event.failureKind) : event.message,
+      );
   };
 
   /** `reader.read()` không nhận `AbortSignal`, nên chạy đua nó với một đồng hồ. */

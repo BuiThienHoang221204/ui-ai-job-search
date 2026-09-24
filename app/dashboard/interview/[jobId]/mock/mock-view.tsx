@@ -22,6 +22,7 @@ import { SectionCard } from "@/components/ui/section-card";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { AnswerBox } from "./answer-box";
 import { InterviewTurnBlock } from "./interview-turns";
+import { failureMessage } from "@/lib/failure-message";
 
 export function MockInterviewView({ jobId }: { jobId: string }) {
   const {
@@ -74,7 +75,7 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
 
       {run?.status === "FAILED" && (
         <Alert tone="danger" title="Buổi luyện dừng giữa chừng">
-          {run.error ?? "Không rõ lý do"}
+          {failureMessage(run.failureKind)}
         </Alert>
       )}
 
