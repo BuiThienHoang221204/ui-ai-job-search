@@ -1,6 +1,10 @@
 import { Check, CircleNotch } from "@phosphor-icons/react/ssr";
 import { Alert } from "@/components/ui/alert";
+import { ModelElapsed } from "@/components/dashboard/model-elapsed";
 import type { UpskillReportRecord } from "@/services";
+
+/** Đo trên `ai_calls`: HAI lượt gọi — `upskill.gaps` 158 giây + `upskill.plan` 96 giây. Tác vụ dài nhất hệ thống. */
+const EXPECTED_SECONDS = 254;
 
 export interface UpskillPartial {
   step?: number;
@@ -34,6 +38,7 @@ export function UpskillProgress({
 
   return (
     <Alert tone="info">
+      <ModelElapsed expected={EXPECTED_SECONDS} />
       <StepRow
         done={step1Done}
         label={`Bước 1/2 — tìm khoảng trống kỹ năng${

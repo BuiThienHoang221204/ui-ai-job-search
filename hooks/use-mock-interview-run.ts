@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
-import { agentService, type AgentRunRecord } from "@/services";
+import { mockInterviewService, type MockInterviewRecord } from "@/services";
 
 /**
  * 4 giây, cùng nhịp với vòng hỏi trạng thái tài liệu. Một bước của agent mất
@@ -21,7 +21,7 @@ const POLL_INTERVAL_MS = 2000;
 const MAX_POLLS = 330;
 
 export interface AgentRunView {
-  run: AgentRunRecord | null;
+  run: MockInterviewRecord | null;
   error: string | null;
   /** Hết hạn chờ mà lượt chạy vẫn chưa dừng. Khác hẳn "hỏng". */
   timedOut: boolean;
@@ -31,15 +31,9 @@ export interface AgentRunView {
 
 /**
  * Lượt chạy còn động hay đã dừng hẳn.
- *
- * `DONE` CHƯA chắc là hết: vòng phản biện chạy nền sau đó và ghi vào cùng bản
- * ghi. Dừng hỏi ngay lúc DONE thì góp ý chỉ hiện ra khi người dùng tự tải lại
- * trang - tức là gần như không bao giờ.
  */
-const isRunning = (run: AgentRunRecord | null): boolean =>
-  run?.status === "PENDING" ||
-  run?.status === "RUNNING" ||
-  run?.review?.status === "PENDING";
+const isRunning = (run: MockInterviewRecord | null): boolean =>
+  run?.status === "PENDING" || run?.status === "RUNNING";
 
 /**
  * Bám theo một lượt chạy agent cho tới khi nó dừng.
@@ -50,12 +44,12 @@ const isRunning = (run: AgentRunRecord | null): boolean =>
  *
  * `runId = null` nghĩa là chưa có gì để theo dõi — người dùng còn đang gõ form.
  */
-export function useAgentRun(
+export function useMockInterviewRun(
   runId: string | null,
   loginNext: string,
 ): AgentRunView {
   const router = useRouter();
-  const [run, setRun] = useState<AgentRunRecord | null>(null);
+  const [run, setRun] = useState<MockInterviewRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [timedOut, setTimedOut] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -80,7 +74,7 @@ export function useAgentRun(
 
     const read = async () => {
       try {
-        const record = await agentService.get(runId);
+        const record = await mockInterviewService.get(runId);
         if (cancelled) return;
 
         setRun(record);

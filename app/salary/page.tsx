@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 /**
  * Lối vào CÔNG KHAI, nằm ngoài `/dashboard` một cách cố ý: `middleware.ts` chỉ
- * chặn `/dashboard` và `/admin`, nên đây là đường duy nhất để Google đọc được.
+ * chặn `/dashboard`, nên đây là đường duy nhất để Google đọc được.
  * Người đã đăng nhập đi vào cùng nội dung này qua `/dashboard/salary`.
  */
 export default async function SalaryPage() {

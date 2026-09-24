@@ -1,5 +1,5 @@
 import { Progress } from "@/components/ui/progress";
-import { scoreBarClass, successRateTone } from "@/utils";
+import { scoreBarClass } from "@/utils";
 
 /**
  * `null` KHÔNG được vẽ thành 0%.
@@ -30,17 +30,6 @@ export function ScoreBar({ label, weight, value }: ScoreBarProps) {
       </div>
       <Progress value={value ?? 0} barClassName={scoreBarClass(value)} />
       <p className="mt-1 text-3xs text-slate-400">trọng số {weight}</p>
-    </div>
-  );
-}
-
-/** Thanh tỷ lệ thành công dùng trong các bảng của trang quản trị. */
-export function SuccessRateCell({ rate }: { rate: number }) {
-  const tone = successRateTone(rate);
-  return (
-    <div className="flex items-center gap-2">
-      <Progress value={rate} barClassName={tone.bar} className="w-20" />
-      <span className={`font-mono text-xs font-bold ${tone.text}`}>{rate}%</span>
     </div>
   );
 }

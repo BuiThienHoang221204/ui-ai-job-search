@@ -54,6 +54,3 @@ export type {
   DashboardOverview,
   TodayScore,
 } from "./dashboard";
-
-// types/admin.ts cố ý trống - kiểu của màn hình Quản trị nằm ở
-// lib/services/admin.ts, cạnh chính lời gọi API sinh ra chúng.

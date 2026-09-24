@@ -1,6 +1,10 @@
 import { Check, CircleNotch } from "@phosphor-icons/react/ssr";
+import { ModelElapsed } from "@/components/dashboard/model-elapsed";
 import { SectionCard } from "@/components/ui/section-card";
 import type { PartialCv } from "@/lib/cv-partial";
+
+/** Đo trên `ai_calls`: `document.cv` 39-84 giây. */
+const EXPECTED_SECONDS = 60;
 
 const ROWS = [
   { label: "Giới thiệu bản thân", of: (p: PartialCv) => p.profileStatement },
@@ -13,11 +17,8 @@ const ROWS = [
 
 export function CvLiveProgress({ partial }: { partial: PartialCv | null }) {
   return (
-    <SectionCard
-      compact
-      title="Đang viết CV"
-      description="Từng mục hiện ra ngay khi AI viết xong"
-    >
+    <SectionCard compact title="Đang viết CV">
+      <ModelElapsed expected={EXPECTED_SECONDS} />
       <ul className="space-y-2">
         {ROWS.map(({ label, of }) => {
           const value = partial ? of(partial) : undefined;

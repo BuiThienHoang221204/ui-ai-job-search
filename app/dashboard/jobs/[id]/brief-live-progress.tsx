@@ -1,4 +1,8 @@
 import { Check, CircleNotch } from "@phosphor-icons/react/ssr";
+import { ModelElapsed } from "@/components/dashboard/model-elapsed";
+
+/** Đo trên `ai_calls`: `company.brief` khoảng 25 giây, chưa kể các lượt tải trang nguồn trước đó. */
+const EXPECTED_SECONDS = 35;
 
 export interface PartialBrief {
   verdict?: string;
@@ -18,10 +22,13 @@ const ROWS = [
 export function BriefLiveProgress({ partial }: { partial: PartialBrief | null }) {
   if (!partial) {
     return (
-      <p className="flex items-center gap-2 text-sm text-slate-500">
-        <CircleNotch className="size-4.5 animate-spin text-slate-300" />
-        Đang tìm và đọc các nguồn đánh giá…
-      </p>
+      <div>
+        <ModelElapsed expected={EXPECTED_SECONDS} />
+        <p className="flex items-center gap-2 text-sm text-slate-500">
+          <CircleNotch className="size-4.5 animate-spin text-slate-300" />
+          Đang tìm và đọc các nguồn đánh giá…
+        </p>
+      </div>
     );
   }
 

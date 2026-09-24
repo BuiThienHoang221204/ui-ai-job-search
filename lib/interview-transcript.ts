@@ -1,4 +1,4 @@
-import type { AgentRunRecord, AgentStep } from "@/services";
+import type { MockInterviewRecord, InterviewStep } from "@/services";
 
 /** Tên tool mà agent gọi khi nó dừng lại hỏi. Khớp `ASK_USER_TOOL` của backend. */
 const ASK_USER = "ask_user";
@@ -28,14 +28,14 @@ const text = (value: unknown): string | null =>
   typeof value === "string" && value.trim() ? value.trim() : null;
 
 /** Câu hỏi mà bước này đặt ra, hoặc `null` nếu nó không hỏi gì. */
-function questionOf(step: AgentStep): string | null {
+function questionOf(step: InterviewStep): string | null {
   const call = step.toolCalls?.find((entry) => entry.tool === ASK_USER);
   if (!call) return null;
   return text((call.input as { question?: unknown } | undefined)?.question);
 }
 
 /** Câu người dùng đã trả lời cho bước đó — backend ghi ngược vào `toolResults`. */
-function answerOf(step: AgentStep): string | null {
+function answerOf(step: InterviewStep): string | null {
   const result = step.toolResults?.find((entry) => entry.tool === ASK_USER);
   if (!result) return null;
   return text((result.output as AskUserOutput | undefined)?.answer);
@@ -53,7 +53,7 @@ function answerOf(step: AgentStep): string | null {
  * người dùng đang đọc lại buổi phỏng vấn của mình, không đọc nhật ký kỹ thuật —
  * phần đó đã có ở màn Ứng tuyển tự động.
  */
-export function buildTranscript(run: AgentRunRecord): InterviewTranscript {
+export function buildTranscript(run: MockInterviewRecord): InterviewTranscript {
   const turns: InterviewTurn[] = [];
   let intro: string | null = null;
 

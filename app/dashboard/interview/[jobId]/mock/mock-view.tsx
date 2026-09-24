@@ -12,7 +12,7 @@ import {
 
 import { buildTranscript, pendingTurn } from "@/lib/interview-transcript";
 
-import { AgentStatusBadge } from "@/components/dashboard/agent-status-badge";
+import { InterviewStatusBadge } from "@/components/dashboard/interview-status-badge";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Alert, PageError } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import { SectionCard } from "@/components/ui/section-card";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { AnswerBox } from "./answer-box";
 import { InterviewTurnBlock } from "./interview-turns";
+import { failureMessage } from "@/lib/failure-message";
 
 export function MockInterviewView({ jobId }: { jobId: string }) {
   const {
@@ -74,7 +75,7 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
 
       {run?.status === "FAILED" && (
         <Alert tone="danger" title="Buổi luyện dừng giữa chừng">
-          {run.error ?? "Không rõ lý do"}
+          {failureMessage(run.failureKind)}
         </Alert>
       )}
 
@@ -120,7 +121,7 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
               ? `${transcript.turns.length} lượt hỏi`
               : "Người phỏng vấn ảo đang soạn câu hỏi đầu tiên"
           }
-          actions={<AgentStatusBadge status={run.status} />}
+          actions={<InterviewStatusBadge status={run.status} />}
         >
           {transcript?.intro && (
             <Markdown text={transcript.intro} className="text-slate-600" />

@@ -1,9 +1,11 @@
+import { failureMessage, type AiFailureKind } from "@/lib/failure-message";
+
 export class ModelStreamError extends Error {}
 
 export type ModelStreamEvent<T> =
   | { type: "partial"; data: unknown }
   | { type: "done"; result: T }
-  | { type: "error"; message: string };
+  | { type: "error"; message: string; failureKind?: AiFailureKind };
 
 export interface StreamModelOptions<P> {
   path: string;
@@ -13,6 +15,9 @@ export interface StreamModelOptions<P> {
 }
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
+
+/** Đếm từ lần NHẬN CUỐI, không phải từ lúc bắt đầu. Server đập nhịp mỗi 10 giây (`HEARTBEAT_MS` trong `common/ndjson.ts`) nên im quá 40 giây là chết thật — đổi một bên phải đổi bên kia. */
+const IDLE_TIMEOUT_MS = 40_000;
 
 export async function streamModel<T, P = unknown>({
   path,
@@ -53,12 +58,37 @@ export async function streamModel<T, P = unknown>({
     }
     if (event.type === "partial") onPartial(event.data as P);
     else if (event.type === "done") done = event.result;
-    else throw new ModelStreamError(event.message);
+    // Có failureKind nghĩa là lỗi AI đã được phân loại; không có là câu server cố ý nói với người dùng.
+    else
+      throw new ModelStreamError(
+        event.failureKind ? failureMessage(event.failureKind) : event.message,
+      );
+  };
+
+  /** `reader.read()` không nhận `AbortSignal`, nên chạy đua nó với một đồng hồ. */
+  const readOrGiveUp = async () => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const giveUp = new Promise<never>((_, reject) => {
+      timer = setTimeout(
+        () =>
+          reject(
+            new ModelStreamError(
+              "Máy chủ ngừng phản hồi. Hãy thử lại sau ít phút.",
+            ),
+          ),
+        IDLE_TIMEOUT_MS,
+      );
+    });
+    try {
+      return await Promise.race([reader.read(), giveUp]);
+    } finally {
+      clearTimeout(timer);
+    }
   };
 
   try {
     for (;;) {
-      const chunk = await reader.read();
+      const chunk = await readOrGiveUp();
       if (chunk.done) break;
       buffer += decoder.decode(chunk.value, { stream: true });
       let at = buffer.indexOf("\n");

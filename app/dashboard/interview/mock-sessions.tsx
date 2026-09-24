@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { CaretRight, Microphone } from "@phosphor-icons/react/ssr";
-import { agentService } from "@/services";
+import { mockInterviewService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
-import { AgentStatusBadge } from "@/components/dashboard/agent-status-badge";
+import { InterviewStatusBadge } from "@/components/dashboard/interview-status-badge";
 import { SectionCard } from "@/components/ui/section-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { relativeDay } from "@/utils";
@@ -23,8 +23,8 @@ const PAGE_SIZE = 8;
  */
 export function MockSessions() {
   const page = useApiQuery(
-    keys.agentRunList({ workflow: "interview", limit: PAGE_SIZE }),
-    () => agentService.list({ workflow: "interview", limit: PAGE_SIZE }),
+    keys.mockInterviewList({ workflow: "interview", limit: PAGE_SIZE }),
+    () => mockInterviewService.list({ workflow: "interview", limit: PAGE_SIZE }),
     { errorMessage: "Không tải được danh sách buổi luyện" },
   );
 
@@ -70,7 +70,7 @@ export function MockSessions() {
                     bước · {relativeDay(session.createdAt)}
                   </p>
                 </div>
-                <AgentStatusBadge status={session.status} />
+                <InterviewStatusBadge status={session.status} />
                 {session.jobId && (
                   <CaretRight className="size-4.5 shrink-0 text-slate-300" />
                 )}

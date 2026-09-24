@@ -13,6 +13,7 @@ import {
   type DocumentRecord,
   type QueuedDocument,
 } from "@/services";
+import { failureMessage } from "@/lib/failure-message";
 
 /**
  * 4 giây: đủ thưa để không nện backend suốt hai phút, đủ dày để người dùng
@@ -114,9 +115,8 @@ export function useDocumentJob(loginNext: string): DocumentJob {
             ...NOTHING,
             of: watch,
             document: record,
-            // Gateway AI hỏng thường xuyên, nên lý do thật của worker đáng giá
-            // hơn bất kỳ câu chữ chung chung nào ta tự nghĩ ra.
-            error: record.error ?? "Worker báo thất bại nhưng không kèm lý do",
+            // Lỗi thô (tên model, gateway) chỉ còn trong log và trang admin; người dùng nhận câu theo loại lỗi.
+            error: failureMessage(record.failureKind),
           });
           return;
         }

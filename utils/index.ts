@@ -33,3 +33,4 @@ export {
   type ToneClasses,
 } from "./score";
 export { fold, isJsonText, joinList, parseList, toJsonText } from "./text";
+export { safeNextPath } from "./redirect";

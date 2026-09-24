@@ -3,16 +3,15 @@
 import { CvLiveProgress } from "./cv-live-progress";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { Sparkle } from "@phosphor-icons/react/ssr";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 import {
   documentsService,
   matchesService,
   type CvLanguage,
+  type CvSourceInput,
   type DocumentRecord,
 } from "@/services";
-import { cn } from "@/utils";
 import { isCvContentEmpty, parseCvContent } from "@/lib/document-content";
 import { PageHeader } from "@/components/dashboard/page-header";
 import {
@@ -21,16 +20,15 @@ import {
   DocumentJobStatus,
   DocumentSource,
   DocumentStatusBadge,
-  JobSelectCard,
   UNREADABLE_CONTENT_MESSAGE,
   upsertDocument,
   useDocumentJob,
 } from "@/components/dashboard/document-job";
 import { Alert, PageError } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/ui/section-card";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { CvContentView } from "./cv-content";
+import { CvSourceCard } from "./cv-source-card";
 import { CvStudio } from "./cv-studio";
 
 const LOGIN_NEXT = "/dashboard/cv-optimizer";
@@ -41,13 +39,20 @@ const MATCH_LIMIT = 50;
 /** Số tài liệu hiện một lúc trong kho; phần còn lại lật bằng phân trang. */
 const DOCUMENT_PAGE_SIZE = 10;
 
-/** Giá trị của mục "không nhắm vị trí nào" — backend coi jobId là tuỳ chọn. */
-const NO_JOB = "";
-
 export function CvOptimizerView() {
   const fixedJobId = useSearchParams().get("jobId");
-  const [jobId, setJobId] = useState<string>(fixedJobId ?? NO_JOB);
   const [language, setLanguage] = useState<CvLanguage>("vi");
+
+  /*
+   * Nguồn của lượt sinh GẦN NHẤT, không phải nguồn đang chọn trong thẻ.
+   *
+   * `DocumentJobStatus` có nút "Thử lại", và nút đó phải sinh lại đúng thứ vừa
+   * hỏng. Đọc lại state của thẻ nguồn thì người dùng đổi tab trong lúc chờ là
+   * bấm Thử lại ra một CV khác hẳn.
+   */
+  const [source, setSource] = useState<CvSourceInput>(
+    fixedJobId ? { jobId: fixedJobId } : {},
+  );
 
   const job = useDocumentJob(LOGIN_NEXT);
 
@@ -90,14 +95,9 @@ export function CvOptimizerView() {
     return job.document ? upsertDocument(list, job.document) : list;
   }, [documentPage.data, job.document]);
 
-  const handleGenerate = () => {
-    job.startStream(() =>
-      documentsService.createCv(
-        jobId === NO_JOB ? undefined : jobId,
-        true,
-        language,
-      ),
-    );
+  const handleGenerate = (next: CvSourceInput = source) => {
+    setSource(next);
+    job.startStream(() => documentsService.createCv(next, true, language));
   };
 
   if (error) return <PageError title="Không tải được dữ liệu" message={error} />;
@@ -118,58 +118,16 @@ export function CvOptimizerView() {
         }
       />
 
-      <JobSelectCard
-        title="Chọn vị trí muốn nhắm tới"
-        description="Không chọn gì thì hệ thống sinh CV tổng quát từ hồ sơ của bạn"
-        selectId="cv-job"
+      <CvSourceCard
         matches={matches}
-        value={jobId}
-        onChange={setJobId}
-        disabled={isGenerating || Boolean(fixedJobId)}
-        emptyOptionLabel="CV tổng quát (không nhắm vị trí nào)"
-        action={
-          <div className="flex flex-wrap items-end gap-3">
-            <div role="group" aria-labelledby="cv-language-label">
-              <span
-                id="cv-language-label"
-                className="mb-1.5 block text-sm font-medium text-slate-700"
-              >
-                Ngôn ngữ CV
-              </span>
-              <div className="flex h-10 items-center rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
-                {(
-                  [
-                    ["vi", "Tiếng Việt"],
-                    ["en", "English"],
-                  ] as const
-                ).map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    disabled={isGenerating}
-                    aria-pressed={language === value}
-                    onClick={() => setLanguage(value)}
-                    className={cn(
-                      "cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                      language === value
-                        ? "bg-primary-50 text-primary-700"
-                        : "text-slate-500 hover:text-slate-800",
-                    )}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <Button onClick={handleGenerate} loading={isGenerating}>
-              <Sparkle className="size-4.5" />
-              {isGenerating ? "Đang tạo…" : "Tạo CV bằng AI"}
-            </Button>
-          </div>
-        }
+        fixedJobId={fixedJobId}
+        language={language}
+        onLanguageChange={setLanguage}
+        disabled={isGenerating}
+        onSubmit={handleGenerate}
       />
 
-      <DocumentJobStatus job={job} onRegenerate={handleGenerate} />
+      <DocumentJobStatus job={job} onRegenerate={() => handleGenerate()} />
 
       {isGenerating && <CvLiveProgress partial={job.partial} />}
 

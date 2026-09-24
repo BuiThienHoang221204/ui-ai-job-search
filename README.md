@@ -47,7 +47,7 @@ Lưu ý: `pnpm build` ghi đè `.next` và làm dev server đang chạy trả 50
 
 ## Nợ đã ghi, không phải bỏ sót
 
-- **Chưa có test đơn vị cho component và hook** — chưa cài `jsdom` lẫn `@testing-library/react`. Bộ đơn vị (vitest) cố ý chỉ kiểm hàm thuần; hành vi được kiểm bằng Playwright trên trình duyệt thật, và hai thứ dễ vỡ nhất đã có test riêng ở đó: `test/visual/document-job.spec.ts` (máy trạng thái tài liệu) và `test/visual/admin-refetch.spec.ts` (đếm request để bắt vòng lặp tải).
+- **Chưa có test đơn vị cho component và hook** — chưa cài `jsdom` lẫn `@testing-library/react`. Bộ đơn vị (vitest) cố ý chỉ kiểm hàm thuần; hành vi được kiểm bằng Playwright trên trình duyệt thật, và thứ dễ vỡ nhất đã có test riêng ở đó: `test/visual/document-job.spec.ts` (máy trạng thái tài liệu). Trang quản trị đã tách sang app riêng `ui-admin-job-search` (cổng 3001).
 - **Thẻ số liệu "Tỷ lệ match TB" không có link.** Nhãn cũ là "Chi tiết phân tích" nhưng không có trang phân tích nào; nay bỏ hẳn nhãn thay vì trỏ tạm sang trang khác. Khi có trang đó thật thì thêm `action` vào `dashboard-stats.tsx`.
 - **`GET /api/upskill` trả 404 khi chưa có báo cáo**, nên console có một dòng 404 mỗi lần mở màn Lộ trình học lúc chưa có dữ liệu. Đúng REST cho một tài nguyên đơn, nhưng giao diện không phân biệt được "chưa có" với "route đã bị đổi tên" — `server/test/upskill.e2e-spec.ts` ghim đường dẫn lại để bịt khe đó.
 

@@ -1,5 +1,5 @@
 import { cn } from "@/utils";
-import type { AgentRunStatus } from "@/services";
+import type { MockInterviewStatus } from "@/services";
 
 /**
  * Năm trạng thái, và `WAITING_USER` phải NỔI hơn bốn cái kia.
@@ -8,7 +8,7 @@ import type { AgentRunStatus } from "@/services";
  * cho tới khi người dùng trả lời. Cho nó cùng một màu xám như "đang chạy" là
  * cách chắc chắn để một lượt chạy bị bỏ quên.
  */
-const STYLES: Record<AgentRunStatus, { label: string; className: string }> = {
+const STYLES: Record<MockInterviewStatus, { label: string; className: string }> = {
   PENDING: {
     label: "Đang xếp hàng",
     className: "bg-slate-100 text-slate-600",
@@ -25,7 +25,7 @@ const STYLES: Record<AgentRunStatus, { label: string; className: string }> = {
   FAILED: { label: "Thất bại", className: "bg-rose-50 text-rose-700" },
 };
 
-export function AgentStatusBadge({ status }: { status: AgentRunStatus }) {
+export function InterviewStatusBadge({ status }: { status: MockInterviewStatus }) {
   const style = STYLES[status];
 
   return (

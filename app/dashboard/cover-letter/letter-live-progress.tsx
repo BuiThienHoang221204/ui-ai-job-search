@@ -1,5 +1,9 @@
 import { Check, CircleNotch } from "@phosphor-icons/react/ssr";
+import { ModelElapsed } from "@/components/dashboard/model-elapsed";
 import { SectionCard } from "@/components/ui/section-card";
+
+/** Đo trên `ai_calls`: `document.coverLetter` 54-61 giây. */
+const EXPECTED_SECONDS = 58;
 
 export interface PartialLetter {
   salutation?: string;
@@ -23,11 +27,8 @@ export function LetterLiveProgress({
   partial: PartialLetter | null;
 }) {
   return (
-    <SectionCard
-      compact
-      title="Đang viết thư"
-      description="Từng đoạn hiện ra ngay khi AI viết xong"
-    >
+    <SectionCard compact title="Đang viết thư">
+      <ModelElapsed expected={EXPECTED_SECONDS} />
       <ul className="space-y-2">
         {ROWS.map(({ label, of }) => {
           const value = partial ? of(partial) : undefined;

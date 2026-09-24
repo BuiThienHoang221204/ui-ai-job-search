@@ -1,5 +1,6 @@
 import { api } from "@/lib/axios";
 import type { Paginated, QueuedScrapeRun, WorkStatus } from "./types";
+import type { AiFailureKind } from "@/lib/failure-message";
 
 export interface ScrapeRunRecord {
   id: string;
@@ -9,7 +10,7 @@ export interface ScrapeRunRecord {
   jobsFound: number;
   jobsNew: number;
   jobsQueued: number;
-  error: string | null;
+  failureKind: AiFailureKind | null;
   startedAt: string;
   finishedAt: string | null;
 }

@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { buildTranscript, pendingTurn } from "@/lib/interview-transcript";
-import type { AgentRunRecord, AgentStep } from "@/services";
+import type { MockInterviewRecord, InterviewStep } from "@/services";
 
 let nextIndex = 0;
 
-function step(partial: Partial<AgentStep>): AgentStep {
+function step(partial: Partial<InterviewStep>): InterviewStep {
   return {
     id: `step_${nextIndex}`,
     index: nextIndex++,
@@ -17,7 +17,7 @@ function step(partial: Partial<AgentStep>): AgentStep {
   };
 }
 
-function ask(question: string, answer?: string): AgentStep {
+function ask(question: string, answer?: string): InterviewStep {
   return step({
     toolCalls: [{ tool: "ask_user", input: { question } }],
     toolResults: [
@@ -26,20 +26,18 @@ function ask(question: string, answer?: string): AgentStep {
   });
 }
 
-function run(steps: AgentStep[], partial: Partial<AgentRunRecord> = {}): AgentRunRecord {
+function run(steps: InterviewStep[], partial: Partial<MockInterviewRecord> = {}): MockInterviewRecord {
   nextIndex = 0;
   return {
     id: "run_1",
     workflow: "interview",
     jobId: "job_1",
     status: "WAITING_USER",
-    input: {},
     result: null,
-    review: null,
     question: null,
     answer: null,
     modelId: "mimo-v2.5-free",
-    error: null,
+    failureKind: null,
     createdAt: "2026-08-21T09:00:00.000Z",
     finishedAt: null,
     steps,
