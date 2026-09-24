@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 const AUTH_COOKIE = "aijob_token";
 
 /**
- * Chặn /dashboard và /admin khi chưa đăng nhập.
+ * Chặn /dashboard khi chưa đăng nhập. Khu quản trị đã tách sang app riêng `ui-admin-job-search`.
  *
  * Đây CHỈ là chặn ở tầng điều hướng, không phải tầng bảo mật: middleware chỉ
  * nhìn xem cookie có tồn tại hay không, nó không xác thực chữ ký JWT. Người
@@ -25,5 +25,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*"],
+  matcher: ["/dashboard/:path*"],
 };

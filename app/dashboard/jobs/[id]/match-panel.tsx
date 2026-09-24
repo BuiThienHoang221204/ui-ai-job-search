@@ -13,6 +13,7 @@ import { AIMatchProgress } from "@/components/dashboard/ai-match-progress";
 import { ScoreBar } from "@/components/dashboard/score-row";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ModelElapsed } from "@/components/dashboard/model-elapsed";
 import { SectionCard } from "@/components/ui/section-card";
 import { cn } from "@/utils";
 import { SCORE_ROWS } from "./job-detail-constants";
@@ -165,13 +166,13 @@ const LIVE_ROWS = [
   { label: "Nhận xét tổng hợp", of: (p: PartialEvaluation) => p.recommendation },
 ] as const;
 
+/** Đo trên `ai_calls`: `match.evaluate` trung bình khoảng 40 giây qua omniroute. */
+const EXPECTED_SCORING_SECONDS = 40;
+
 function LiveScoringCard({ partial }: { partial: PartialEvaluation | null }) {
   return (
-    <SectionCard
-      compact
-      title="Đang chấm điểm"
-      description="Kết quả hiện dần ngay khi AI viết ra"
-    >
+    <SectionCard compact title="Đang chấm điểm">
+      <ModelElapsed expected={EXPECTED_SCORING_SECONDS} />
       <ul className="space-y-2">
         {LIVE_ROWS.map(({ label, of }) => {
           const value = partial ? of(partial) : undefined;
@@ -186,11 +187,8 @@ function LiveScoringCard({ partial }: { partial: PartialEvaluation | null }) {
               <span className={done ? "text-slate-800" : "text-slate-400"}>
                 {label}
               </span>
-              {typeof value === "number" && (
-                <span className="ml-auto font-semibold text-slate-800">
-                  {value}
-                </span>
-              )}
+              {/* KHÔNG hiện giá trị: mảnh dở dang cho ra số SAI trước khi
+                  đúng — "85" về làm hai lần nên có khoảnh khắc nó là "8". */}
             </li>
           );
         })}

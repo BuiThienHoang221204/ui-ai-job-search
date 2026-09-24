@@ -10,6 +10,9 @@ import { useSession } from "@/components/dashboard/session";
 import { navItems } from "@/components/dashboard/nav-items";
 import { BrandLogo } from "@/components/dashboard/brand-logo";
 
+// Khu quản trị là app riêng (ui-admin-job-search), nên đây là link sang origin khác chứ không phải route nội bộ.
+const ADMIN_APP_URL = process.env.NEXT_PUBLIC_ADMIN_URL ?? "http://localhost:3001";
+
 export function Sidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -89,21 +92,16 @@ export function Sidebar() {
 
         {user?.role === "ADMIN" && (
           <div className="!mt-4 border-t border-slate-100/90 pt-3">
-            <Link
-              href="/admin"
-              title="Admin Control Panel"
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-150",
-                pathname.startsWith("/admin")
-                  ? "bg-primary-50 text-primary-900 font-semibold border-l-2 border-primary-600 pl-2.5"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
-              )}
+            <a
+              href={ADMIN_APP_URL}
+              title="Trang quản trị"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs sm:text-sm font-medium text-slate-600 transition-all duration-150 hover:bg-slate-50 hover:text-slate-900"
             >
               <Lightning className="size-4.5 shrink-0 text-slate-400" />
               <span data-sidebar-label className="truncate">
-                Admin Control Panel
+                Trang quản trị
               </span>
-            </Link>
+            </a>
           </div>
         )}
       </nav>

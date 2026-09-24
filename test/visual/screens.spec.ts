@@ -20,9 +20,7 @@ import { waitForImages } from "./support";
  * trống — nên mọi ảnh chụp đều là trạng thái RỖNG, và bộ kiểm báo xanh mà chưa
  * từng xem bố cục lúc có dữ liệu. Trạng thái rỗng đáng xem, nhưng nó không phải
  * thứ cần xem. Tài khoản này có 48 việc đã chấm điểm, 6 đơn ứng tuyển ở 6 trạng
- * thái khác nhau, và 20 lượt quét cho màn quản trị.
- *
- * Vai ADMIN là bắt buộc: `/admin` chặn theo vai.
+ * thái khác nhau.
  */
 const EMAIL = process.env.VISUAL_EMAIL ?? "admin@aijob.local";
 const PASSWORD = process.env.VISUAL_PASSWORD ?? "Demo@12345";
@@ -62,7 +60,6 @@ const SCREENS = [
   { path: "/dashboard/upskill", name: "04-upskill" },
   { path: "/dashboard/profile/upload", name: "04b-doc-cv" },
   { path: "/dashboard/settings", name: "05-settings" },
-  { path: "/admin", name: "06-admin" },
 ];
 
 async function login(page: Page) {

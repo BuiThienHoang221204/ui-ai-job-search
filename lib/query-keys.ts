@@ -71,10 +71,6 @@ export const keys = {
   mockInterviews: () => ["mock-interviews"] as const,
   mockInterviewList: (scope: unknown) =>
     ["mock-interviews", "list", scope] as const,
-
-  admin: () => ["admin"] as const,
-  adminReport: (days: number) => ["admin", "report", days] as const,
-  scrapeHistory: () => ["scrape", "history"] as const,
 } as const;
 
 /**

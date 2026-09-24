@@ -10,8 +10,6 @@ export { upskillService } from "./upskill";
 export { profileService } from "./profile";
 export { profileDraftService } from "./profile-draft";
 export { scraperService } from "./scraper";
-export { skillsService } from "./skills";
-export { adminService } from "./admin";
 export { companiesService } from "./companies";
 
 export type {
@@ -79,5 +77,3 @@ export type {
   CompanyVerdict,
 } from "./companies";
 export type { ScrapeRunRecord } from "./scraper";
-export type { SkillRecord } from "./skills";
-export type { AiFailureKind, AiFailureRecord, AiHealth, PurposeStats } from "./admin";
