@@ -13,24 +13,15 @@ interface SectionCardProps {
   title: ReactNode;
   description?: ReactNode;
   icon?: PhosphorIcon;
-  /** Mặc định là màu thương hiệu; đổi khi biểu tượng mang nghĩa cảnh báo. */
   iconClassName?: string;
-  /** Nội dung căn phải trên cùng hàng với tiêu đề (nút, huy hiệu trạng thái). */
   actions?: ReactNode;
-  /** Cỡ chữ nhỏ hơn và có đường kẻ dưới tiêu đề — dùng cho thẻ phụ trong trang. */
   compact?: boolean;
   className?: string;
   contentClassName?: string;
   children: ReactNode;
 }
 
-/**
- * Thẻ có tiêu đề — bố cục lặp lại ở gần như mọi trang.
- *
- * Gom lại một chỗ để tiêu đề, khoảng cách và cỡ chữ giống nhau ở mọi nơi: khi
- * mỗi trang tự ghép Card + CardHeader + CardTitle thì chỉ vài lần sửa là các
- * trang lệch nhau vài pixel mà không ai cố ý.
- */
+/** Thẻ có tiêu đề — bố cục lặp lại ở gần như mọi trang. */
 export function SectionCard({
   title,
   description,
@@ -47,12 +38,6 @@ export function SectionCard({
       <CardHeader
         className={cn(
           compact && "border-b border-slate-100 pb-3",
-          /*
-             Xếp DỌC trên màn hẹp, ngang từ `sm` trở lên.
-             Để `flex-row` ở mọi cỡ thì cột tiêu đề bị ép còn một nửa và một tên
-             tài liệu dài vỡ thành sáu dòng bên cạnh hai cái nút — đã thấy trên
-             ảnh chụp 390px của khối kết quả mail.
-          */
           actions &&
             "flex-col items-start gap-3 space-y-0 sm:flex-row sm:items-start sm:justify-between sm:gap-4",
         )}

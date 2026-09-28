@@ -19,21 +19,9 @@ import {
 import { fold, formatMonthlyVnd } from "@/utils";
 import { SalaryBar } from "./salary-bar";
 
-
-/**
- * Số dòng mỗi trang.
- *
- * Đặt bằng đúng ngành lớn nhất (25 vị trí) để lọc theo một ngành thì gọn trong
- * một trang, và `Pagination` tự ẩn đi.
- */
 const PAGE_SIZE = 25;
 
-/**
- * Thang CHUNG cho mọi dòng, luôn bắt đầu từ 0.
- *
- * Mỗi dòng một thang riêng thì thanh dài ngắn không còn nghĩa gì, mà mắt vẫn cứ
- * so chúng với nhau — đó chính là thứ làm lưới thẻ cũ không đọc được.
- */
+/** Thang chung cho mọi dòng, luôn bắt đầu từ 0. */
 function globalScale(positions: SalaryPositionSummary[]): [number, number] {
   const top = positions.reduce((max, p) => {
     const candidate = p.rangeMax ?? p.avgMonthly ?? 0;
@@ -43,6 +31,7 @@ function globalScale(positions: SalaryPositionSummary[]): [number, number] {
   return [0, Math.max(top, 1)];
 }
 
+/** Trình duyệt tra cứu lương: tìm kiếm, lọc theo ngành và danh sách dải lương. */
 export function SalaryBrowser({
   occupations,
   positions,
@@ -50,7 +39,6 @@ export function SalaryBrowser({
 }: {
   occupations: SalaryOccupation[];
   positions: SalaryPositionSummary[];
-  /** Tiền tố đường dẫn: trang công khai và trang trong dashboard dùng chung component này. */
   basePath: string;
 }) {
   const [term, setTerm] = useState("");
@@ -188,6 +176,7 @@ export function SalaryBrowser({
   );
 }
 
+/** Chip lọc theo ngành nghề. */
 function FilterChip({
   label,
   count,

@@ -1,8 +1,4 @@
-/**
- * Đọc được ở cả hai đầu thang: 340 ms và 517 giây đều xuất hiện thật trong dữ
- * liệu độ trễ của AI gateway, nên một đơn vị cố định sẽ hoặc mất độ chính xác
- * hoặc khó đọc.
- */
+/** Định dạng thời lượng tự chọn đơn vị ms, giây hoặc phút. */
 export function formatDuration(ms: number): string {
   if (ms < 1000) return `${ms} ms`;
   const seconds = ms / 1000;

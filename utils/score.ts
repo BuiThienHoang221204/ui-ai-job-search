@@ -43,27 +43,19 @@ export function matchTone(score: number): ScoreTone {
   return "low";
 }
 
+/** Lấy bộ class màu theo mức điểm phù hợp. */
 export function matchToneClasses(score: number): ToneClasses {
   return TONE_CLASSES[matchTone(score)];
 }
 
-/**
- * Ngưỡng cho tỷ lệ thành công của AI gateway — cao hơn `matchTone` một cách có
- * chủ ý: 80% là điểm phù hợp tốt cho một công việc, nhưng một gateway hỏng một
- * phần năm số lời gọi thì đang ở tình trạng báo động.
- */
+/** Bộ class màu theo tỷ lệ thành công của AI gateway (ngưỡng cao hơn `matchTone`). */
 export function successRateTone(rate: number): ToneClasses {
   if (rate >= 95) return TONE_CLASSES.good;
   if (rate >= 80) return TONE_CLASSES.mid;
   return TONE_CLASSES.low;
 }
 
-/**
- * Màu thanh cho điểm từng chiều đánh giá.
- *
- * `null` nghĩa là backend không chấm chiều này — tô xám chứ không tô màu của
- * điểm 0, vì hai chuyện đó khác hẳn nhau.
- */
+/** Màu thanh cho điểm từng chiều đánh giá, `null` thì tô xám. */
 export function scoreBarClass(value: number | null): string {
   if (value === null) return "bg-slate-200";
   if (value >= 85) return "bg-emerald-500";

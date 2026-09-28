@@ -1,29 +1,23 @@
 import type { MockInterviewRecord, InterviewStep } from "@/services";
 
-/** Tên tool mà agent gọi khi nó dừng lại hỏi. Khớp `ASK_USER_TOOL` của backend. */
 const ASK_USER = "ask_user";
 
-/** Một lượt hỏi - đáp - nhận xét trong buổi luyện. */
 export interface InterviewTurn {
-  /** Số thứ tự lượt, bắt đầu từ 1. */
   index: number;
   question: string;
-  /** `null` khi đây là câu đang chờ người dùng trả lời. */
   answer: string | null;
-  /** Nhận xét của người phỏng vấn ảo cho câu trả lời này. */
   feedback: string | null;
 }
 
 export interface InterviewTranscript {
-  /** Lời dẫn trước câu hỏi đầu tiên, nếu agent có viết. */
   intro: string | null;
   turns: InterviewTurn[];
-  /** Tổng kết cuối buổi, chỉ có khi lượt chạy đã xong. */
   closing: string | null;
 }
 
 type AskUserOutput = { asked?: unknown; answer?: unknown };
 
+/** Chuỗi đã cắt khoảng trắng, rỗng hoặc không phải chuỗi thì trả null. */
 const text = (value: unknown): string | null =>
   typeof value === "string" && value.trim() ? value.trim() : null;
 
@@ -41,18 +35,7 @@ function answerOf(step: InterviewStep): string | null {
   return text((result.output as AskUserOutput | undefined)?.answer);
 }
 
-/**
- * Dựng biên bản buổi luyện từ nhật ký các bước.
- *
- * Ghép được là nhờ một quy luật ĐO ĐƯỢC ở lượt chạy thật, không phải giả định:
- * agent viết nhận xét cho câu vừa rồi và đặt câu hỏi tiếp theo **trong cùng một
- * bước** — `step.text` là nhận xét, `toolCalls` là câu hỏi mới. Nên văn bản của
- * một bước luôn thuộc về lượt TRƯỚC nó, còn câu hỏi mở ra lượt mới.
- *
- * Các bước không hỏi gì (đọc hồ sơ, đọc khung đặc tả, lưu bộ đề) bị bỏ qua:
- * người dùng đang đọc lại buổi phỏng vấn của mình, không đọc nhật ký kỹ thuật —
- * phần đó đã có ở màn Ứng tuyển tự động.
- */
+/** Dựng biên bản buổi luyện phỏng vấn từ nhật ký các bước. */
 export function buildTranscript(run: MockInterviewRecord): InterviewTranscript {
   const turns: InterviewTurn[] = [];
   let intro: string | null = null;
@@ -76,11 +59,6 @@ export function buildTranscript(run: MockInterviewRecord): InterviewTranscript {
     });
   }
 
-  /*
-   * Lời kết lấy từ `result.text` chứ không từ bước cuối: khi lượt chạy dừng vì
-   * `ask_user`, `result.text` chỉ lặp lại đúng đoạn đã gán làm nhận xét ở trên
-   * và sẽ hiện hai lần.
-   */
   const closing = run.status === "DONE" ? text(run.result?.text) : null;
 
   return { intro, turns, closing };

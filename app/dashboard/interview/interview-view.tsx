@@ -27,20 +27,19 @@ import { PrepLauncher } from "./prep-launcher";
 
 const LOGIN_NEXT = "/login?next=/dashboard/interview";
 
-/** Số vị trí hiện một lúc ở cột trái. Phần còn lại lật bằng thanh phân trang. */
 const PAGE_SIZE = 15;
 
 const POLL_MS = 2500;
 const SLOW_AFTER_MS = 3 * 60 * 1000;
 
+/** Bộ câu hỏi còn đang chờ hoặc đang soạn. */
 const isBusy = (status: string) => status === "PENDING" || status === "RUNNING";
 
-/** Bốn trạng thái của một lượt soạn, mỗi cái cần một câu khác nhau. */
+/** Màn chuẩn bị phỏng vấn: danh sách vị trí bên trái, bộ câu hỏi bên phải. */
 export function InterviewView() {
   const router = useRouter();
   const [offset, setOffset] = useState(0);
   const [retryError, setRetryError] = useState<string | null>(null);
-  /** `null` = người dùng chưa bấm chọn, để hệ thống chọn hộ. */
   const [chosenId, setChosenId] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
 
@@ -65,29 +64,12 @@ export function InterviewView() {
   const total = page.data?.total ?? 0;
   const error = retryError ?? page.error;
 
-  /*
-   * Ưu tiên một bản ĐÃ XONG, chỉ lùi về bản mới nhất khi không có bản nào xong.
-   *
-   * Backend sắp theo `updatedAt` giảm dần, mà một lần chạy hỏng cũng cập nhật
-   * `updatedAt` — nên "bản mới nhất" rất hay chính là bản vừa hỏng, và người
-   * dùng mở màn hình ra là gặp ngay một khối lỗi đỏ trong khi vẫn có bộ câu hỏi
-   * dùng được ở ngay dưới. Đó đúng là điều đã xảy ra.
-   *
-   * Suy ra lúc render thay vì gieo vào state sau khi tải: bản cũ cần một `ref`
-   * để nhớ đã chọn hộ lần nào chưa, và lật trang thì lựa chọn cũ trỏ vào một
-   * bản ghi không còn trên trang — khung bên phải trống trơn.
-   */
   const autoId =
     (preps?.find((prep) => prep.status === "DONE") ?? preps?.[0])?.id ?? null;
   const selectedId = chosenId ?? autoId;
   const selected = preps?.find((prep) => prep.id === selectedId) ?? null;
 
-  /**
-   * Xếp lại vào hàng đợi rồi tải lại danh sách.
-   *
-   * `force: true` là bắt buộc: bản ghi đã tồn tại ở trạng thái FAILED, và đường
-   * mặc định sẽ thấy "đã có rồi" mà không chạy lại gì cả.
-   */
+  /** Xếp lại bản hỏng vào hàng đợi với `force: true` rồi tải lại danh sách. */
   const retry = async () => {
     if (!selected) return;
     setRetrying(true);
@@ -113,11 +95,6 @@ export function InterviewView() {
         subtitle="Bộ câu hỏi và câu trả lời gợi ý, soạn riêng cho từng vị trí bạn đang phỏng vấn"
       />
 
-      {/*
-        Đặt TRƯỚC nhánh rẽ bên dưới, không nằm trong nó: nhánh đó trả về ô trống
-        khi chưa có bộ đề nào, mà buổi luyện thì không cần bộ đề - nhét vào trong
-        là lặp lại đúng lỗi đã làm một lần, khoá lối vào sau một điều kiện thừa.
-      */}
       <PrepLauncher onQueued={() => page.reload()} />
 
       <MockSessions />
@@ -151,7 +128,6 @@ export function InterviewView() {
         </Card>
       ) : (
         <div className="grid gap-4 lg:grid-cols-[18rem_1fr]">
-          {/* Danh sách vị trí */}
           <Card className="h-fit overflow-hidden">
             <ul className="divide-y divide-slate-100">
               {preps.map((prep) => {
@@ -216,11 +192,6 @@ export function InterviewView() {
                       soạn {relativeDay(selected.generatedAt)}
                     </span>
                   )}
-                  {/*
-                    Lối vào buổi luyện đặt Ở ĐÂY chứ không phải trên thanh bên:
-                    một buổi luyện luôn gắn với MỘT vị trí, và đây là chỗ duy
-                    nhất trên màn hình mà người dùng đã chọn xong vị trí đó.
-                  */}
                   <Link
                     href={`/dashboard/interview/${selected.job.id}/mock`}
                     className="ml-auto"

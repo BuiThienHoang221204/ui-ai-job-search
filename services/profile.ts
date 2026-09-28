@@ -29,7 +29,6 @@ export interface ProfileRecord {
   targetSectors: string[];
   dealBreakers: string[];
   experiences: unknown;
-  /** Dự án đã làm. Với hồ sơ kỹ thuật, đây mới là phần chứng minh năng lực. */
   projects: unknown;
   educations: unknown;
   certificates: unknown;

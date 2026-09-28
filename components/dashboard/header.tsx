@@ -13,6 +13,7 @@ interface HeaderProps {
   onMenuClick: () => void;
 }
 
+/** Thanh đầu trang dashboard: nút mở menu, tiêu đề trang, ô tìm việc và người dùng. */
 export function Header({ onMenuClick }: HeaderProps) {
   const { user } = useSession();
   const pathname = usePathname();

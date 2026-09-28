@@ -15,6 +15,7 @@ interface OccupationPickerProps {
   onClose: () => void;
 }
 
+/** Bộ chọn ngành nghề theo nhóm và nghề con. */
 export function OccupationPicker({
   open,
   groups,

@@ -5,23 +5,15 @@ import { Button } from "@/components/ui/button";
 import { formatCount } from "@/utils";
 
 interface PaginationProps {
-  /** Vị trí bản ghi đầu tiên của trang hiện tại, tính từ 0. */
   offset: number;
   limit: number;
   total: number;
   onOffsetChange: (offset: number) => void;
-  /** Danh từ đếm được, ví dụ "tin" hay "đơn". Mặc định là "kết quả". */
   noun?: string;
-  /** Khoá nút trong lúc đang tải trang kế, tránh bấm chồng nhiều lần. */
   disabled?: boolean;
 }
 
-/**
- * Phân trang chạy bằng offset, khớp với `?limit=&offset=` của backend.
- *
- * Hiện luôn khoảng bản ghi đang xem chứ không chỉ số trang: "21–40 / 342" trả
- * lời được câu hỏi "còn bao nhiêu nữa", còn "Trang 2" thì không.
- */
+/** Phân trang theo offset, hiện khoảng bản ghi đang xem trên tổng số. */
 export function Pagination({
   offset,
   limit,
@@ -30,7 +22,6 @@ export function Pagination({
   noun = "kết quả",
   disabled,
 }: PaginationProps) {
-  // Không có gì để lật thì không vẽ thanh điều hướng.
   if (total <= limit) return null;
 
   const from = offset + 1;

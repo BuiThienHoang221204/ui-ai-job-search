@@ -1,13 +1,6 @@
 import { cn } from "@/utils";
 import type { MockInterviewStatus } from "@/services";
 
-/**
- * Năm trạng thái, và `WAITING_USER` phải NỔI hơn bốn cái kia.
- *
- * Nó là trạng thái duy nhất mà hệ thống không tự thoát ra được: agent nằm im
- * cho tới khi người dùng trả lời. Cho nó cùng một màu xám như "đang chạy" là
- * cách chắc chắn để một lượt chạy bị bỏ quên.
- */
 const STYLES: Record<MockInterviewStatus, { label: string; className: string }> = {
   PENDING: {
     label: "Đang xếp hàng",
@@ -25,6 +18,7 @@ const STYLES: Record<MockInterviewStatus, { label: string; className: string }> 
   FAILED: { label: "Thất bại", className: "bg-rose-50 text-rose-700" },
 };
 
+/** Huy hiệu trạng thái của một buổi phỏng vấn thử. */
 export function InterviewStatusBadge({ status }: { status: MockInterviewStatus }) {
   const style = STYLES[status];
 

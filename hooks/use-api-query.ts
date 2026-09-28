@@ -8,6 +8,7 @@ import {
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import type { AsyncData } from "@/hooks/use-async-data";
 
+/** Bọc useQuery thành dạng AsyncData, kèm thông báo lỗi và mã HTTP đã chuẩn hoá. */
 export function useApiQuery<T>(
   key: QueryKey,
   fetcher: () => Promise<T>,

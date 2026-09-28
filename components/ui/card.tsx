@@ -1,6 +1,7 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "@/utils";
 
+/** Khung thẻ có viền và nền trắng. */
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
@@ -13,10 +14,12 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   );
 }
 
+/** Phần đầu của thẻ. */
 export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("flex flex-col gap-1 p-5 pb-0", className)} {...props} />;
 }
 
+/** Tiêu đề thẻ. */
 export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
@@ -26,14 +29,17 @@ export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingEle
   );
 }
 
+/** Dòng mô tả dưới tiêu đề thẻ. */
 export function CardDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return <p className={cn("text-xs sm:text-sm text-slate-500 leading-relaxed", className)} {...props} />;
 }
 
+/** Phần nội dung của thẻ. */
 export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("p-5", className)} {...props} />;
 }
 
+/** Phần chân của thẻ. */
 export function CardFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("flex items-center p-5 pt-0 border-t border-slate-100/80 mt-4", className)} {...props} />;
 }

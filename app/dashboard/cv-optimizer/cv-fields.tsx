@@ -18,7 +18,7 @@ export const SECTION_LABELS: Record<CvSectionKey, string> = {
 export const replaceAt = <T,>(list: T[], index: number, value: T): T[] =>
   list.map((item, at) => (at === index ? value : item));
 
-/** Đổi chỗ hai phần tử. Trả về chính mảng cũ nếu chỉ số nằm ngoài. */
+/** Đổi chỗ hai phần tử, trả về chính mảng cũ nếu chỉ số nằm ngoài. */
 export const swap = <T,>(list: T[], from: number, to: number): T[] => {
   if (to < 0 || to >= list.length) return list;
   const next = [...list];
@@ -26,7 +26,7 @@ export const swap = <T,>(list: T[], from: number, to: number): T[] => {
   return next;
 };
 
-/** Ô nhập nhiều dòng, mỗi dòng một mục. Dùng cho gạch đầu dòng vốn hay có dấu phẩy. */
+/** Ô nhập nhiều dòng, mỗi dòng một mục. */
 export function LinesField({
   label,
   value,
@@ -79,6 +79,7 @@ export function Line({
   );
 }
 
+/** Ô nhập đoạn văn nhiều dòng kèm nhãn nhỏ. */
 export function Paragraph({
   label,
   value,
@@ -127,13 +128,7 @@ export function EntryBox({
   );
 }
 
-/**
- * Panel sửa nội dung CV: chữ, thứ tự mục, mục bị ẩn.
- *
- * Component ĐƯỢC ĐIỀU KHIỂN - không giữ state riêng. Nhờ vậy khung xem trước và
- * nút Lưu ở component cha luôn nhìn thấy đúng một bản nháp duy nhất.
- */
-
+/** Mục con thu gọn được, kèm nút đổi thứ tự và xoá. */
 export function CollapsibleEntry({
   title,
   subtitle,

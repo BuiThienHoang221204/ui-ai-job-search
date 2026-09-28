@@ -5,18 +5,9 @@ import { toJobCard } from "@/lib/adapters";
 import { JobCard } from "@/components/dashboard/job-card";
 import { EmptyHint } from "@/components/ui/empty-state";
 
-/**
- * Số cột phải là 1 hoặc 3, KHÔNG BAO GIỜ 2.
- *
- * Backend trả đúng 3 việc (`dashboard.service.ts`, `take: 3`). Lưới trước đây là
- * `lg:grid-cols-2 2xl:grid-cols-3`, nên trong khoảng 1024–1535px thì 3 thẻ nằm
- * trong lưới 2 cột và để trống hẳn một ô bên phải thẻ thứ ba — 1440px là cỡ màn
- * hình thường gặp nhất, nên gần như ai cũng thấy cái lỗ đó.
- *
- * Đổi `take` ở backend thì phải đổi cả chỗ này.
- */
 const GRID = "grid gap-4 xl:grid-cols-3";
 
+/** Lưới các việc phù hợp nhất; số cột luôn là 1 hoặc 3. */
 export function TopMatches({
   matches,
 }: {

@@ -13,22 +13,14 @@ import {
   relativeTime,
 } from "@/utils";
 
-/** Hình dạng lương thô mà backend trả về, dùng chung cho cả hai đường vào. */
 type RawSalary = Pick<
   JobMatchWithJob["job"],
   "salaryMin" | "salaryMax" | "currency"
 >;
 
-/** Hai mốc thời gian backend trả về cho mọi tin. */
 type RawTiming = Pick<JobMatchWithJob["job"], "postedAt" | "scrapedAt">;
 
-/**
- * Chọn mốc thời gian để hiển thị, và nói rõ đó là mốc gì.
- *
- * Ưu tiên ngày đăng vì đó là thứ người tìm việc cần biết. Chỉ khi portal không
- * cho biết — TopCV không bao giờ trả trường này — mới rơi về ngày thu thập, và
- * lúc đó phải mang nhãn "thu thập" chứ không được đội lốt ngày đăng.
- */
+/** Chọn mốc thời gian để hiển thị (ngày đăng, nếu không có thì ngày thu thập) kèm nhãn nguồn. */
 export function toJobTimestamp(job: RawTiming): JobTimestamp {
   if (job.postedAt) {
     return {
@@ -44,18 +36,12 @@ export function toJobTimestamp(job: RawTiming): JobTimestamp {
   };
 }
 
+/** Đơn vị tiền tệ có phải VND hoặc USD hay không. */
 const isCurrency = (value: string | null): value is SalaryCurrency =>
   value === "VND" || value === "USD";
 
-/**
- * Chỉ dựng khoảng lương khi backend có ĐỦ min, max và một đơn vị tiền tệ nhận
- * ra được. Thiếu bất kỳ mảnh nào thì trả null và để `salaryRaw` nói thay —
- * xem `formatJobSalary`.
- */
+/** Dựng khoảng lương khi có đủ min, max và đơn vị tiền tệ; thiếu thì trả null. */
 export function toSalaryRange(job: RawSalary): SalaryRange | null {
-  // Kiểm tra ngay trong biểu thức chứ không qua một biến boolean trung gian:
-  // TypeScript không thu hẹp kiểu xuyên qua biến như vậy, và job.salaryMin sẽ
-  // vẫn là `number | null` ở chỗ dùng.
   return job.salaryMin !== null &&
     job.salaryMax !== null &&
     isCurrency(job.currency)
@@ -82,9 +68,6 @@ function toCardBase(
     location: job.location ?? "Không rõ",
     salary: toSalaryRange(job),
     salaryRaw: job.salaryRaw,
-    // Bỏ tag trùng: portal trả về những tin có "AI" hoặc "Cloud Architecture"
-    // hai lần, và thẻ dùng chính chuỗi tag làm `key` của React nên trùng là
-    // React cảnh báo rồi bỏ bớt phần tử.
     tags: [...new Set(job.tags)],
     postedAt: toJobTimestamp(job),
     saved: job.saved,
@@ -95,8 +78,6 @@ function toCardBase(
 export function toJobCard(match: JobMatchWithJob): Job {
   return {
     ...toCardBase(match.job),
-    // Giữ nguyên null: bản ghi đang chạy dở chưa có điểm, và trên thẻ thì
-    // "chưa chấm" phải đọc khác hẳn "0%".
     aiMatch: match.overallScore,
     systemMatch: null,
     strengths: match.strengths.slice(0, 2),
@@ -104,12 +85,7 @@ export function toJobCard(match: JobMatchWithJob): Job {
   };
 }
 
-/**
- * Chuyển một tin THÔ từ `GET /jobs` — tin chưa hề đi qua khâu chấm điểm.
- *
- * `aiMatch` luôn null ở đây, và đó là sự thật chứ không phải giá trị mặc định:
- * endpoint này không biết gì về hồ sơ người dùng.
- */
+/** Chuyển một tin thô từ `GET /jobs` (chưa chấm điểm) thành thẻ công việc. */
 export function toJobCardFromRecord(job: JobListItem): Job {
   return {
     ...toCardBase(job),

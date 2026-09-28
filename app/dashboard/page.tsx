@@ -12,6 +12,7 @@ import { QuickStrip } from "./quick-strip";
 import { ScoreBreakdown } from "./score-breakdown";
 import { TopMatches } from "./top-matches";
 
+/** Trang tổng quan của dashboard. */
 export default function DashboardPage() {
   const { user, loading: loadingUser } = useSession();
   const { data, error } = useApiQuery(
@@ -39,6 +40,7 @@ export default function DashboardPage() {
   );
 }
 
+/** Khung xám giữ bố cục trang tổng quan trong lúc tải. */
 function DashboardSkeleton() {
   return (
     <SkeletonPage>

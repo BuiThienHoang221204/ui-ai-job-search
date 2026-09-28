@@ -2,7 +2,6 @@ import { Check, CircleNotch } from "@phosphor-icons/react/ssr";
 import { ModelElapsed } from "@/components/dashboard/model-elapsed";
 import { SectionCard } from "@/components/ui/section-card";
 
-/** Đo trên `ai_calls`: `document.coverLetter` 54-61 giây. */
 const EXPECTED_SECONDS = 58;
 
 export interface PartialLetter {
@@ -21,6 +20,7 @@ const ROWS = [
   { label: "Đoạn kết", of: (p: PartialLetter) => p.closing },
 ] as const;
 
+/** Tiến độ trực tiếp trong lúc AI đang viết thư. */
 export function LetterLiveProgress({
   partial,
 }: {

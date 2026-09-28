@@ -11,24 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SelectMenu } from "@/components/ui/select-menu";
 
-/**
- * Trần số đơn đổ vào ô chọn.
- *
- * Chỉ đơn ĐÃ NỘP mới vào đây nên con số thật sẽ nhỏ; đặt trần để một tài khoản
- * nộp rất nhiều không kéo cả danh sách về.
- */
 const LIMIT = 100;
 
-/**
- * Chọn một tin đã nộp rồi soạn bộ câu hỏi cho nó.
- *
- * Đặt ở ĐÂY chứ không ở trang chi tiết tin: việc chạy nền mất khoảng một phút,
- * và đây là màn hình hiển thị kết quả. Bấm xong thấy ngay một dòng mới ở trạng
- * thái đang chạy ngay bên dưới, thay vì bắn đi rồi phải tự đoán có gì đang chạy.
- *
- * Chỉ liệt kê đơn `APPLIED`: soạn bộ đề cho một tin mới chỉ xem qua là tốn một
- * lượt gọi model cho việc chưa chắc xảy ra.
- */
+/** Chọn một tin đã nộp rồi xếp hàng soạn bộ câu hỏi cho nó. */
 export function PrepLauncher({ onQueued }: { onQueued: () => void }) {
   const router = useRouter();
   const [jobId, setJobId] = useState("");

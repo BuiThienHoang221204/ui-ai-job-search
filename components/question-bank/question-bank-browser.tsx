@@ -35,21 +35,19 @@ function menuOptions(options: Option[], allLabel: string) {
   ];
 }
 
+/** Tìm tên hiển thị của một mã trong danh sách lựa chọn. */
 function labelOf(options: Option[], code: string | null): string {
   return options.find((o) => o.code === code)?.name ?? code ?? "";
 }
 
-/**
- * Mục đang chọn PHẢI luôn hiện ra, kể cả khi số đếm của nó rơi về 0 sau khi bật
- * thêm một bộ lọc khác. Không có nó thì cái chip đang bật biến mất và người dùng
- * không còn đường bỏ chọn — kẹt luôn ở một bộ lọc rỗng.
- */
+/** Đảm bảo mục đang chọn luôn có trong danh sách, kể cả khi số đếm về 0. */
 function withSelected(options: Option[], value: string | null, fallback: Option[]): Option[] {
   if (!value || options.some((o) => o.code === value)) return options;
   const known = fallback.find((o) => o.code === value);
   return [...options, { code: value, name: known?.name ?? value, count: 0 }];
 }
 
+/** Một dòng câu hỏi, bấm để mở phần đáp án. */
 function QuestionRow({ question }: { question: QuestionSummary }) {
   const [open, setOpen] = useState(false);
 
@@ -92,6 +90,7 @@ function QuestionRow({ question }: { question: QuestionSummary }) {
   );
 }
 
+/** Trình duyệt ngân hàng câu hỏi kèm bộ lọc và danh sách câu hỏi. */
 export function QuestionBankBrowser({
   facets: initialFacets,
   initial,
@@ -108,12 +107,6 @@ export function QuestionBankBrowser({
   const [facets, setFacets] = useState<QuestionFacets>(initialFacets);
   const [pending, startTransition] = useTransition();
 
-  /**
-   * Lọc và tìm kiếm chạy trên SERVER, không lọc trong bộ nhớ.
-   *
-   * Ngân hàng có hơn năm nghìn câu; tải hết về trình duyệt rồi lọc tại chỗ sẽ
-   * ngốn vài MB mỗi lần mở trang, và số đếm trên thanh lọc vẫn phải hỏi server.
-   */
   useEffect(() => {
     const timer = setTimeout(() => {
       startTransition(async () => {
@@ -123,8 +116,6 @@ export function QuestionBankBrowser({
           difficulty: difficulty ?? undefined,
           q: term.trim() || undefined,
         };
-        // Số đếm trên thanh lọc phải đi CÙNG danh sách, nếu không chúng đứng yên
-        // ở con số của toàn kho và trông như bị tính sai.
         const [nextPage, nextFacets] = await Promise.all([
           questionBankService.browse({ ...filters, limit: PAGE_SIZE, offset }),
           questionBankService.browseFacets(filters),

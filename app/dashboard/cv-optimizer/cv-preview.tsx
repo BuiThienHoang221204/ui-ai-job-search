@@ -4,23 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { CvSectionKey } from "@/services";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/** Khổ A4 quy ra pixel ở 96dpi, đúng mốc trình duyệt dùng để dựng trang. */
 const PAGE_WIDTH = 794;
 const PAGE_HEIGHT = 1123;
 
-/** Số trang khung xem trước cuộn được. CV dài hơn thì bản PDF vẫn đủ. */
 const PREVIEW_PAGES = 2;
 
-/**
- * Khung xem trước, thu nhỏ đúng tỉ lệ A4.
- *
- * Phải THU NHỎ chứ không thả iframe co theo khung: trang CV dựng theo khổ giấy
- * thật, nên iframe hẹp hơn 794px sẽ ngắt dòng khác hẳn bản in.
- *
- * `srcDoc` chứ không phải `src`: iframe không gửi kèm cookie SameSite=Lax nên trỏ
- * thẳng route sẽ ra 401. `allow-scripts` KHÔNG được bật - xem CLAUDE.md, mục
- * "Bấm vào bản xem trước", để biết vì sao `allow-same-origin` thì được.
- */
+/** Khung xem trước CV thu nhỏ đúng tỉ lệ A4 qua iframe `srcDoc`. */
 export function CvPreview({
   html,
   activeSection,

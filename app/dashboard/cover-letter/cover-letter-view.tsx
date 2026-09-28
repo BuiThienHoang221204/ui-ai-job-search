@@ -18,27 +18,17 @@ const MATCH_LIMIT = 50;
 
 type Kind = "email" | "letter";
 
-/**
- * Hai thể loại, không phải hai cách trình bày của một thứ.
- *
- * Mail ứng tuyển là thứ người dùng gửi đi hằng ngày: dán JD, sao chép, gửi.
- * Thư xin việc là tài liệu trang trọng để đính kèm dạng PDF khi nhà tuyển dụng
- * yêu cầu. Gộp vào một màn thì mỗi lần dùng lại phải bỏ đi một nửa số nút.
- */
 const KINDS = [
   { value: "email", label: "Mail ứng tuyển" },
   { value: "letter", label: "Thư xin việc (PDF)" },
 ];
 
+/** Màn viết thư với hai tab: mail ứng tuyển và thư xin việc trang trọng. */
 export function CoverLetterView() {
   const fixedJobId = useSearchParams().get("jobId");
 
-  // Vào từ nút "Viết thư xin việc cho tin này" ở trang chi tiết thì mở đúng tab
-  // đó; vào từ menu bên trái thì mở tab dùng nhiều hơn.
   const [kind, setKind] = useState<Kind>(fixedJobId ? "letter" : "email");
 
-  // Cùng khoá với màn "CV đã tạo": hai màn hỏi y hệt một danh sách, nên màn nào
-  // mở sau lấy từ cache thay vì gọi lại.
   const page = useApiQuery(
     keys.matchList(MATCH_LIMIT),
     () => matchesService.list({ limit: MATCH_LIMIT }),

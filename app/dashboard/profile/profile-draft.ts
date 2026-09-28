@@ -171,16 +171,6 @@ function assign<K extends keyof ProfileUpdate>(
   target[key] = value;
 }
 
-/**
- * Chỉ gom những trường thật sự khác so với hồ sơ đang có.
- *
- * PATCH gửi cả hồ sơ cũng chạy, nhưng khi hai tab cùng mở thì bản gửi sau sẽ
- * ghi đè thay đổi của bản trước bằng dữ liệu đã cũ. Gửi đúng phần đã sửa thì
- * không có chuyện đó.
- *
- * Ném lỗi khi một khối JSON gõ sai, vì lúc đó không có cách nào đoán được ý
- * người dùng — thà dừng lại còn hơn lưu nửa vời.
- */
 export function buildChanges(
   draft: ProfileDraft,
   profile: ProfileRecord,
@@ -203,8 +193,6 @@ export function buildChanges(
 
   for (const key of JSON_FIELDS) {
     const text = draft[key].trim();
-    // Ô trống được hiểu là "giữ nguyên", không phải "xoá": Prisma từ chối gán
-    // null thẳng vào cột Json và sẽ trả lỗi 500. Muốn xoá thì gõ [] hoặc {}.
     if (!text || text === toJsonText(profile[key]).trim()) continue;
     try {
       assign(changes, key, JSON.parse(text) as unknown);

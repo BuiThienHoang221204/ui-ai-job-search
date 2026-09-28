@@ -16,11 +16,6 @@ export function FieldRow({
 }) {
   return (
     <div className="flex gap-3 py-3.5">
-      {/*
-        Checkbox gốc, và nó bị `disabled` khi model không có gì cho trường này —
-        hàng vẫn hiện để người dùng biết AI đã xem trường đó và không tìm ra, nhưng
-        không thể tích một thứ không có nội dung.
-      */}
       <input
         type="checkbox"
         checked={checked}
@@ -43,12 +38,6 @@ export function FieldRow({
           >
             {row.label}
           </label>
-          {/*
-            Ba nhãn cho ba tình huống khác nhau, và chúng phải khác nhau: trước đây
-            chỉ có "ghi đè", nên trường "Quốc gia" bị dán nhãn cảnh báo trong khi cả
-            hai bên đều là "Việt Nam". Cảnh báo về một mất mát không tồn tại làm
-            người dùng bỏ qua cả những cảnh báo thật.
-          */}
           {row.isEmpty ? (
             <Badge variant="neutral" className="text-2xs">
               không tìm thấy
@@ -71,8 +60,6 @@ export function FieldRow({
               lines={row.proposed}
               tone="proposed"
             />
-            {/* Cột "đang có" CHỈ hiện khi thật sự có dữ liệu sẽ bị ghi đè. Hiện một
-                ô "chưa có" rỗng ở mọi hàng chỉ làm loãng đúng thứ cần chú ý. */}
             {row.overwrites && (
               <ValueBlock
                 caption="Hồ sơ đang có"
@@ -87,10 +74,6 @@ export function FieldRow({
   );
 }
 
-/// Số dòng hiện tối đa trước khi gộp phần còn lại thành một dòng đếm.
-///
-/// Một CV có thể cho ra 25 kỹ năng; in hết thì một hàng cao hơn cả màn hình và bảng
-/// xác nhận không còn đọc được theo chiều dọc.
 const MAX_LINES = 6;
 
 function ValueBlock({

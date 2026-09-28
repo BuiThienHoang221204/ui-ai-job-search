@@ -5,17 +5,6 @@ import { Card } from "@/components/ui/card";
 import { ProgressCircle } from "@/components/ui/progress-circle";
 import { cn } from "@/utils";
 
-/**
- * Chỗ cần đi tới khi bấm dòng chữ dưới ô số liệu.
- *
- * Gộp nhãn và đích vào MỘT object là có chủ ý. Trước đây là hai prop rời
- * `actionLabel?: string` và `onAction?: () => void`, và cả bốn ô trên Dashboard
- * đều truyền nhãn mà quên handler — ra một `<button onClick={undefined}>`: có con
- * trỏ bàn tay, có mũi tên chạy khi hover, bấm vào thì không có gì xảy ra. Kiểu cũ
- * cho phép chuyện đó nên TypeScript không nói gì.
- *
- * Với hình dạng này, có nhãn thì buộc có đích. Không biểu diễn được cái sai nữa.
- */
 interface StatCardAction {
   label: string;
   href: string;
@@ -27,12 +16,12 @@ interface StatCardProps {
   iconClassName?: string;
   value: string;
   subtitle?: string;
-  /** Bỏ trống khi chưa có trang nào để đi tới — ô sẽ không hiện chữ bấm được. */
   action?: StatCardAction;
   progress?: number;
   className?: string;
 }
 
+/** Thẻ số liệu kèm biểu tượng, tiến độ và liên kết hành động tuỳ chọn. */
 export function StatCard({
   title,
   icon: Icon,
@@ -66,9 +55,6 @@ export function StatCard({
       {subtitle && <p className="mt-1 text-xs text-slate-500 font-normal leading-normal">{subtitle}</p>}
 
       {action && (
-        // `Link` chứ không `button`: đây là điều hướng, nên nó phải mở được ở tab
-        // mới, hiện đích ở thanh trạng thái, và điều hướng được cả khi JS chưa kịp
-        // chạy — ba thứ một `<button onClick>` không cho.
         <Link
           href={action.href}
           className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary-600 transition-colors hover:text-primary-700 group"

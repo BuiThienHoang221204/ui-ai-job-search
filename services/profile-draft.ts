@@ -2,9 +2,6 @@ import type { AiFailureKind } from "@/lib/failure-message";
 import { api } from "@/lib/axios";
 import type { Paginated, WorkStatus } from "./types";
 
-/**
- * Một mẩu bằng chứng đã thu, khớp `server/src/modules/profile-sources/evidence.ts`.
- */
 export interface EvidenceRecord {
   kind:
     | "CV_PDF_TEXT"
@@ -17,7 +14,6 @@ export interface EvidenceRecord {
   meta: Record<string, string | number | boolean>;
 }
 
-/** Một dòng kinh nghiệm trong đề xuất. Chưa có `id` — id sinh khi áp dụng. */
 export interface ProposedExperience {
   company: string;
   position: string;
@@ -122,15 +118,10 @@ export const profileDraftService = {
       })
       .then((r) => r.data),
 
-  /** Link mở CV gốc trong tab mới. Cookie `sameSite: lax` nên thẻ `<a>` là đủ. */
+  /** Trả về link mở file CV gốc của bản nháp trong tab mới. */
   fileUrl: (id: string) => `${api.defaults.baseURL}/profile-drafts/${id}/file`,
 
-  /**
-   * Chạy lại một bản nháp FAILED từ bằng chứng đã lưu.
-   *
-   * Khác hẳn nộp lại file: không parse lại PDF, không ghi trùng file, không đẻ
-   * thêm bản nháp. Backend chỉ nhận khi bản nháp đang FAILED.
-   */
+  /** Chạy lại bản nháp FAILED từ bằng chứng đã lưu, không cần nộp lại file. */
   retry: (id: string) =>
     api
       .post<ProfileDraftRecord>(`/profile-drafts/${id}/retry`)

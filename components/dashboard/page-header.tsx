@@ -6,6 +6,7 @@ interface PageHeaderProps {
   actions?: ReactNode;
 }
 
+/** Tiêu đề trang kèm mô tả và vùng thao tác. */
 export function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-3">

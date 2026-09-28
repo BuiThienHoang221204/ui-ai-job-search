@@ -2,12 +2,7 @@ import { Fragment } from "react";
 import { parseMarkdown, type InlineToken } from "@/lib/markdown-blocks";
 import { cn } from "@/utils";
 
-/**
- * Vẽ Markdown do model sinh ra.
- *
- * Mọi nơi hiện văn bản Markdown đều đi qua đây, nên đổi cách vẽ — kể cả đổi
- * sang một thư viện thật — chỉ phải sửa một file.
- */
+/** Vẽ Markdown do model sinh ra; mọi nơi hiện Markdown đều đi qua đây. */
 export function Markdown({
   text,
   className,
@@ -68,8 +63,6 @@ export function Markdown({
 
           case "table":
             return (
-              // Bảng điểm của model thường 4-5 cột; trên điện thoại nó phải
-              // cuộn NGANG trong khung của chính nó, không được đẩy cả trang.
               <div key={index} className="overflow-x-auto">
                 <table className="w-full min-w-md border-collapse text-xs">
                   <thead>
@@ -117,6 +110,7 @@ export function Markdown({
   );
 }
 
+/** Vẽ các token nội dòng của Markdown. */
 function Inline({ tokens }: { tokens: InlineToken[] }) {
   return (
     <>

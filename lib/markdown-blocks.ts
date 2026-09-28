@@ -1,18 +1,3 @@
-/**
- * Cắt Markdown do model sinh ra thành các khối để React vẽ.
- *
- * Vì sao tự viết thay vì thêm `react-markdown`: đây là chỗ DUY NHẤT trong app
- * có văn bản Markdown, và tập cú pháp mà model thật sự dùng thì hẹp — tiêu đề,
- * bảng, danh sách, chữ đậm. Dự án đang giữ 8 dependency và không có UI kit nào;
- * thêm hai gói cho một màn là một cái giá khó biện minh.
- *
- * Đổi lại, bộ này CỐ Ý không đầy đủ: không xử lý danh sách lồng nhau, trích
- * dẫn, ảnh hay liên kết. Thứ gì không nhận ra thì rơi xuống thành đoạn văn
- * thường — mất định dạng chứ không mất chữ. Nếu về sau cần Markdown đầy đủ thì
- * thay `parseMarkdown` bằng `react-markdown` là xong, vì mọi nơi vẽ đều đi qua
- * đúng một component.
- */
-
 export type InlineToken = { text: string; bold: boolean };
 
 export type MarkdownBlock =
@@ -36,6 +21,7 @@ export function parseInline(line: string): InlineToken[] {
   return tokens.length > 0 ? tokens : [{ text: line, bold: false }];
 }
 
+/** Tách một dòng bảng markdown thành các ô. */
 const cells = (line: string): string[] =>
   line
     .replace(/^\||\|$/g, "")
@@ -46,8 +32,10 @@ const cells = (line: string): string[] =>
 const isDivider = (line: string): boolean =>
   /^\|?[\s:|-]+\|[\s:|-]*$/.test(line) && line.includes("-");
 
+/** Dòng có phải một hàng của bảng markdown hay không. */
 const isTableRow = (line: string): boolean => line.trim().startsWith("|");
 
+/** Phân tích markdown đơn giản thành các khối để hiển thị. */
 export function parseMarkdown(input: string): MarkdownBlock[] {
   const lines = input.replace(/\r\n/g, "\n").split("\n");
   const blocks: MarkdownBlock[] = [];
@@ -55,13 +43,6 @@ export function parseMarkdown(input: string): MarkdownBlock[] {
   let paragraph: string[] = [];
   const flush = () => {
     if (paragraph.length === 0) return;
-    /*
-     * GIỮ xuống dòng đơn thay vì gộp thành một đoạn như Markdown chuẩn.
-     *
-     * Model hay viết nhiều dòng "**Nhãn:** giá trị" liền nhau mà không chừa
-     * dòng trống. Gộp lại thì chúng dính thành một khối chữ dài không đọc nổi -
-     * đã thấy trên màn thật ở mục "Kiểm tra chất lượng".
-     */
     blocks.push({ kind: "paragraph", lines: paragraph.map(parseInline) });
     paragraph = [];
   };
@@ -97,8 +78,6 @@ export function parseMarkdown(input: string): MarkdownBlock[] {
     if (heading) {
       flush();
       blocks.push({
-        // Gộp mọi cấp về h2/h3: model rắc `#` khá tuỳ hứng, và một trang chỉ
-        // nên có vài cỡ chữ.
         kind: "heading",
         level: heading[1].length <= 2 ? 2 : 3,
         text: heading[2].replace(/\*\*/g, "").trim(),
@@ -144,13 +123,7 @@ export function parseMarkdown(input: string): MarkdownBlock[] {
   return blocks;
 }
 
-/**
- * Bỏ hết cú pháp, giữ lại chữ — dùng cho những chỗ chỉ có một dòng để hiện.
- *
- * Bảng bị rút thành các ô nối bằng " · " thay vì một hàng dấu `|`: bảng ép vào
- * ba dòng preview thì đằng nào cũng không đọc được, mà một dãy `|---|---|` thì
- * trông y như lỗi hiển thị.
- */
+/** Bỏ hết cú pháp markdown, giữ lại chữ để hiện trên một dòng. */
 export function toPlainText(input: string): string {
   return input
     .replace(/```[\s\S]*?```/g, " ")

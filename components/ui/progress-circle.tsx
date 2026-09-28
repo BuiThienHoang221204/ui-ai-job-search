@@ -10,6 +10,7 @@ interface ProgressCircleProps {
   children?: React.ReactNode;
 }
 
+/** Vòng tròn tiến độ SVG, nội dung con nằm giữa. */
 export function ProgressCircle({
   value,
   size = 120,

@@ -5,18 +5,9 @@ import { ArrowElbowDownLeft, PaperPlaneTilt } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/form";
 
-/** Đủ dài cho một câu chuyện STAR mà không phải kéo thanh cuộn ngay từ đầu. */
 const ROWS = 5;
 
-/**
- * Ô trả lời cho một câu phỏng vấn.
- *
- * Cố ý KHÔNG dùng lại `AgentQuestionCard` của màn Ứng tuyển tự động, dù hai cái
- * cùng gọi một endpoint: bên đó là quyết định có/không với hai nút bấm sẵn, bên
- * này là văn dài và không có câu trả lời nhanh nào đúng cho một câu phỏng vấn.
- * Gộp lại sẽ thành một component toàn tham số cấu hình, và mỗi lần sửa một màn
- * phải nghĩ về màn kia.
- */
+/** Ô trả lời văn dài cho một câu phỏng vấn, Ctrl/Cmd + Enter để gửi. */
 export function AnswerBox({
   sending,
   onSend,
@@ -41,8 +32,6 @@ export function AnswerBox({
         value={text}
         disabled={sending}
         onChange={(event) => setText(event.target.value)}
-        // Ctrl/Cmd + Enter gửi: người dùng đang gõ một đoạn dài nhiều dòng, nên
-        // Enter một mình phải là xuống dòng.
         onKeyDown={(event) => {
           if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) send();
         }}

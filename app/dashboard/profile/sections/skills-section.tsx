@@ -34,6 +34,7 @@ const FIELDS: DraftFieldSpec[] = [
   },
 ];
 
+/** Khối hồ sơ về kỹ năng. */
 export function SkillsSection({ draft, update }: ProfileSectionProps) {
   return (
     <SectionCard

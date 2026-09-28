@@ -8,6 +8,7 @@ import { cn } from "@/utils";
 
 const LONG_ENOUGH_TO_FOLD = 900;
 
+/** Thẻ mô tả công việc, gập lại khi nội dung quá dài. */
 export function JobDescriptionCard({
   description,
   defaultOpen = false,

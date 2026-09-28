@@ -18,6 +18,7 @@ import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/ui/section-card";
 
+/** Hiển thị thư xin việc đã viết kèm nút sao chép. */
 export function CoverLetterResult({
   record,
   loginNext,
@@ -69,8 +70,6 @@ export function CoverLetterResult({
                 {letter.salutation}
               </p>
             )}
-            {/* Khoá kèm chỉ số: model hoàn toàn có thể lặp lại nguyên một đoạn,
-                và hai khoá trùng nhau sẽ khiến React bỏ mất một đoạn. */}
             {paragraphs.map((paragraph, index) => (
               <p
                 key={`${index}-${paragraph}`}
@@ -88,8 +87,6 @@ export function CoverLetterResult({
         </p>
       </SectionCard>
 
-      {/* `key` là BẮT BUỘC: nó buộc React dựng lại component khi đổi tài
-          liệu, thay cho một effect tự dọn state bên trong. */}
       <DocumentSource
         key={record.id}
         documentId={record.id}

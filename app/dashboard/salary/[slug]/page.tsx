@@ -10,11 +10,13 @@ import {
 
 type Params = { params: Promise<{ slug: string }> };
 
+/** Sinh metadata cho trang lương của một vị trí. */
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const data = await loadSalaryPosition((await params).slug);
   return { title: data ? `Mức lương ${data.positionName}` : "Tra cứu lương" };
 }
 
+/** Trang mức lương của một vị trí trong dashboard. */
 export default async function DashboardSalaryPositionPage({ params }: Params) {
   const { slug } = await params;
   const data = await loadSalaryPosition(slug);

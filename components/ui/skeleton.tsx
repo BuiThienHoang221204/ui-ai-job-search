@@ -1,10 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/utils";
 
-/**
- * Một khối xám. Chiều cao do nơi dùng quyết định, vì mục đích của khung xám là
- * giữ ĐÚNG bố cục trang thật — nội dung không được nhảy khi tải xong.
- */
+/** Một khối xám giữ chỗ khi đang tải. */
 export function Skeleton({ className }: { className?: string }) {
   return <div className={cn("rounded-xl bg-slate-200/70", className)} />;
 }

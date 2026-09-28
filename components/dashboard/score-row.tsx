@@ -1,19 +1,12 @@
 import { Progress } from "@/components/ui/progress";
 import { scoreBarClass } from "@/utils";
 
-/**
- * `null` KHÔNG được vẽ thành 0%.
- *
- * Backend trả null cho chiều nó không chấm; "0%" ở đó sẽ bị đọc thành một kết
- * luận đánh giá ("bạn không có kỹ năng nào khớp"), tức là bịa ra một câu trả
- * lời mà hệ thống chưa hề đưa ra.
- */
+/** Đổi điểm sang phần trăm; `null` giữ nguyên để không bị vẽ thành 0%. */
 const asPercent = (value: number | null): string =>
   value === null ? "—" : `${value}%`;
 
 interface ScoreBarProps {
   label: string;
-  /** Trọng số của chiều này trong điểm tổng, ví dụ "30%". */
   weight: string;
   value: number | null;
 }

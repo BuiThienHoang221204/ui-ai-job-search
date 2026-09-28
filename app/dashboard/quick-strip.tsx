@@ -20,6 +20,7 @@ const SHELL: Record<Pill["tone"], string> = {
   calm: "border-slate-200/80 bg-white text-slate-700",
 };
 
+/** Dải nhãn nhắc nhanh các việc cần làm trên trang tổng quan. */
 export function QuickStrip({ data }: { data: DashboardOverview }) {
   const profileGap = data.suggestions.find(
     (suggestion) => suggestion.id === "profile-incomplete",

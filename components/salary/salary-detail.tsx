@@ -19,6 +19,7 @@ import {
 import { formatMonthlyVnd } from "@/utils";
 import { SalaryBar } from "./salary-bar";
 
+/** Tải dữ liệu lương của một vị trí theo slug, trả null khi không có. */
 export async function loadSalaryPosition(
   slug: string,
 ): Promise<SalaryPositionDetail | null> {
@@ -29,12 +30,7 @@ export async function loadSalaryPosition(
   }
 }
 
-/**
- * Thang dùng chung cho MỌI thanh dải trên trang.
- *
- * Ưu tiên khoảng phổ biến của vị trí; thiếu thì suy từ các mốc kinh nghiệm. Không
- * suy được thì trả `null` và trang bỏ hẳn phần thanh dải thay vì vẽ một thang bịa.
- */
+/** Tính thang dùng chung cho mọi thanh dải trên trang, trả null khi không suy được. */
 function resolveScale(data: SalaryPositionDetail): [number, number] | null {
   const amounts = [
     data.rangeMin,
@@ -49,8 +45,10 @@ function resolveScale(data: SalaryPositionDetail): [number, number] | null {
   return max > min ? [min, max] : null;
 }
 
+/** Định dạng lương tháng dạng ngắn, bỏ chữ "triệu". */
 const shortVnd = (value: number) => formatMonthlyVnd(value).replace(" triệu", "");
 
+/** Trang chi tiết lương của một vị trí. */
 export async function SalaryDetail({
   slug,
   basePath,
@@ -73,6 +71,7 @@ export async function SalaryDetail({
   );
 }
 
+/** Khối đầu trang chi tiết lương: khoảng lương phổ biến trên thang. */
 function Headline({
   data,
   scale,
@@ -131,12 +130,7 @@ function Headline({
   );
 }
 
-/**
- * Bốn mốc kinh nghiệm vẽ trên CÙNG một thang với khối trên.
- *
- * Đây là điểm khác biệt so với bảng số cũ: đặt chung thang thì bậc thang lương
- * hiện ra thành hình, không phải đọc từng ô rồi tự so trong đầu.
- */
+/** Bốn mốc kinh nghiệm vẽ trên cùng một thang với khối trên. */
 function Experience({
   bands,
   scale,
@@ -200,13 +194,7 @@ function Experience({
   );
 }
 
-/**
- * Xếp hạng cùng ngành — thứ cho một con số lẻ có chỗ đứng.
- *
- * `?? []` không thừa: `next: { revalidate }` còn phục vụ payload cũ thiếu trường
- * này một thời gian sau khi API đổi hình dạng, và một trang 500 vì cache cũ là
- * lỗi rất khó lần ra.
- */
+/** Xếp hạng lương các vị trí cùng ngành. */
 function Peers({
   data,
   basePath,
@@ -303,10 +291,7 @@ function Peers({
   );
 }
 
-/**
- * Dải nguồn LUÔN hiện. Số đang là của bên thứ ba nên ghi nguồn là bắt buộc, và
- * khi đổi sang thống kê từ kho tin của hệ thống thì chính khối này đổi chữ.
- */
+/** Dải ghi nguồn số liệu lương, luôn hiện. */
 function SourceNote({ data }: { data: SalaryPositionDetail }) {
   const updated = new Date(data.updatedAt).toLocaleDateString("vi-VN");
 

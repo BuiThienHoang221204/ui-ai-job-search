@@ -64,6 +64,7 @@ const POSTED_STEPS = [
   { value: 7, label: "Trong 7 ngày" },
   { value: 30, label: "Trong 30 ngày" },
 ];
+/** Thanh bộ lọc việc làm: các dropdown lọc, công tắc, sắp xếp và chip đang bật. */
 export function JobFilterBar({
   value,
   filters,
@@ -289,6 +290,7 @@ export function JobFilterBar({
     </div>
   );
 }
+/** Nút bật/tắt một bộ lọc dạng boolean. */
 function Toggle({
   label,
   icon: Icon,
@@ -323,6 +325,7 @@ function Toggle({
     </button>
   );
 }
+/** Ô chọn cách sắp xếp danh sách việc làm. */
 export function SortSelect({
   value,
   onChange,
@@ -341,13 +344,16 @@ export function SortSelect({
     />
   );
 }
+/** Tìm tên hiển thị của một mã trong danh sách lựa chọn. */
 const labelOf = (options: FilterOption[], code: string) =>
   options.find((option) => option.code === code)?.name ?? code;
 
+/** Tìm tên hiển thị của một mã nghề con trong các nhóm nghề. */
 const subLabelOf = (groups: OccupationOption[], code: string) =>
   groups.flatMap((group) => group.subs ?? []).find((sub) => sub.code === code)
     ?.name ?? code;
 
+/** Trạng thái mở/đóng của dropdown, tự đóng khi bấm ra ngoài. */
 function useDropdown() {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
@@ -363,6 +369,7 @@ function useDropdown() {
 
   return { open, setOpen, root };
 }
+/** Nút bấm mở một dropdown bộ lọc. */
 function TriggerButton({
   icon: Icon,
   label,
@@ -405,6 +412,7 @@ function TriggerButton({
     </button>
   );
 }
+/** Dropdown chọn nhiều giá trị cho một bộ lọc. */
 function MultiSelect({
   label,
   icon: Icon,

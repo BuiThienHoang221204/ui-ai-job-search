@@ -48,9 +48,9 @@ import {
 
 type Filter = "all" | ApplicationGroup;
 
-/** Số đơn hiện một lúc. Bảng dài hơn thế là phải cuộn để tìm, không phải đọc. */
 const PAGE_SIZE = 20;
 
+/** Trang quản lý đơn ứng tuyển: lọc theo trạng thái, phân trang và đổi trạng thái đơn. */
 export default function ApplicationsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -82,8 +82,6 @@ export default function ApplicationsPage() {
       .catch(() => {});
   }, []);
 
-  // Lọc ở phía backend chứ không lọc mảng đã tải: `counts` phải là tổng thật
-  // trên toàn bộ đơn, không phải đếm lại sau khi đã lọc theo chính tab đang mở.
   const { data, error } = useApiQuery(
     keys.applicationList(filter, offset),
     () =>
@@ -93,24 +91,11 @@ export default function ApplicationsPage() {
       }),
     {
       errorMessage: "Không tải được danh sách đơn",
-      // Đổi tab hay lật trang thì giữ bảng cũ trên màn cho tới khi trang mới
-      // về, thay vì chớp một nhịp khung xám.
       keepPrevious: true,
     },
   );
 
-  /**
-   * Đổi trạng thái rồi TẢI LẠI cả danh sách, thay vì vá bản ghi tại chỗ.
-   *
-   * Cập nhật tại chỗ sẽ nhanh hơn nhưng sai hai chỗ: `counts` trên các tab là
-   * tổng thật do máy chủ đếm, và bản ghi vừa đổi có thể không còn thuộc tab đang
-   * mở nữa. Một request thêm đổi lấy việc màn hình không nói dối.
-   *
-   * CỐ Ý không cập nhật lạc quan: máy chủ mới là bên quyết định một lần chuyển
-   * có hợp lệ hay không, và khi nó từ chối thì lý do của nó (ví dụ "chưa từng ở
-   * trạng thái OFFER") là thứ người dùng cần đọc — hiện trạng thái mới rồi rút
-   * lại chỉ làm người dùng tưởng mình bấm hụt.
-   */
+  /** Đổi trạng thái đơn rồi tải lại danh sách, hiện nguyên lý do nếu máy chủ từ chối. */
   const changeStatus = async (
     application: Application,
     next: ApplicationStatus,
@@ -119,8 +104,6 @@ export default function ApplicationsPage() {
     setRowError(null);
     try {
       await applicationsService.updateStatus(application.id, next);
-      // Không chỉ tải lại bảng này: màn Tổng quan đếm đơn theo trạng thái từ
-      // cùng một nguồn, nên nó cũng vừa cũ đi.
       invalidateAfter(queryClient, "applicationStatus");
     } catch (err) {
       setRowError({
@@ -182,7 +165,6 @@ export default function ApplicationsPage() {
         subtitle="Theo dõi trạng thái từng đơn ứng tuyển của bạn"
       />
 
-      {/* Đổi tab thì về trang đầu: giữ offset cũ rất dễ ra một bảng trống. */}
       <CountTabs
         tabs={APPLICATION_TABS}
         value={filter}
@@ -288,16 +270,6 @@ export default function ApplicationsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {/*
-                      Dùng <select> gốc thay vì dựng một menu riêng: nó có sẵn
-                      điều hướng bàn phím và hoạt động với trình đọc màn hình mà
-                      không phải tự cài lại ARIA.
-
-                      `value` ghim ở chuỗi rỗng nên ô luôn quay về dòng gợi ý sau
-                      mỗi lần chọn — trạng thái thật đã nằm ở Badge bên cạnh, để
-                      hai chỗ cùng hiển thị một thứ chỉ tạo cơ hội cho chúng lệch
-                      nhau.
-                    */}
                     <Select
                       aria-label={`Đổi trạng thái đơn ${application.job.title}`}
                       className="h-9 min-w-40 text-xs"
@@ -324,8 +296,6 @@ export default function ApplicationsPage() {
                       ))}
                     </Select>
                     {rowError?.id === application.id && (
-                      // Nguyên văn lý do máy chủ trả về. Nó biết những thứ dữ
-                      // liệu ở đây không biết, ví dụ đơn đã từng ở OFFER hay chưa.
                       <p className="mt-1 text-xs text-rose-600">
                         {rowError.message}
                       </p>

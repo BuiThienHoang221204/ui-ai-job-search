@@ -12,6 +12,7 @@ type Step = {
   state: "done" | "now" | "later";
 };
 
+/** Thẻ một bước trong hướng dẫn bắt đầu. */
 function StepCard({ step, index }: { step: Step; index: number }) {
   const done = step.state === "done";
   const now = step.state === "now";
@@ -48,6 +49,7 @@ function StepCard({ step, index }: { step: Step; index: number }) {
   );
 }
 
+/** Dòng tin mờ minh hoạ danh sách việc làm khi chưa có dữ liệu. */
 function GhostJob({ title }: { title: string }) {
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-dashed border-slate-200 bg-white/60 p-3.5">
@@ -71,6 +73,7 @@ function GhostJob({ title }: { title: string }) {
   );
 }
 
+/** Màn chào lần đầu, hướng dẫn các bước để bắt đầu dùng. */
 export function FirstRun({
   firstName,
   data,

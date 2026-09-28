@@ -3,7 +3,6 @@ import { ModelElapsed } from "@/components/dashboard/model-elapsed";
 import { SectionCard } from "@/components/ui/section-card";
 import type { PartialCv } from "@/lib/cv-partial";
 
-/** Đo trên `ai_calls`: `document.cv` 39-84 giây. */
 const EXPECTED_SECONDS = 60;
 
 const ROWS = [
@@ -15,6 +14,7 @@ const ROWS = [
   { label: "Nhóm kỹ năng", of: (p: PartialCv) => p.skillGroups?.length },
 ] as const;
 
+/** Tiến độ trực tiếp trong lúc AI đang sinh CV. */
 export function CvLiveProgress({ partial }: { partial: PartialCv | null }) {
   return (
     <SectionCard compact title="Đang viết CV">

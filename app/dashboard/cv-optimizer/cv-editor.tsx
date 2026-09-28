@@ -6,6 +6,7 @@ import { cn } from "@/utils";
 import { SECTION_LABELS } from "./cv-fields";
 import { SectionFields } from "./section-fields";
 
+/** Số mục của một phần CV để hiện cạnh tiêu đề, `null` nếu phần đó không đếm. */
 function entryCount(
   key: CvSectionKey,
   content: CvContentInput,
@@ -26,6 +27,7 @@ function entryCount(
   }
 }
 
+/** Panel sửa nội dung CV dạng điều khiển: chữ, thứ tự mục và mục bị ẩn. */
 export function CvEditor({
   content,
   layout,

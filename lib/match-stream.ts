@@ -1,7 +1,10 @@
 import type { JobMatchWithJob } from "@/types";
 import { streamModel } from "./model-stream";
 
-export { ModelStreamError as MatchStreamError } from "./model-stream";
+export {
+  ModelStreamError as MatchStreamError,
+  ModelServerError as MatchServerError,
+} from "./model-stream";
 
 export interface PartialEvaluation {
   eligibility?: { verdict?: string; note?: string; quote?: string };
@@ -22,6 +25,7 @@ export interface StreamMatchOptions {
   signal?: AbortSignal;
 }
 
+/** Chạy đánh giá độ phù hợp của một tin theo luồng, báo từng phần kết quả. */
 export function streamMatchEvaluation({
   jobId,
   onPartial,

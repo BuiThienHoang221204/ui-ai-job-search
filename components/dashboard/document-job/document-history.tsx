@@ -23,7 +23,6 @@ export function DocumentHistory({
   activeId: string | null;
   onSelect: (id: string) => void;
   emptyLabel: string;
-  /** Bỏ trống thì không vẽ thanh lật trang - dùng cho danh sách ngắn cố định. */
   page?: {
     offset: number;
     limit: number;

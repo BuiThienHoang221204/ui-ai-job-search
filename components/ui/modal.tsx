@@ -12,6 +12,7 @@ interface ModalProps {
   className?: string;
 }
 
+/** Hộp thoại có tiêu đề, đóng bằng Escape hoặc bấm ra ngoài. */
 export function Modal({ open, onClose, title, children, className }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
 

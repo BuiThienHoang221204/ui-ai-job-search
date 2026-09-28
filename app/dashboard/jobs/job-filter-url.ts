@@ -1,21 +1,11 @@
 import type { JobSort } from "@/services";
 import type { JobFilterValue } from "@/components/dashboard/job-filter-bar";
 
-/**
- * Bộ lọc việc làm nằm trên URL, không nằm trong state.
- *
- * Nhờ vậy một trang kết quả đã lọc chia sẻ được, và nút Back của trình duyệt trả
- * đúng bộ lọc trước đó. Cái giá là hai hàm này phải KHỨ HỒI chính xác:
- * `readFilter(writeFilter(x)) === x`. Sai một trường thì bộ lọc âm thầm mất khi
- * tải lại trang - một triệu chứng trông y hệt lỗi hiển thị.
- *
- * File chỉ import KIỂU nên không kéo theo React, và chạy được trong bộ test
- * `environment: node` của repo.
- */
 export const SORTS: JobSort[] = ["newest", "salary", "match"];
 
 export const DEFAULT_SORT: JobSort = "newest";
 
+/** Đọc bộ lọc việc làm từ URL; phải khứ hồi chính xác với `writeFilter`. */
 export function readFilter(
   params: URLSearchParams,
 ): JobFilterValue {
@@ -35,12 +25,7 @@ export function readFilter(
   };
 }
 
-/**
- * Giá trị rỗng và giá trị mặc định KHÔNG được ghi vào URL.
- *
- * Không phải để URL cho đẹp: `keys.jobList` băm nguyên bộ lọc làm khoá cache, nên
- * cùng một bộ lọc mà ra hai chuỗi khác nhau sẽ tách đôi cache và tải lại thừa.
- */
+/** Ghi bộ lọc lên URL, bỏ giá trị rỗng/mặc định để khoá cache ổn định. */
 export function writeFilter(
   filter: JobFilterValue,
   offset: number,

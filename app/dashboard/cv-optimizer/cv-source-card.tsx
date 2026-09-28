@@ -22,7 +22,6 @@ import { SectionCard } from "@/components/ui/section-card";
 import { Tabs } from "@/components/ui/tabs";
 import { cn } from "@/utils";
 
-/** Giá trị của mục "không nhắm vị trí nào" — backend coi jobId là tuỳ chọn. */
 const NO_JOB = "";
 
 type Source = "pick" | "paste" | "url";
@@ -38,14 +37,7 @@ const LANGUAGES = [
   ["en", "English"],
 ] as const;
 
-/**
- * Nguồn tin tuyển dụng cho một CV, và đây là chỗ khác `ApplicationEmailSourceCard`:
- * CV có nguồn thứ ba là KHÔNG CÓ nguồn nào.
- *
- * "CV tổng quát" là một lựa chọn thật chứ không phải trạng thái chưa điền, nên
- * tab "Chọn tin đã có" vẫn bấm được khi ô chọn để trống. Lá mail thì ngược lại:
- * không có đích thì không có gì để viết.
- */
+/** Chọn nguồn tin cho CV: dán JD, tin đã có hoặc CV tổng quát không nhắm tin nào. */
 export function CvSourceCard({
   matches,
   fixedJobId,
@@ -55,7 +47,6 @@ export function CvSourceCard({
   onSubmit,
 }: {
   matches: JobMatchWithJob[];
-  /** Vào từ trang chi tiết tin: khoá luôn vào tin đó, không cho đổi. */
   fixedJobId: string | null;
   language: CvLanguage;
   onLanguageChange: (next: CvLanguage) => void;
@@ -72,13 +63,7 @@ export function CvSourceCard({
 
   const ready = source === "pick" || pasted.ready;
 
-  /**
-   * Bóc xong thì đổ vào ba ô của tab dán rồi CHUYỂN sang tab đó.
-   *
-   * Người dùng phải nhìn thấy thứ vừa bóc trước khi nó đi vào CV: trang tuyển
-   * dụng nào cũng có tin gợi ý nằm cạnh, và đọc nhầm tên công ty là lỗi chỉ lộ
-   * ra khi CV đã sinh xong.
-   */
+  /** Bóc tin từ URL, đổ vào các ô của tab dán rồi chuyển sang tab đó. */
   const handleExtract = async () => {
     const target = url.trim();
     if (!target || fetching) return;

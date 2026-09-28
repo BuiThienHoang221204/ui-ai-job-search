@@ -3,20 +3,12 @@ import { scaleBand, scalePercent } from "./salary-scale";
 interface SalaryBarProps {
   from: number | null;
   to: number | null;
-  /** Vạch đánh dấu mức trung bình. Bỏ qua khi không có. */
   marker?: number | null;
   scale: [number, number];
-  /** Cao hơn một chút cho bảng mốc kinh nghiệm ở trang chi tiết. */
   size?: "sm" | "md";
 }
 
-/**
- * Một dải lương vẽ trên thang cho trước.
- *
- * Tách thành component riêng vì trang danh sách và trang chi tiết vẽ CÙNG một
- * thứ: gộp lại thì đổi cách thể hiện chỉ phải sửa một chỗ, và hai trang không
- * thể lệch nhau.
- */
+/** Một dải lương vẽ trên thang cho trước, dùng chung cho trang danh sách và chi tiết. */
 export function SalaryBar({ from, to, marker, scale, size = "sm" }: SalaryBarProps) {
   if (from === null || to === null) return null;
 

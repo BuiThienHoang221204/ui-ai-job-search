@@ -26,6 +26,7 @@ interface AISuggestionCardProps {
   suggestions: AiSuggestion[];
 }
 
+/** Thẻ gợi ý tối ưu; gợi ý có `href` thì bấm được, không có thì chỉ hiển thị. */
 export function AISuggestionCard({ suggestions }: AISuggestionCardProps) {
   return (
     <Card className="overflow-hidden border-slate-200/90 bg-white">
@@ -38,17 +39,6 @@ export function AISuggestionCard({ suggestions }: AISuggestionCardProps) {
             Gợi ý tối ưu
           </h3>
         </div>
-        {/*
-          Đã gỡ nhãn "Real-time Engine" (chấm xanh, chữ mono) ở đây.
-
-          Nó sai theo hai hướng cùng lúc: chữ cứng nên không bao giờ phản ánh
-          trạng thái thật, và những gợi ý này KHÔNG do model sinh ra — chúng được
-          suy ra bằng SQL từ hồ sơ và kết quả chấm điểm đã có (xem `suggestions.ts`
-          phía backend). Dán nhãn "real-time engine" lên một truy vấn SQL là hứa
-          một thứ hệ thống không làm.
-
-          Tiêu đề cũng bỏ chữ "từ AI Agent" vì cùng lý do đó.
-        */}
       </div>
 
       <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -69,8 +59,6 @@ export function AISuggestionCard({ suggestions }: AISuggestionCardProps) {
                   )}>
                     {suggestion.title}
                   </p>
-                  {/* Mũi tên chỉ xuất hiện khi có chỗ để đi tới. Trước đây nó hiện
-                      trên mọi thẻ, kể cả thẻ không dẫn đi đâu. */}
                   {suggestion.href && (
                     <ArrowRight className="size-3.5 shrink-0 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100" />
                   )}
@@ -82,16 +70,6 @@ export function AISuggestionCard({ suggestions }: AISuggestionCardProps) {
 
           const base = "flex gap-3 rounded-lg border border-slate-200/70 bg-slate-50/50 p-3.5";
 
-          /*
-           * Backend đã tính sẵn `href` cho từng gợi ý (xem `suggestions.ts`:
-           * thiếu hồ sơ -> /dashboard/profile, thiếu kỹ năng -> /dashboard/upskill,
-           * điểm cao -> trang chi tiết việc đó). Frontend trước đây bỏ hẳn trường
-           * này mà vẫn để `cursor-pointer` cùng mũi tên hover — người dùng bấm vào
-           * một thẻ trông như link rồi không có gì xảy ra.
-           *
-           * `href` vẫn là optional trong kiểu, nên nhánh không-link phải tồn tại;
-           * điều quan trọng là nó KHÔNG giả vờ bấm được.
-           */
           return suggestion.href ? (
             <Link
               key={suggestion.id}

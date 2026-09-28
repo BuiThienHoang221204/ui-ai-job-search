@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-// Next phục vụ file này ở /manifest.webmanifest và tự chèn <link rel="manifest">.
+/** Web app manifest cho PWA, Next phục vụ ở /manifest.webmanifest. */
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",

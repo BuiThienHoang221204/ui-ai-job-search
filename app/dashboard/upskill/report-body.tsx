@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { SectionCard } from "@/components/ui/section-card";
 
+/** Nội dung báo cáo nâng cấp kỹ năng: khoảng cách và lộ trình học. */
 export function ReportBody({ report }: { report: UpskillReportRecord }) {
   const hardGaps = parseHardGaps(report.hardGaps);
   const synthesised = parseSynthesisedGaps(report.synthesisedGaps);
@@ -59,8 +60,6 @@ export function ReportBody({ report }: { report: UpskillReportRecord }) {
                     )}
                   </div>
                 </div>
-                {/* Không có độ ưu tiên thì KHÔNG vẽ thanh: một thanh 0% trông
-                    như "không quan trọng", trong khi sự thật là không biết. */}
                 {gap.priority !== null && (
                   <Progress value={gap.priority} className="mt-1.5" />
                 )}
@@ -114,9 +113,6 @@ export function ReportBody({ report }: { report: UpskillReportRecord }) {
           <ol className="space-y-4">
             {plan.map((step, index) => (
               <li key={index} className="flex gap-3">
-                {/* Số thứ tự đánh lại theo vị trí, không dùng thẳng `order` của
-                    model: nó hay để lỗ (1, 2, 4) và một danh sách nhảy cóc làm
-                    người đọc tưởng mình thiếu mất một bước. */}
                 <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-50 font-mono text-xs font-semibold text-primary-700">
                   {index + 1}
                 </span>

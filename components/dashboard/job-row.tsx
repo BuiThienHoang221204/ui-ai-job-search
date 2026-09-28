@@ -14,6 +14,7 @@ interface JobRowProps {
   onSelect: (jobId: string) => void;
   onSavedChange?: (jobId: string, saved: boolean) => void;
 }
+/** Một dòng việc làm trong bảng, kèm nút lưu. */
 export function JobRow({
   job,
   selected,

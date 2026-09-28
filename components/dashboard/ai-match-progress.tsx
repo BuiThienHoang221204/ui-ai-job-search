@@ -1,7 +1,6 @@
 import { ProgressCircle } from "@/components/ui/progress-circle";
 import { cn, matchTone, matchToneClasses } from "@/utils";
 
-/** Một câu kết luận đi kèm con số — con số trần không nói người dùng nên làm gì. */
 const VERDICTS = {
   good: "Rất phù hợp — đề xuất ứng tuyển ngay",
   mid: "Khá phù hợp — cần tinh chỉnh CV",
@@ -16,6 +15,7 @@ interface AIMatchProgressProps {
   className?: string;
 }
 
+/** Vòng tròn độ phù hợp AI kèm một câu kết luận theo mức điểm. */
 export function AIMatchProgress({
   value,
   size = 140,

@@ -8,7 +8,6 @@ import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/** Màu gợi ý cho mẫu có dùng màu nhấn. */
 const ACCENT_CHOICES = [
   "#3873b3",
   "#0f766e",
@@ -24,10 +23,7 @@ const STYLE_LABELS: Record<CvTemplate["style"], string> = {
   "hien-dai": "Hiện đại",
 };
 
-/**
- * Kho chọn mẫu CV. Component ĐƯỢC ĐIỀU KHIỂN: bản nháp và khung xem trước do
- * `CvStudio` giữ, ở đây chỉ báo lên khi người dùng chọn.
- */
+/** Kho chọn mẫu CV dạng điều khiển, báo lên khi người dùng chọn mẫu hoặc màu. */
 export function CvTemplatePicker({
   templateId,
   accent,
@@ -39,8 +35,6 @@ export function CvTemplatePicker({
   onTemplateChange: (templateId: string) => void;
   onAccentChange: (accent: string) => void;
 }) {
-  // Danh sách mẫu gần như bất biến - sáu mục do máy chủ khai cứng. Trước đây
-  // mỗi lần mở kho mẫu là một request cho đúng sáu dòng đó.
   const { data: templates, error } = useApiQuery(
     keys.cvTemplates(),
     () => documentsService.cvTemplates(),

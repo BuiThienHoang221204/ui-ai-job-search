@@ -5,8 +5,7 @@ export const metadata: Metadata = {
   title: "Phỏng vấn thử",
 };
 
-// Server component chỉ để khai metadata và mở gói `params`; mọi việc tải dữ
-// liệu nằm ở client component vì các endpoint đều cần cookie của người dùng.
+/** Trang phỏng vấn thử: mở `params` rồi giao cho client component. */
 export default async function MockInterviewPage({
   params,
 }: {
