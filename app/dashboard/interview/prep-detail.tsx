@@ -46,6 +46,7 @@ function StarPart({ label, value }: { label: string; value: string | null }) {
   );
 }
 
+/** Danh sách gạch đầu dòng đơn giản. */
 function BulletList({ items }: { items: string[] }) {
   return (
     <ul className="space-y-2">
@@ -59,6 +60,7 @@ function BulletList({ items }: { items: string[] }) {
   );
 }
 
+/** Chi tiết một bộ câu hỏi phỏng vấn theo trạng thái soạn. */
 export function PrepDetail({
   prep,
   retrying,
@@ -75,25 +77,9 @@ export function PrepDetail({
     return (
       <div className="space-y-3">
         <Alert tone="danger">
-        {/* Trước đây chỗ này in nguyên `prep.error`, tức nguyên văn thông báo
-            của SDK, kèm ghi chú rằng "lý do thật đáng giá hơn câu chung chung".
-            Đúng một nửa: lý do thật đáng giá — cho người vận hành. Người dùng
-            đọc "AI_APICallError: Error from provider (Console)" thì không biết
-            nên chờ, nên bấm lại, hay nên báo lỗi. Nay backend trả phân loại và
-            `failureMessage` nói ra bước tiếp theo; nguyên văn vẫn ở DB cùng màn
-            quản trị. */}
           {failureMessage(prep.failureKind)}
         </Alert>
 
-        {/*
-          Câu thông báo nói "hãy thử lại", nên phải có chỗ để thử lại — nếu không
-          thì nó chỉ là lời khuyên suông.
-
-          `isWorthRetrying` gạt riêng lỗi SCHEMA: đó là lúc model không trả nổi
-          đúng cấu trúc, nên bấm lại gần như chắc chắn hỏng tiếp và mỗi lần bấm
-          vẫn tốn một lượt gọi. Ở trường hợp đó không hiện nút, và thông báo đã
-          nói là cần báo lỗi.
-        */}
         {isWorthRetrying(prep.failureKind) && (
           <Button
             variant="secondary"
@@ -117,7 +103,6 @@ export function PrepDetail({
     );
   }
 
-  // DONE nhưng không đọc được gì — khác hẳn "đang soạn", nên phải nói thẳng.
   if (isInterviewPrepEmpty(prep)) {
     return (
       <Alert tone="warning">
@@ -223,4 +208,3 @@ export function PrepDetail({
     </div>
   );
 }
-

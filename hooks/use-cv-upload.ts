@@ -20,16 +20,10 @@ import {
 
 const LOGIN_NEXT = "/login?next=/dashboard/profile/upload";
 
-/// Nhịp hỏi lại trạng thái, và số lần tối đa.
-///
-/// Đường đọc CV đặt timeout 180 giây (`SYNTHESIS_TIMEOUT_MS`), nên 3 giây × 70 lần
-/// = 210 giây, rộng hơn một chút để còn kịp nhận trạng thái FAILED do chính backend
-/// ghi thay vì tự bỏ cuộc trước rồi hiện một câu chung chung.
 const POLL_MS = 2_000;
 const MAX_POLLS = 105;
 
-/// Toàn bộ trạng thái và tác vụ của màn đọc CV. Tách khỏi phần render để mỗi
-/// bên đọc được riêng: một bên là máy trạng thái, bên kia chỉ là bố cục.
+/** Toàn bộ trạng thái và tác vụ của màn đọc CV: nộp, chờ, chạy lại và áp dụng đề xuất. */
 export function useCvUpload() {
   const router = useRouter();
   const mounted = useRef(true);
@@ -56,9 +50,6 @@ export function useCvUpload() {
     };
   }, []);
 
-  // Tải hồ sơ hiện tại VÀ bản nháp mới nhất cùng lúc. Cần cả hai ngay từ đầu: màn
-  // xác nhận đặt đề xuất cạnh giá trị đang có, nên thiếu hồ sơ thì mọi hàng đều
-  // trông như "chưa có gì" và người dùng tích bừa.
   useEffect(() => {
     let cancelled = false;
 
@@ -67,7 +58,6 @@ export function useCvUpload() {
         const [current, latest] = await Promise.all([
           profileService.get().catch(() => null),
           profileDraftService.latest().catch((err: unknown) => {
-            // 404 KHÔNG phải lỗi: nghĩa là chưa từng nộp CV nào.
             if (apiErrorStatus(err) === 404) return null;
             throw err;
           }),
@@ -95,12 +85,7 @@ export function useCvUpload() {
     };
   }, [router]);
 
-  /**
-   * Hỏi lại tới khi bản nháp xong hoặc hỏng.
-   *
-   * Vòng lặp tự gọi lại thay vì `setInterval`: mỗi lần hỏi phải chờ lần trước xong,
-   * nếu không thì khi backend chậm sẽ có nhiều request xếp chồng lên nhau.
-   */
+  /** Hỏi lại trạng thái bản nháp theo chuỗi cho tới khi xong hoặc hỏng. */
   const waitForDraft = async (draftId: string) => {
     setWaiting(true);
     for (let attempt = 0; attempt < MAX_POLLS; attempt += 1) {
@@ -127,7 +112,6 @@ export function useCvUpload() {
           router.replace(LOGIN_NEXT);
           return;
         }
-        // Một lần hỏi hỏng không có nghĩa là cả lượt đọc hỏng — hỏi tiếp.
       }
     }
 
@@ -146,7 +130,6 @@ export function useCvUpload() {
     try {
       const receipt = await profileDraftService.uploadCv(file, true);
       if (!mounted.current) return;
-      // Đọc lại ngay để có bản ghi đầy đủ (biên nhận chỉ có draftId và số liệu).
       setDraft(await profileDraftService.get(receipt.draftId));
       setFile(null);
 
@@ -174,19 +157,13 @@ export function useCvUpload() {
         router.replace(LOGIN_NEXT);
         return;
       }
-      // Backend trả câu tiếng Việt đã soạn cho từng nguyên nhân (file scan, có mật
-      // khẩu, quá lớn, không phải PDF) — hiện đúng câu đó.
       setError(apiErrorMessage(err, "Không nộp được CV"));
     } finally {
       if (mounted.current) setUploading(false);
     }
   };
 
-  /**
-   * Chạy lại lượt đọc mà không bắt nộp lại file — bằng chứng đã nằm trong bản
-   * nháp. Dùng chung `waitForDraft` với luồng nộp mới, vì từ lúc này trở đi hai
-   * luồng giống hệt nhau.
-   */
+  /** Chạy lại lượt đọc CV trên bản nháp hiện có mà không cần nộp lại file. */
   const retry = async () => {
     if (!draft) return;
     setRetrying(true);
@@ -238,7 +215,6 @@ export function useCvUpload() {
         ? current.filter((item) => item !== field)
         : [...current, field],
     );
-
 
   const rows = draft?.proposal ? proposalRows(draft.proposal, profile) : [];
   const running =

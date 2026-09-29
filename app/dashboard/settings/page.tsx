@@ -16,23 +16,7 @@ import { SectionCard } from "@/components/ui/section-card";
 import { DisplayCard } from "./display-card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * Trang tài khoản.
- *
- * Bản trước của trang này hiển thị thông tin cá nhân BỊA — "Nguyễn Minh An",
- * "minhan.nguyen@gmail.com", "+84 90 123 4567" — như thể đó là tài khoản đang
- * đăng nhập, kèm một nút Lưu hiện "Đã lưu ✓" mà không gọi mạng lần nào. Nó lại
- * nằm ngay trên thanh điều hướng chính, nên là thứ đầu tiên một người thử hệ
- * thống bấm vào.
- *
- * Bản này chỉ hiện những gì backend thật sự có, và nói thẳng những gì chưa có.
- * Ba khối đã bị gỡ và lý do:
- *
- * - **Số điện thoại**: không có trường nào tương ứng ở `User` lẫn `Profile`.
- * - **Chọn ngôn ngữ giao diện**: không có i18n. Mọi chuỗi trong ứng dụng là chữ
- *   tiếng Việt viết thẳng trong JSX, nên một ô chọn "English" là lời hứa suông.
- * - **Tuỳ chọn thông báo**: không có hệ thống thông báo, cũng không có email.
- */
+/** Trang tài khoản; chỉ hiện những gì backend thật sự có. */
 export default function SettingsPage() {
   const { user, loading, logout } = useSession();
 
@@ -90,14 +74,6 @@ export default function SettingsPage() {
           title="Dữ liệu của bạn đi những đâu"
           description="Ba việc hệ thống làm với hồ sơ của bạn"
         >
-          {/*
-            Nói đúng sự thật thay vì một câu trấn an.
-
-            Bản trước viết "hồ sơ chỉ hiển thị cho nhà tuyển dụng khi bạn chủ
-            động ứng tuyển" — câu đó sai theo hai hướng: hệ thống KHÔNG gửi hồ
-            sơ cho nhà tuyển dụng nào cả (bạn tự nộp), nhưng nó CÓ gửi nội dung
-            hồ sơ tới nhà cung cấp model, điều mà câu kia không hề nhắc tới.
-          */}
           <dl className="grid gap-6 sm:grid-cols-3">
             <DataFact
               icon={ArrowSquareOut}
@@ -138,6 +114,7 @@ export default function SettingsPage() {
   );
 }
 
+/** Một dòng thông tin kèm biểu tượng về dữ liệu tài khoản. */
 function DataFact({
   icon: Icon,
   tone,

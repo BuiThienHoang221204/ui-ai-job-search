@@ -7,6 +7,7 @@ import {
 } from "react";
 import { cn } from "@/utils";
 
+/** Nhãn của ô nhập. */
 export function Label({ className, ...props }: LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
@@ -16,6 +17,7 @@ export function Label({ className, ...props }: LabelHTMLAttributes<HTMLLabelElem
   );
 }
 
+/** Ô nhập một dòng. */
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   ({ className, ...props }, ref) => (
     <input
@@ -32,6 +34,7 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
 );
 Input.displayName = "Input";
 
+/** Ô nhập nhiều dòng. */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(
   ({ className, ...props }, ref) => (
     <textarea
@@ -47,6 +50,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<H
 );
 Textarea.displayName = "Textarea";
 
+/** Ô chọn dạng `<select>` gốc. */
 export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(
   ({ className, ...props }, ref) => (
     <select

@@ -12,15 +12,12 @@ interface TabsProps {
   className?: string;
 }
 
+/** Thanh tab chuyển khung nhìn. */
 export function Tabs({ tabs, value, onChange, className }: TabsProps) {
   return (
     <div
       role="tablist"
       className={cn(
-        // `w-fit` chứ KHÔNG `w-full`: nền xám phải ôm sát các viên, nếu không thì
-        // hai tab ngắn để lại một mảng xám rỗng kéo dài hết bề ngang - trông như
-        // còn tab nữa chưa nạp xong. `max-w-full` giữ lại đường cuộn ngang cho
-        // trường hợp nhiều tab trên màn hẹp.
         "scrollbar-thin flex w-fit max-w-full gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1",
         className,
       )}
@@ -52,18 +49,11 @@ interface CountTabsProps<T extends string> {
   tabs: ReadonlyArray<{ value: T; label: string }>;
   value: T;
   onChange: (value: T) => void;
-  /** Số bên cạnh mỗi nhãn; thiếu khoá nào thì hiện 0. */
   counts?: Partial<Record<T, number>>;
   className?: string;
 }
 
-/**
- * Dạng viên thuốc kèm số đếm, dùng khi con số là một phần của lựa chọn.
- *
- * Tách khỏi `Tabs` chứ không thêm cờ: hai kiểu này khác nhau cả về hình lẫn về
- * việc chúng trả lời câu hỏi gì — `Tabs` chuyển khung nhìn, còn cái này lọc một
- * danh sách và nói trước mỗi bộ lọc còn lại bao nhiêu dòng.
- */
+/** Tab dạng viên thuốc kèm số đếm, dùng để lọc một danh sách. */
 export function CountTabs<T extends string>({
   tabs,
   value,

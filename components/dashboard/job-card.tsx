@@ -17,12 +17,7 @@ interface JobCardProps {
   onSavedChange?: (jobId: string, saved: boolean) => void;
 }
 
-/**
- * Tin chưa chấm KHÔNG mang huy hiệu màu.
- *
- * Màu ở đây là kết luận đánh giá; tô xanh hay đỏ cho một tin hệ thống chưa hề
- * đọc là nói thay nó một điều nó chưa nói.
- */
+/** Huy hiệu điểm phù hợp; tin chưa chấm không mang màu kết luận. */
 export function MatchBadge({ score }: { score: number | null }) {
   if (score === null) {
     return (
@@ -47,17 +42,8 @@ export function MatchBadge({ score }: { score: number | null }) {
   );
 }
 
+/** Thẻ việc làm: logo, tiêu đề, điểm phù hợp và nút lưu. */
 export function JobCard({ job, onSavedChange }: JobCardProps) {
-  /**
-   * Ý muốn của người dùng khi vừa bấm, chưa có xác nhận từ máy chủ. `null` =
-   * chưa bấm gì, tin cái máy chủ nói.
-   *
-   * KHÔNG chép `job.saved` vào state bằng `useState(job.saved)`. Chép một lần
-   * lúc mount thì thẻ đóng băng ở giá trị đầu tiên: sau đó dữ liệu mới về bao
-   * nhiêu lần cũng không đẩy được nút đi. Đã trả giá đúng như vậy - lưu một tin
-   * ở trang chi tiết rồi quay lại danh sách, máy chủ trả `saved: true`, danh
-   * sách đã nạp lại, mà ngôi sao vẫn tắt. Người dùng đọc ra thành "bấm hụt".
-   */
   const [pending, setPending] = useState<boolean | null>(null);
   const saved = pending ?? job.saved;
 
@@ -99,7 +85,7 @@ export function JobCard({ job, onSavedChange }: JobCardProps) {
                     className="rounded-full bg-teal-50 px-2 py-0.5 font-mono text-2xs font-semibold whitespace-nowrap text-teal-700"
                     title={
                       job.systemMatch.kind === "REQUIREMENTS"
-                        ? `Hồ sơ đáp ứng ${job.systemMatch.met}/${job.systemMatch.total} yêu cầu tin nêu ra (${job.systemMatch.percent}% có trọng số)`
+                        ? `Hồ sơ có ${job.systemMatch.met}/${job.systemMatch.total} kỹ năng tin nêu ra (${job.systemMatch.percent}% có trọng số, tính cả số năm kinh nghiệm)`
                         : `Tin chưa được rút trích yêu cầu; đang đếm kỹ năng của bạn xuất hiện trong tin`
                     }
                   >

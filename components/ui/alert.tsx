@@ -8,14 +8,6 @@ import {
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { cn } from "@/utils";
 
-/**
- * Bốn sắc thái, và chúng KHÔNG thay thế được cho nhau.
- *
- * `danger` dành cho sự cố hệ thống. `warning` dành cho kết luận của backend mà
- * người dùng cần xử lý (không đủ điều kiện, chờ quá lâu). `info` dành cho việc
- * đã xảy ra đúng như thiết kế. Gộp tất cả vào hộp đỏ thì người dùng không phân
- * biệt được "hệ thống hỏng" với "hồ sơ của bạn chưa đạt".
- */
 export type AlertTone = "danger" | "warning" | "info" | "success";
 
 interface ToneStyle {
@@ -49,16 +41,14 @@ const TONE_STYLES: Record<AlertTone, ToneStyle> = {
 
 interface AlertProps {
   tone?: AlertTone;
-  /** Bỏ trống thì nội dung nằm một dòng ngang hàng với biểu tượng. */
   title?: ReactNode;
-  /** Ghi đè biểu tượng mặc định của sắc thái. */
   icon?: PhosphorIcon;
-  /** Nút hoặc liên kết đặt dưới phần nội dung. */
   actions?: ReactNode;
   className?: string;
   children?: ReactNode;
 }
 
+/** Hộp thông báo đặt xen giữa nội dung, theo tông màu. */
 export function Alert({
   tone = "danger",
   title,
@@ -99,12 +89,7 @@ export function Alert({
   );
 }
 
-/**
- * Hộp lỗi chiếm chỗ của cả trang, dùng khi lần tải đầu tiên hỏng.
- *
- * Khác với `Alert` đặt xen giữa nội dung: ở đây không có gì khác để xem, nên
- * hộp lỗi được đưa vào giữa màn hình thay vì nằm nép trên cùng.
- */
+/** Hộp lỗi chiếm chỗ cả trang, dùng khi lần tải đầu tiên hỏng. */
 export function PageError({
   title,
   message,

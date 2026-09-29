@@ -36,16 +36,8 @@ const THEME_ICON: Record<ThemeId, typeof Sun> = {
   system: Monitor,
 };
 
+/** Thẻ cài đặt hiển thị: cỡ chữ và giao diện sáng/tối. */
 export function DisplayCard() {
-  /*
-    `localStorage` là trạng thái NGOÀI React, nên đọc bằng `useSyncExternalStore`
-    chứ không phải `useState` + `useEffect`: bản dựng trên máy chủ dùng ảnh chụp
-    riêng nên không lệch hydration, và không có `setState` chạy đồng bộ trong
-    effect để sinh thêm một vòng render.
-
-    Cỡ chữ THẬT của trang đã do thẻ script trong `<head>` đặt từ trước lần vẽ đầu
-    tiên - chỗ này chỉ quyết định con số hiện trên nút.
-  */
   const percent = useSyncExternalStore(
     subscribeFontScale,
     readFontScale,
@@ -143,6 +135,7 @@ export function DisplayCard() {
   );
 }
 
+/** Một hàng cài đặt gồm nhãn, gợi ý và ô điều khiển. */
 function SettingRow({
   label,
   hint,
@@ -163,6 +156,7 @@ function SettingRow({
   );
 }
 
+/** Nút tăng/giảm một nấc cho cài đặt. */
 function StepButton({
   label,
   disabled,

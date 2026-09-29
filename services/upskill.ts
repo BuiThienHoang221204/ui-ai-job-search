@@ -29,7 +29,7 @@ export const upskillService = {
   get: (id: string) =>
     api.get<UpskillReportRecord>(`/upskill/${id}`).then((r) => r.data),
 
-  /** Có jobId thì chạy chế độ TARGETED, không có thì AGGREGATE. */
+  /** Tạo báo cáo nâng cấp kỹ năng: có jobId thì TARGETED, không thì AGGREGATE. */
   generate: (jobId?: string) =>
     api.post<QueuedReport>("/upskill/generate", { jobId }).then((r) => r.data),
 

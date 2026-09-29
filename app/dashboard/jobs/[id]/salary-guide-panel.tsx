@@ -4,6 +4,7 @@ import type { SalaryGuide } from "@/services";
 import { SectionCard } from "@/components/ui/section-card";
 import { formatMonthlyVnd } from "@/utils";
 
+/** Một ô số tiền theo tháng kèm chú thích. */
 function Amount({
   caption,
   value,
@@ -38,6 +39,7 @@ function Amount({
   );
 }
 
+/** Câu giải thích mức lương được tính theo vị trí nào. */
 function basisLine(guide: SalaryGuide) {
   if (guide.basis === "POSITION") {
     return `Tính theo mặt bằng vị trí ${guide.label}`;
@@ -45,9 +47,11 @@ function basisLine(guide: SalaryGuide) {
   return `Chưa nhận ra chức danh cụ thể trong tiêu đề tin, nên lấy mức chung của ${guide.positionCount} vị trí gần nhất: ${guide.label}`;
 }
 
+/** Định dạng số năm kinh nghiệm theo kiểu Việt Nam. */
 const years = (value: number) =>
   `${value.toLocaleString("vi-VN", { maximumFractionDigits: 1 })} năm`;
 
+/** Câu giải thích mốc kinh nghiệm dùng để tính lương. */
 function experienceLine(guide: SalaryGuide) {
   if (!guide.experienceLabel) {
     return "Chưa biết số năm kinh nghiệm của bạn lẫn của tin — dùng mức chung của vị trí";
@@ -59,6 +63,7 @@ function experienceLine(guide: SalaryGuide) {
   return `Hồ sơ chưa đọc được số năm kinh nghiệm, nên tạm lấy mốc tin yêu cầu: ${guide.experienceLabel}`;
 }
 
+/** Khung gợi ý mức lương cho tin tuyển dụng. */
 export function SalaryGuidePanel({ guide }: { guide: SalaryGuide | null }) {
   if (!guide) return null;
 

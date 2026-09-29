@@ -3,7 +3,6 @@ import { Alert } from "@/components/ui/alert";
 import { ModelElapsed } from "@/components/dashboard/model-elapsed";
 import type { UpskillReportRecord } from "@/services";
 
-/** Đo trên `ai_calls`: HAI lượt gọi — `upskill.gaps` 158 giây + `upskill.plan` 96 giây. Tác vụ dài nhất hệ thống. */
 const EXPECTED_SECONDS = 254;
 
 export interface UpskillPartial {
@@ -11,8 +10,10 @@ export interface UpskillPartial {
   value?: unknown;
 }
 
+/** Đếm số phần tử nếu là mảng, ngược lại trả 0. */
 const count = (value: unknown) => (Array.isArray(value) ? value.length : 0);
 
+/** Một bước trong tiến trình tạo báo cáo. */
 function StepRow({ done, label }: { done: boolean; label: string }) {
   return (
     <span className="flex items-center gap-2">
@@ -26,6 +27,7 @@ function StepRow({ done, label }: { done: boolean; label: string }) {
   );
 }
 
+/** Tiến trình trực tiếp khi đang tạo báo cáo nâng cấp kỹ năng. */
 export function UpskillProgress({
   report,
   step = 0,

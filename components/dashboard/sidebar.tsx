@@ -10,21 +10,14 @@ import { useSession } from "@/components/dashboard/session";
 import { navItems } from "@/components/dashboard/nav-items";
 import { BrandLogo } from "@/components/dashboard/brand-logo";
 
-// Khu quản trị là app riêng (ui-admin-job-search), nên đây là link sang origin khác chứ không phải route nội bộ.
 const ADMIN_APP_URL = process.env.NEXT_PUBLIC_ADMIN_URL ?? "http://localhost:3001";
 
+/** Thanh điều hướng bên của dashboard. */
 export function Sidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, loading, logout } = useSession();
 
-  /**
-   * Mục khớp DÀI NHẤT thắng, chỉ một mục sáng tại một thời điểm.
-   *
-   * So cả query string, không chỉ pathname: "Việc làm phù hợp" và "Tất cả việc
-   * làm" cùng trỏ `/dashboard/jobs`, chỉ khác `?scored=1`. `usePathname()` bỏ
-   * query nên hai mục sẽ cùng khớp và mục sai sáng lên.
-   */
   const activeHref = useMemo(() => {
     const query = searchParams.toString();
     const current = query ? `${pathname}?${query}` : pathname;
@@ -32,8 +25,6 @@ export function Sidebar() {
     const matched = navItems.filter((item) => {
       const [itemPath, itemQuery] = item.href.split("?");
       if (itemQuery) return current === item.href;
-      // Mục không có query chỉ khớp khi URL cũng không có query, nếu không nó
-      // sẽ nuốt luôn mọi biến thể lọc của chính đường dẫn đó.
       if (query && pathname === itemPath) return false;
       return item.exact
         ? pathname === itemPath
@@ -58,7 +49,6 @@ export function Sidebar() {
         </button>
       </div>
 
-      {/* Navigation */}
       <nav className="scrollbar-thin w-64 flex-1 space-y-1 overflow-y-auto px-3 py-3">
         {navItems.map(({ label, href, icon: Icon }) => {
           const active = href === activeHref;
@@ -80,9 +70,6 @@ export function Sidebar() {
                   active ? "text-primary-600" : "text-slate-400",
                 )}
               />
-              {/* Trước đây có một Badge "24" viết cứng cạnh "Việc làm phù hợp",
-                  hiện đúng con số đó cho mọi tài khoản bất kể thực tế có bao
-                  nhiêu. Số thật đã có ở màn Tổng quan, lấy từ backend. */}
               <span data-sidebar-label className="truncate">
                 {label}
               </span>
@@ -106,12 +93,6 @@ export function Sidebar() {
         )}
       </nav>
 
-      {/* Ở đây từng có thẻ "Nâng cấp Pro Agent" hứa "CV tối ưu không giới hạn &
-          RPA tự động ứng tuyển", với một nút không có onClick. Hệ thống không có
-          gói dịch vụ, không có thanh toán, và RPA tự động ứng tuyển thì chưa tồn
-          tại — quảng cáo cả ba thứ đó là hứa suông. */}
-
-      {/* Profile card */}
       <div className="flex shrink-0 items-center gap-2.5 border-t border-slate-100 px-4 py-3 collapsed:flex-col collapsed:gap-2 collapsed:px-2">
         <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200/80 bg-slate-100 text-xs font-bold text-slate-800">
           {loading ? "…" : personInitials(user?.name)}

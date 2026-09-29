@@ -5,8 +5,7 @@ export const metadata: Metadata = {
   title: "Lộ trình học",
 };
 
-// Giữ trang này là server component chỉ để khai metadata; việc tải dữ liệu nằm
-// ở client component vì endpoint cần cookie của người dùng.
+/** Trang nâng cấp kỹ năng; server component chỉ để khai metadata. */
 export default function UpskillPage() {
   return <UpskillView />;
 }

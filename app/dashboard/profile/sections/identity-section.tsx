@@ -22,13 +22,6 @@ const TEXT_FIELDS = [
     placeholder: "Thành phố Hồ Chí Minh",
   },
   {
-    /*
-     * Số điện thoại: bạn tự điền, AI KHÔNG đề xuất trường này từ CV.
-     *
-     * Đọc sai một chữ số thì hồ sơ gửi đi mang một số không liên lạc được, và không
-     * có cách nào để bạn biết. Nó cũng là trường gần như mọi form ứng tuyển đều hỏi,
-     * và là trường `\phone` mà template CV vốn đã hỗ trợ nhưng chưa từng có dữ liệu.
-     */
     key: "phone",
     label: "Số điện thoại",
     placeholder: "0901234567",

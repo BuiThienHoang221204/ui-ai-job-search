@@ -18,6 +18,7 @@ const PAGE_SIZE = 12;
 
 const GRID = "grid gap-4 md:grid-cols-2 xl:grid-cols-3";
 
+/** Danh sách các việc đã chấm điểm phù hợp, có phân trang. */
 export function MatchesView() {
   const [offset, setOffset] = useState(0);
 

@@ -20,13 +20,7 @@ const SOURCES = [
   { value: "pick", label: "Chọn tin đã có" },
 ];
 
-/**
- * Chọn nguồn tin tuyển dụng cho mail: dán JD, hoặc lấy một tin đã chấm điểm.
- *
- * Dán JD là nhánh MẶC ĐỊNH, và đó là chủ ý: thao tác thật của người dùng là
- * copy mô tả từ một trang tuyển dụng bất kỳ rồi nhờ AI viết mail, chứ không
- * phải chờ tin đó được hệ thống quét về và chấm điểm xong.
- */
+/** Chọn nguồn tin cho mail ứng tuyển: dán JD hoặc lấy một tin đã chấm điểm. */
 export function ApplicationEmailSourceCard({
   matches,
   fixedJobId,
@@ -34,7 +28,6 @@ export function ApplicationEmailSourceCard({
   onSubmit,
 }: {
   matches: JobMatchWithJob[];
-  /** Vào từ trang chi tiết tin: khoá luôn vào tin đó, không cho đổi. */
   fixedJobId: string | null;
   disabled: boolean;
   onSubmit: (input: ApplicationEmailInput) => void;

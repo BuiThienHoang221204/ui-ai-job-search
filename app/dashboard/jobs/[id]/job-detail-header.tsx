@@ -27,6 +27,7 @@ interface JobDetailHeaderProps {
   applied?: boolean;
 }
 
+/** Phần đầu trang chi tiết tin: tiêu đề, công ty và các thao tác chính. */
 export function JobDetailHeader({
   card,
   job,

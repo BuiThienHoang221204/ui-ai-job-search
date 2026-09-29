@@ -29,6 +29,7 @@ const sizeClasses: Record<Size, string> = {
   icon: "size-9 p-0",
 };
 
+/** Nút bấm dùng chung với các biến thể và kích thước. */
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", loading, disabled, children, ...props }, ref) => (
     <button

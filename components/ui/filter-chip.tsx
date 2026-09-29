@@ -2,13 +2,7 @@
 
 import { X } from "@phosphor-icons/react/ssr";
 
-/**
- * Một bộ lọc ĐANG bật, kèm nút bỏ.
- *
- * Tách ra khỏi `job-filter-bar` để trang việc làm và ngân hàng câu hỏi dùng
- * chung một dáng: hai hàng chip trông khác nhau là dấu hiệu người dùng đọc thấy
- * ngay, dù không gọi tên được.
- */
+/** Một bộ lọc đang bật, kèm nút bỏ. */
 export function FilterChip({
   label,
   onRemove,

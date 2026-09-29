@@ -1,10 +1,3 @@
-/**
- * Bộ khối dùng chung cho hai trang tài liệu (Tối ưu CV và Thư xin việc).
- *
- * Cả hai trang có cùng một vòng đời: bấm nút → xếp hàng → hỏi lại trạng thái →
- * hiện kết quả hoặc lý do hỏng. Chỉ phần hiển thị NỘI DUNG là khác nhau, nên
- * mọi thứ còn lại nằm ở đây.
- */
 export { DocumentHistory } from "./document-history";
 export {
   documentSubtitle,

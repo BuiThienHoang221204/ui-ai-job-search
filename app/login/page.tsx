@@ -10,11 +10,10 @@ import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { authService } from "@/services";
 import { safeNextPath } from "@/utils";
 
+/** Form đăng nhập bằng email/mật khẩu, xong chuyển về trang `next`. */
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  // Chỉ nhận đường dẫn nội bộ. Không kiểm tra thì "?next=https://ke-gian.com"
-  // sẽ biến trang đăng nhập thành bàn đạp chuyển hướng cho trang lừa đảo.
   const next = safeNextPath(params.get("next"), "/dashboard");
 
   const [email, setEmail] = useState("");
@@ -22,18 +21,15 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  /** Gửi thông tin đăng nhập, điều hướng khi thành công hoặc hiện lỗi. */
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      // Backend đặt cookie httpOnly trong phản hồi này; nhờ withCredentials,
-      // trình duyệt lưu lại và tự gửi kèm ở mọi lời gọi sau.
       await authService.login(email, password);
 
-      // refresh() để middleware chạy lại và thấy cookie vừa được đặt; thiếu nó
-      // thì router vẫn giữ kết quả điều hướng của phiên chưa đăng nhập.
       router.replace(next);
       router.refresh();
     } catch (error) {
@@ -108,9 +104,6 @@ function LoginForm() {
           </Button>
         </form>
 
-        {/* Thiếu đường này thì người dùng mới vào /login không có lối nào tạo
-            tài khoản — trước đây tài khoản chỉ tạo được bằng lệnh SQL. Giữ
-            nguyên `next` để sau khi đăng ký xong họ về đúng chỗ định tới. */}
         <p className="text-center text-xs text-slate-500">
           Chưa có tài khoản?{" "}
           <Link
@@ -125,8 +118,8 @@ function LoginForm() {
   );
 }
 
+/** Trang đăng nhập, bọc form trong Suspense vì dùng useSearchParams. */
 export default function LoginPage() {
-  // useSearchParams cần Suspense, nếu không cả trang bị ép sang render động.
   return (
     <Suspense>
       <LoginForm />

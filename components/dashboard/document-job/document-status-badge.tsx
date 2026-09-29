@@ -15,6 +15,7 @@ const STATUS_VARIANTS: Record<WorkStatus, NonNullable<BadgeProps["variant"]>> = 
   FAILED: "danger",
 };
 
+/** Huy hiệu trạng thái của một tài liệu. */
 export function DocumentStatusBadge({ status }: { status: WorkStatus }) {
   return (
     <Badge

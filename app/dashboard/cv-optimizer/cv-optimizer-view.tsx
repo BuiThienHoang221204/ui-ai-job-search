@@ -33,23 +33,15 @@ import { CvStudio } from "./cv-studio";
 
 const LOGIN_NEXT = "/dashboard/cv-optimizer";
 
-/** Đủ để chọn trong một danh sách thả xuống mà không kéo cả bảng matches về. */
 const MATCH_LIMIT = 50;
 
-/** Số tài liệu hiện một lúc trong kho; phần còn lại lật bằng phân trang. */
 const DOCUMENT_PAGE_SIZE = 10;
 
+/** Màn tối ưu CV: chọn nguồn tin, sinh CV và xem kho tài liệu đã tạo. */
 export function CvOptimizerView() {
   const fixedJobId = useSearchParams().get("jobId");
   const [language, setLanguage] = useState<CvLanguage>("vi");
 
-  /*
-   * Nguồn của lượt sinh GẦN NHẤT, không phải nguồn đang chọn trong thẻ.
-   *
-   * `DocumentJobStatus` có nút "Thử lại", và nút đó phải sinh lại đúng thứ vừa
-   * hỏng. Đọc lại state của thẻ nguồn thì người dùng đổi tab trong lúc chờ là
-   * bấm Thử lại ra một CV khác hẳn.
-   */
   const [source, setSource] = useState<CvSourceInput>(
     fixedJobId ? { jobId: fixedJobId } : {},
   );
@@ -58,16 +50,6 @@ export function CvOptimizerView() {
 
   const [documentOffset, setDocumentOffset] = useState(0);
 
-  /*
-   * Hai truy vấn RIÊNG, không gộp một lần tải như trước.
-   *
-   * Danh sách vị trí ở đây giống hệt danh sách màn "Thư đã viết" - cùng khoá thì
-   * màn nào mở sau lấy miễn phí. Đo trên một phiên duyệt: gộp chung thì endpoint
-   * này bị gọi 4 lần, tách ra và dùng chung khoá thì còn 1.
-   *
-   * Tách ra còn cho phép xoá riêng kho tài liệu sau khi sinh CV, mà không kéo
-   * theo một lượt tải lại danh sách vị trí vốn không đổi.
-   */
   const matchPage = useApiQuery(
     keys.matchList(MATCH_LIMIT),
     () => matchesService.list({ limit: MATCH_LIMIT }),
@@ -87,8 +69,6 @@ export function CvOptimizerView() {
   const error = matchPage.error ?? documentPage.error;
   const matches = matchPage.data?.items ?? null;
 
-  // Suy ra lúc render, không chép vào state bằng effect — xem giải thích ở
-  // `cover-letter-view.tsx`, hai màn dùng cùng một cách.
   const documents: DocumentRecord[] | null = useMemo(() => {
     const list = documentPage.data?.items ?? null;
     if (!list) return null;
@@ -179,8 +159,6 @@ function CvResult({
 
       <CvStudio record={record} onSaved={onTemplateSaved} />
 
-      {/* `key` là BẮT BUỘC: nó buộc React dựng lại component khi đổi tài
-          liệu, thay cho một effect tự dọn state bên trong. */}
       <DocumentSource
         key={record.id}
         documentId={record.id}

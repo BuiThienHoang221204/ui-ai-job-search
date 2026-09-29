@@ -37,20 +37,6 @@ export function UploadCard({
       description="Chỉ nhận PDF, tối đa 10MB. Cần bản PDF có lớp text — bản scan hoặc ảnh chụp chưa đọc được."
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        {/*
-          Vẫn là `<input type="file">` GỐC, chỉ ẩn đi và bọc trong `<label>`.
-
-          Không dựng vùng kéo-thả tự viết: input gốc đã có sẵn điều hướng bàn phím,
-          hoạt động với trình đọc màn hình, và mở đúng hộp thoại chọn file của hệ
-          điều hành. Một vùng kéo-thả tự dựng phải cài lại cả ba thứ đó mới ngang
-          bằng.
-
-          Vì sao ẩn rồi bọc `<label>` thay vì tạo kiểu bằng `file:`: chữ trên nút
-          của input file do TRÌNH DUYỆT sinh và **CSS không đổi được** — trên máy
-          tiếng Anh nó hiện "Choose File / No file chosen" ngay giữa một giao diện
-          tiếng Việt. `sr-only` giữ input trong luồng tab và vẫn nhận click từ
-          label, nên không mất khả năng truy cập nào.
-        */}
         <label
           className={cn(
             "flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm transition-colors hover:border-slate-300 sm:max-w-md",
@@ -111,8 +97,6 @@ export function RunningCard({
   draft: ProfileDraftRecord | null;
   partial?: PartialProposal | null;
 }) {
-  // Số liệu trích xuất có NGAY từ lúc nộp, trước khi model chạy. Hiện luôn: một CV
-  // 6 trang chỉ ra 400 ký tự là dấu hiệu rất rõ, và biết sớm thì đỡ chờ vô ích.
   const meta = draft?.evidence?.[0]?.meta;
 
   return (
@@ -170,11 +154,6 @@ export function RunningCard({
   );
 }
 
-/**
- * `isWorthRetrying` sai với `SCHEMA`: model trả sai cấu trúc thì bấm lại cũng
- * hỏng như cũ, và mỗi lần bấm là một lượt gọi bị đốt. Ba loại còn lại đều là
- * "hệ thống bận", tức đáng thử lại.
- */
 export function FailedCard({
   draft,
   onRetry,

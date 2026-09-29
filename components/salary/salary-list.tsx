@@ -1,11 +1,7 @@
 import { salaryService } from "@/services/salary";
 import { SalaryBrowser } from "./salary-browser";
 
-/**
- * Phần thân của trang tra cứu lương, dùng chung cho HAI lối vào: trang công khai
- * `/salary` (để Google đọc được) và trang `/dashboard/salary` nằm trong khung
- * điều hướng. `basePath` quyết định link chi tiết trỏ về lối vào nào.
- */
+/** Phần thân trang tra cứu lương, dùng chung cho `/salary` và `/dashboard/salary`. */
 export async function SalaryList({ basePath }: { basePath: string }) {
   const [occupations, positions] = await Promise.all([
     salaryService.occupations(),

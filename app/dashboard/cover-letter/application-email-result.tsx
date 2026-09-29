@@ -23,6 +23,7 @@ import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/ui/section-card";
 
+/** Hiển thị mail ứng tuyển đã viết: tiêu đề, thân mail, chữ ký và nút sao chép. */
 export function ApplicationEmailResult({ record }: { record: DocumentRecord }) {
   const email = parseApplicationEmailContent(record.content);
   const { copied, copy } = useCopy();
@@ -81,8 +82,6 @@ export function ApplicationEmailResult({ record }: { record: DocumentRecord }) {
         </>
       }
     >
-      {/* Tiêu đề tách hẳn khỏi thân mail vì ở mọi trình gửi thư chúng là hai ô
-          khác nhau — gộp chung thì người dùng phải tự cắt ra. */}
       <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
@@ -115,8 +114,6 @@ export function ApplicationEmailResult({ record }: { record: DocumentRecord }) {
             {email.greeting}
           </p>
         )}
-        {/* Khoá kèm chỉ số: model hoàn toàn có thể lặp lại nguyên một đoạn, và
-            hai khoá trùng nhau sẽ khiến React bỏ mất một đoạn. */}
         {[email.paragraphs, [email.attachmentNote, email.closing]]
           .flat()
           .filter((part): part is string => Boolean(part))
@@ -133,8 +130,6 @@ export function ApplicationEmailResult({ record }: { record: DocumentRecord }) {
           <p className="text-sm text-slate-700">{email.signOff}</p>
         )}
 
-        {/* Chữ ký do backend ghép từ hồ sơ, không do model viết — số điện thoại
-            sai ở đây là thứ người nhận sẽ dùng để gọi lại. */}
         <div className="space-y-0.5 text-sm text-slate-700">
           {signature.name && (
             <p className="font-semibold text-slate-900">{signature.name}</p>

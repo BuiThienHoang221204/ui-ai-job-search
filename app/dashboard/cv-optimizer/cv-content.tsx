@@ -13,13 +13,7 @@ import { SectionTitle } from "@/components/ui/section-title";
 const joinParts = (parts: Array<string | null | undefined>): string =>
   parts.filter((part): part is string => Boolean(part)).join(" · ");
 
-/**
- * Vẽ nội dung CV đã phân tích.
- *
- * Mỗi khối tự ẩn khi rỗng: model có thể trả về thiếu bất kỳ phần nào, và một
- * tiêu đề "Học vấn" đứng trên khoảng trắng đọc như dữ liệu bị mất chứ không như
- * dữ liệu chưa có.
- */
+/** Vẽ nội dung CV đã phân tích, mỗi khối tự ẩn khi rỗng. */
 export function CvContentView({ cv }: { cv: CvContent }) {
   return (
     <>

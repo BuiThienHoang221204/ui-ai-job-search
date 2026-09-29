@@ -10,19 +10,12 @@ import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { authService } from "@/services";
 import { safeNextPath } from "@/utils";
 
-/**
- * Khớp với `MinLength(8)` của `RegisterDto` ở backend.
- *
- * Kiểm ở client là để người dùng biết ngay, KHÔNG phải để thay backend kiểm:
- * backend vẫn từ chối độc lập, và phải như vậy vì client nào cũng sửa được.
- */
 const MIN_PASSWORD_LENGTH = 8;
 
+/** Form tạo tài khoản mới, kiểm tra mật khẩu rồi đăng ký và chuyển về `next`. */
 function RegisterForm() {
   const router = useRouter();
   const params = useSearchParams();
-  // Cùng cách chặn như trang đăng nhập: chỉ nhận đường dẫn nội bộ, nếu không
-  // "?next=https://ke-gian.com" biến trang này thành bàn đạp chuyển hướng.
   const next = safeNextPath(params.get("next"), "/dashboard");
 
   const [name, setName] = useState("");
@@ -33,6 +26,7 @@ function RegisterForm() {
   const [duplicate, setDuplicate] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  /** Kiểm tra dữ liệu, gọi API đăng ký và xử lý lỗi trùng email. */
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
@@ -42,8 +36,6 @@ function RegisterForm() {
       setError(`Mật khẩu cần ít nhất ${MIN_PASSWORD_LENGTH} ký tự`);
       return;
     }
-    // Chỉ kiểm ở client: backend không nhận trường này, và cũng không nên nhận -
-    // nó là cách bắt lỗi gõ nhầm, không phải một phần của hồ sơ.
     if (password !== confirm) {
       setError("Hai lần nhập mật khẩu không khớp");
       return;
@@ -51,17 +43,11 @@ function RegisterForm() {
 
     setLoading(true);
     try {
-      // Backend đặt cookie httpOnly ngay trong phản hồi đăng ký, nên không phải
-      // đăng nhập lại sau khi tạo tài khoản.
       await authService.register(email, password, name);
 
       router.replace(next);
-      // refresh() để middleware chạy lại và thấy cookie vừa đặt; thiếu nó thì
-      // router vẫn giữ kết quả điều hướng của phiên chưa đăng nhập.
       router.refresh();
     } catch (err) {
-      // 409 là email đã có người dùng — một kết luận, không phải sự cố. Nó cần
-      // một lối đi tiếp (sang đăng nhập) chứ không chỉ một dòng chữ đỏ.
       if (apiErrorStatus(err) === 409) {
         setDuplicate(true);
       } else {
@@ -190,8 +176,8 @@ function RegisterForm() {
   );
 }
 
+/** Trang đăng ký, bọc form trong Suspense vì dùng useSearchParams. */
 export default function RegisterPage() {
-  // useSearchParams cần Suspense, nếu không cả trang bị ép sang render động.
   return (
     <Suspense>
       <RegisterForm />

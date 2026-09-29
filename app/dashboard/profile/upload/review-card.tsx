@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/ui/section-card";
 import { FieldRow } from "./field-row";
 
+/** Thẻ duyệt các trường AI đề xuất từ CV trước khi áp dụng vào hồ sơ. */
 export function ReviewCard({
   draft,
   rows,

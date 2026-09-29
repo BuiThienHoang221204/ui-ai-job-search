@@ -8,7 +8,7 @@ import {
 } from "@/lib/use-elapsed";
 import { cn } from "@/utils";
 
-/** Đồng hồ cho một tác vụ gọi model — mọi lượt nay đi đường KHÔNG stream nên màn hình im lặng 40-254 giây. `expected` lấy từ số ĐO THẬT trong `ai_calls`, đừng đoán. */
+/** Đồng hồ đếm thời gian cho một tác vụ gọi model, so với thời gian dự kiến. */
 export function ModelElapsed({
   expected,
   className,

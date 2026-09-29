@@ -42,6 +42,7 @@ const DANGER_DURATION = 8_000;
 
 const ToastContext = createContext<ToastApi | null>(null);
 
+/** Lấy API hiện thông báo toast, phải nằm trong `ToastProvider`. */
 export function useToast(): ToastApi {
   const api = useContext(ToastContext);
   if (!api) {
@@ -52,6 +53,7 @@ export function useToast(): ToastApi {
 
 let nextId = 0;
 
+/** Cung cấp và hiển thị hàng đợi thông báo toast, tự ẩn sau một khoảng thời gian. */
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<ToastItem[]>([]);
 
@@ -113,6 +115,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/** Một thông báo toast kèm nút đóng. */
 function ToastCard({
   item,
   onClose,

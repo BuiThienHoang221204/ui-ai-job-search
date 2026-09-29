@@ -38,10 +38,9 @@ const TABS = [
   { value: "mau", label: "Mẫu trình bày" },
 ];
 
-/** Chờ ngần này sau phím cuối rồi mới tải lại bản xem trước. */
 const PREVIEW_DEBOUNCE_MS = 400;
 
-/** Bản đã lưu chuyển thành bản nháp sửa được: `null` thành chuỗi rỗng. */
+/** Chuyển bản đã lưu thành bản nháp sửa được: `null` thành chuỗi rỗng. */
 const toDraft = (raw: unknown): CvContentInput => {
   const cv = parseCvContent(raw);
   return {
@@ -76,19 +75,14 @@ const toDraft = (raw: unknown): CvContentInput => {
   };
 };
 
-/** Bố cục đã lưu, điền mặc định cho phần thiếu. Bản rút gọn của `resolveLayout`. */
+/** Bố cục đã lưu, điền mặc định cho phần thiếu. */
 const toLayout = (raw: CvLayout | null): CvLayout => {
   const order = (raw?.order ?? []).filter((key) => SECTION_KEYS.includes(key));
   const missing = SECTION_KEYS.filter((key) => !order.includes(key));
   return { order: [...order, ...missing], hidden: raw?.hidden ?? [] };
 };
 
-/**
- * Bàn làm việc của một CV: sửa nội dung, chọn mẫu, xem trước, tải PDF.
- *
- * Giữ TOÀN BỘ bản nháp ở đây thay vì để mỗi tab tự giữ: hai tab cùng đổi một tờ
- * giấy, nên chỉ được có một nguồn sự thật và một khung xem trước.
- */
+/** Bàn làm việc của một CV: sửa nội dung, chọn mẫu, xem trước, tải PDF. */
 export function CvStudio({
   record,
   onSaved,
@@ -125,24 +119,8 @@ export function CvStudio({
   );
   const previewKey = `${record.id}|${JSON.stringify(draft)}`;
 
-  /*
-   * Hoãn rồi mới đổi KHOÁ, thay vì hoãn lời gọi.
-   *
-   * Người dùng gõ liên tục nên phải có nhịp hoãn; nhưng hoãn ở tầng khoá thì
-   * phần còn lại là việc của cache: một bản nháp đã dựng rồi hiện lại tức thì,
-   * không tốn request. Đó là chuyện xảy ra thật mỗi lần bấm thử qua lại giữa
-   * hai mẫu, hoặc gõ nhầm rồi xoá đi.
-   */
   const debouncedKey = useDebounce(previewKey, PREVIEW_DEBOUNCE_MS);
 
-  /*
-   * `keepPrevious`: giữ bản vẽ trước trên màn trong lúc bản mới đang dựng. Bản
-   * cũ để `html` về null giữa hai lượt, nên cứ mỗi nhịp ngừng gõ là khung xem
-   * trước chớp thành khung xám rồi mới hiện lại.
-   *
-   * Lượt tải cũ về muộn không đè được lên bản mới: cache khoá theo bản nháp, nên
-   * mỗi phản hồi chỉ rơi đúng vào ô của chính nó.
-   */
   const preview = useApiQuery(
     ["cv-preview", debouncedKey],
     () => documentsService.previewDraft(record.id, draft),
@@ -211,7 +189,6 @@ export function CvStudio({
     >
       {error ? <Alert tone="danger">{error}</Alert> : null}
 
-      {/* Nút "Tải PDF" lấy bản ĐÃ LƯU, nên phải nói rõ khi bản nháp còn khác. */}
       {dirty ? (
         <Alert tone="info">
           Bản xem trước đang hiện thay đổi chưa lưu. Bấm “Lưu thay đổi” trước khi
@@ -239,7 +216,6 @@ export function CvStudio({
               accent={accent}
               onTemplateChange={(id) => {
                 setTemplateId(id);
-                // Bỏ màu đang chọn: mỗi mẫu có màu mặc định riêng.
                 setAccent(undefined);
               }}
               onAccentChange={setAccent}

@@ -9,6 +9,7 @@ import {
 
 type Params = { params: Promise<{ slug: string }> };
 
+/** Sinh metadata SEO theo vị trí lương. */
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const data = await loadSalaryPosition((await params).slug);
   if (!data) return { title: "Không có dữ liệu lương" };
@@ -19,6 +20,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
+/** Trang công khai chi tiết mức lương của một vị trí. */
 export default async function SalaryPositionPage({ params }: Params) {
   const { slug } = await params;
   const data = await loadSalaryPosition(slug);

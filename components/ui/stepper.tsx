@@ -13,6 +13,7 @@ interface StepperProps {
   className?: string;
 }
 
+/** Thanh các bước tiến trình, bấm được để quay lại bước đã qua. */
 export function Stepper({ steps, current, onStepClick, className }: StepperProps) {
   return (
     <ol className={cn("flex items-start w-full", className)}>

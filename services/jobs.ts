@@ -11,17 +11,17 @@ export interface JobMatchState {
 export interface RequirementCheck {
   label: string;
   kind: "SKILL" | "NICE" | "YEARS" | "ELIGIBILITY" | "LOCATION";
-  
   met: boolean | null;
   note?: string;
-  
   via?: string;
 }
 export interface SystemMatch {
-  
   kind: "REQUIREMENTS" | "KEYWORDS";
   met: number;
   total: number;
+  /** Chỉ đếm dòng kỹ năng — số năm, địa điểm không nằm trong đây. */
+  skillMet?: number;
+  skillTotal?: number;
   score: number;
   eligibility: "PASS" | "FAIL" | "UNVERIFIED";
   checks: RequirementCheck[];
@@ -72,11 +72,8 @@ export interface JobListParams {
   salaryMin?: number;
   postedWithin?: number;
   sort?: JobSort;
-  
   scored?: boolean;
-  
   saved?: boolean;
-  
   applied?: boolean;
 }
 export interface FilterOption {
@@ -84,7 +81,7 @@ export interface FilterOption {
   name: string;
   count: number;
 }
-    
+
 export interface OccupationOption extends FilterOption {
   subs?: FilterOption[];
 }
@@ -98,7 +95,6 @@ export interface JobFilters {
 export interface CreateJobInput {
   title: string;
   company: string;
-  
   description: string;
   url?: string;
   source?: string;

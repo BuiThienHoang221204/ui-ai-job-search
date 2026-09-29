@@ -22,12 +22,6 @@ interface InsightListProps {
   items: string[];
 }
 
-/**
- * "Điểm mạnh" và "Khoảng cách" là cùng một khối, khác mỗi màu và biểu tượng.
- *
- * Viết hai lần thì lần sửa sau sẽ chỉ chạm được một bên, và hai danh sách nằm
- * cạnh nhau trên cùng màn hình sẽ lệch nhau thấy rõ.
- */
 export function InsightList({
   tone,
   title,

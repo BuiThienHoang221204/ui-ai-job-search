@@ -2,6 +2,8 @@ import { failureMessage, type AiFailureKind } from "@/lib/failure-message";
 
 export class ModelStreamError extends Error {}
 
+export class ModelServerError extends ModelStreamError {}
+
 export type ModelStreamEvent<T> =
   | { type: "partial"; data: unknown }
   | { type: "done"; result: T }
@@ -16,9 +18,9 @@ export interface StreamModelOptions<P> {
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
 
-/** Đếm từ lần NHẬN CUỐI, không phải từ lúc bắt đầu. Server đập nhịp mỗi 10 giây (`HEARTBEAT_MS` trong `common/ndjson.ts`) nên im quá 40 giây là chết thật — đổi một bên phải đổi bên kia. */
 const IDLE_TIMEOUT_MS = 40_000;
 
+/** Gọi một endpoint stream NDJSON của model, báo từng phần và trả kết quả cuối. */
 export async function streamModel<T, P = unknown>({
   path,
   onPartial,
@@ -58,9 +60,8 @@ export async function streamModel<T, P = unknown>({
     }
     if (event.type === "partial") onPartial(event.data as P);
     else if (event.type === "done") done = event.result;
-    // Có failureKind nghĩa là lỗi AI đã được phân loại; không có là câu server cố ý nói với người dùng.
     else
-      throw new ModelStreamError(
+      throw new ModelServerError(
         event.failureKind ? failureMessage(event.failureKind) : event.message,
       );
   };

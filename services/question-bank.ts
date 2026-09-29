@@ -10,9 +10,7 @@ export interface QuestionSummary {
   type: QuestionType | null;
   typeName: string | null;
   difficulty: string | null;
-  /** `null` = chưa ai mở câu này, đáp án sẽ được sinh ở lần mở đầu tiên. */
   answeredAt: string | null;
-  /** `false` với câu hành vi và động cơ — đáp án phải là trải nghiệm của chính ứng viên. */
   canHaveSampleAnswer: boolean;
 }
 
@@ -21,7 +19,6 @@ export interface QuestionDetail extends QuestionSummary {
   keyPoints: string[];
   answerGuide: string | null;
   sampleAnswer: string | null;
-  /** Đáp án do model sinh và chưa có người rà. Giao diện PHẢI nói rõ điều này. */
   verified: boolean;
 }
 
@@ -48,13 +45,9 @@ export interface QuestionFilters {
   offset?: number;
 }
 
-/**
- * `BACKEND_URL` chứ KHÔNG phải `NEXT_PUBLIC_API_URL` — cùng lý do đã ghi ở
- * `services/salary.ts`: biến public là đường dẫn tương đối, chỉ có nghĩa trong
- * trình duyệt, dùng ở server thì `fetch` ném "Failed to parse URL".
- */
 const API = `${process.env.BACKEND_URL ?? "http://localhost:4000"}/api`;
 
+/** Dựng query string từ bộ lọc, bỏ các giá trị rỗng. */
 function query(filters: QuestionFilters): string {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(filters)) {
@@ -66,7 +59,7 @@ function query(filters: QuestionFilters): string {
   return text ? `?${text}` : "";
 }
 
-/** Gọi từ SERVER COMPONENT. Ba route đọc đều công khai nên không cần cookie. */
+/** Gọi API ngân hàng câu hỏi từ server component, cache 5 phút. */
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${API}${path}`, { next: { revalidate: 300 } });
   if (!res.ok) throw new Error(`Question bank API ${res.status} ${path}`);
@@ -77,7 +70,7 @@ export const questionBankService = {
   facets: (filters: QuestionFilters = {}) =>
     get<QuestionFacets>(`/question-bank/filters${query(filters)}`),
 
-  /** Số đếm phía trình duyệt, gọi lại mỗi lần đổi bộ lọc. */
+  /** Lấy số đếm bộ lọc phía trình duyệt, gọi lại mỗi lần đổi bộ lọc. */
   browseFacets: (filters: QuestionFilters = {}) =>
     api
       .get<QuestionFacets>(`/question-bank/filters${query(filters)}`)
@@ -86,18 +79,13 @@ export const questionBankService = {
   list: (filters: QuestionFilters = {}) =>
     get<QuestionPage>(`/question-bank${query(filters)}`),
 
-  /** Đường ĐỌC phía trình duyệt, dùng khi người dùng đổi bộ lọc. */
+  /** Lấy danh sách câu hỏi phía trình duyệt khi người dùng đổi bộ lọc. */
   browse: (filters: QuestionFilters = {}) =>
     api
       .get<QuestionPage>(`/question-bank${query(filters)}`)
       .then((r) => r.data),
 
-  /**
-   * Lấy câu hỏi kèm đáp án, SINH nếu chưa có.
-   *
-   * Đây là đường duy nhất tốn một lượt gọi model, nên nó cần đăng nhập và có thể
-   * mất vài chục giây ở lần đầu. Lần sau đọc thẳng từ database.
-   */
+  /** Lấy câu hỏi kèm đáp án, sinh bằng model nếu chưa có. */
   answer: (id: string) =>
     api
       .post<QuestionDetail>(`/question-bank/${encodeURIComponent(id)}/answer`)

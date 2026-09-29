@@ -6,18 +6,11 @@ interface EmptyStateProps {
   icon?: PhosphorIcon;
   title: string;
   description?: ReactNode;
-  /** Nút dẫn người dùng tới việc tiếp theo làm được. */
   action?: ReactNode;
   className?: string;
 }
 
-/**
- * "Chưa có gì" là một câu trả lời hợp lệ, không phải một lỗi.
- *
- * Vì vậy khối này không dùng màu cảnh báo, và luôn nói rõ VÌ SAO chưa có gì —
- * một dòng "Không có dữ liệu" để người dùng tự đoán là cách chắc chắn nhất
- * khiến họ nghĩ hệ thống hỏng.
- */
+/** Khối "chưa có gì" kèm lý do, không dùng màu cảnh báo. */
 export function EmptyState({
   icon: Icon,
   title,

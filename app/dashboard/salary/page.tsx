@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Tra cứu lương",
 };
 
+/** Trang tra cứu mức lương trong dashboard. */
 export default async function DashboardSalaryPage() {
   const count = await salaryPositionCount();
 

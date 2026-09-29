@@ -6,6 +6,7 @@ import { formatSalaryInput } from "@/utils";
 import { SectionCard } from "@/components/ui/section-card";
 import type { ProfileSectionProps } from "../profile-draft";
 
+/** Khối hồ sơ về điều kiện làm việc mong muốn. */
 export function ConditionsSection({ draft, update }: ProfileSectionProps) {
   return (
     <SectionCard

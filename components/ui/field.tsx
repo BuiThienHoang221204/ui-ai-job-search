@@ -34,6 +34,7 @@ export function FieldShell({
   );
 }
 
+/** Ô nhập một dòng có nhãn. */
 export function TextField({
   id,
   label,
@@ -54,6 +55,7 @@ export function TextField({
   );
 }
 
+/** Ô nhập nhiều dòng có nhãn. */
 export function AreaField({
   id,
   label,
@@ -108,6 +110,7 @@ export function ListField({
   );
 }
 
+/** Ô nhập nội dung JSON có nhãn. */
 export function JsonField({
   id,
   label,
@@ -117,7 +120,6 @@ export function JsonField({
   icon,
   rows = 8,
 }: FieldProps & { icon: ReactNode; rows?: number }) {
-  // Báo JSON sai ngay lúc gõ, chứ không đợi tới lúc bấm Lưu mới nói.
   const invalid = value.trim().length > 0 && !isJsonText(value);
   return (
     <div>

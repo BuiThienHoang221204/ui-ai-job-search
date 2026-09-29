@@ -8,10 +8,6 @@ import { cn, fold } from "@/utils";
 export interface SelectMenuOption<T extends string | number> {
   value: T;
   label: string;
-  /*
-    Dòng phụ mờ hơn dưới nhãn - tên công ty, mã tỉnh, thứ gì đó phân biệt hai
-    lựa chọn trùng tên. Cũng được tính vào khi gõ tìm.
-  */
   hint?: string;
 }
 
@@ -19,36 +15,17 @@ interface SelectMenuProps<T extends string | number> {
   value: T;
   options: SelectMenuOption<T>[];
   onChange: (next: T) => void;
-  /*
-    Chữ hiện trên nút khi chưa có lựa chọn nào khớp. Ở dáng `chip` nó còn là
-    nhãn cố định của bộ lọc.
-  */
   label: string;
   icon?: PhosphorIcon;
   disabled?: boolean;
   align?: "left" | "right";
   className?: string;
-  /*
-    `chip` là nút lọc tròn trên trang việc làm: đổi màu khi khác mặc định.
-    `field` là ô nhập trong biểu mẫu: rộng hết khung, luôn một màu viền.
-  */
   variant?: "chip" | "field";
-  /** Đặt chuỗi này thì hiện ô gõ tìm ở đầu danh sách. */
   searchPlaceholder?: string;
-  /** Trỏ từ `<label htmlFor>` sang nút mở, cho ô nhập trong biểu mẫu. */
   id?: string;
 }
 
-/**
- * Danh sách chọn một, tự dựng thay cho `<select>` gốc.
- *
- * Lý do không dùng `<select>`: trình duyệt vẽ danh sách bung ra bằng widget của
- * hệ điều hành, nên nó KHÔNG nhận CSS của trang - không bo góc, không theo chủ
- * đề tối, không xuống được hai dòng để kèm tên công ty, và không nhét được ô gõ
- * tìm. Với danh sách vài chục việc làm thì ba thứ đó đều cần.
- *
- * Đổi lại phải tự lo bàn phím và việc đóng khi bấm ra ngoài - phần bên dưới.
- */
+/** Danh sách chọn một tự dựng thay cho `<select>` gốc, có ô tìm và điều khiển bàn phím. */
 export function SelectMenu<T extends string | number>({
   value,
   options,
@@ -102,14 +79,7 @@ export function SelectMenu<T extends string | number>({
       ?.scrollIntoView({ block: "nearest" });
   }, [cursor, open]);
 
-  /*
-    Đặt lại ngay lúc mở chứ không để trong `useEffect`: gọi `setState` trong
-    effect sẽ sinh thêm một vòng vẽ sau khi danh sách đã hiện, nên con trỏ chớp
-    từ dòng đầu sang dòng đang chọn - vừa thấy được vừa bị eslint chặn.
-
-    Xoá chữ đã gõ và đặt con trỏ lên đúng dòng đang chọn, để bấm mở rồi gõ mũi
-    tên là đi tiếp từ chỗ hiện tại chứ không nhảy về đầu danh sách.
-  */
+  /** Mở danh sách, xoá chữ đã gõ và đặt con trỏ lên dòng đang chọn. */
   const openMenu = () => {
     setQuery("");
     const at = options.findIndex((option) => option.value === value);

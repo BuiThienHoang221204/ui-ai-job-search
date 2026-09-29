@@ -21,6 +21,7 @@ interface CvPickerProps {
   loading?: boolean;
 }
 
+/** Modal chọn CV để nộp: CV đã upload hoặc tạo CV mới theo vị trí. */
 export function CvPicker({
   open,
   onClose,

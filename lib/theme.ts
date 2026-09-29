@@ -9,9 +9,11 @@ export type ThemeId = (typeof THEMES)[number]["id"];
 export const DEFAULT_THEME: ThemeId = "system";
 export const THEME_KEY = "aijob:theme";
 
+/** Giá trị có phải một id giao diện hợp lệ hay không. */
 export const isThemeId = (value: unknown): value is ThemeId =>
   THEMES.some((theme) => theme.id === value);
 
+/** Đọc giao diện đã lưu trong localStorage. */
 export function readTheme(): ThemeId {
   if (typeof window === "undefined") return DEFAULT_THEME;
   try {
@@ -24,12 +26,13 @@ export function readTheme(): ThemeId {
 
 const listeners = new Set<() => void>();
 
+/** Đăng ký lắng nghe thay đổi giao diện, trả về hàm huỷ đăng ký. */
 export function subscribeTheme(listener: () => void): () => void {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
 
-/** `system` không phải một bảng màu — nó là "hỏi hệ điều hành". */
+/** Quy `system` về sáng hoặc tối theo cài đặt của hệ điều hành. */
 export function resolveTheme(id: ThemeId): "light" | "dark" {
   if (id !== "system") return id;
   if (typeof window === "undefined") return "light";
@@ -38,6 +41,7 @@ export function resolveTheme(id: ThemeId): "light" | "dark" {
     : "light";
 }
 
+/** Gắn class và color-scheme của giao diện lên thẻ html. */
 export function paintTheme(id: ThemeId): void {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
@@ -45,28 +49,18 @@ export function paintTheme(id: ThemeId): void {
   root.style.colorScheme = resolveTheme(id);
 }
 
+/** Áp dụng giao diện, lưu lại và báo cho người nghe. */
 export function applyTheme(id: ThemeId): void {
   paintTheme(id);
   try {
     window.localStorage.setItem(THEME_KEY, id);
-  } catch {
-    /* chế độ riêng tư chặn ghi: màu vẫn đổi, chỉ không nhớ được. */
-  }
+  } catch {}
   for (const listener of listeners) listener();
 }
 
+/** Ảnh chụp cho `useSyncExternalStore`; trên máy chủ luôn là mặc định. */
 export const serverTheme = (): ThemeId => DEFAULT_THEME;
 
-/**
- * Đặt chủ đề TRƯỚC khi trang vẽ lần đầu.
- *
- * Không làm bằng React: `useEffect` chạy sau lần vẽ đầu, nên người chọn chế độ
- * tối sẽ thấy một chớp trắng mỗi lần tải trang - khó chịu hơn hẳn so với chớp
- * cỡ chữ, vì nó chói mắt trong phòng tối.
- *
- * Đoạn này cũng đăng ký nghe `prefers-color-scheme`: ở chế độ "Tự động", đổi
- * chủ đề của hệ điều hành phải đổi theo ngay mà không cần tải lại trang.
- */
 export const THEME_BOOTSTRAP = `
 (function(){
   try {

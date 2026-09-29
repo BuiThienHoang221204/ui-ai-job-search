@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Ngân hàng câu hỏi",
 };
 
+/** Trang ngân hàng câu hỏi: tải bộ lọc và trang đầu ở server. */
 export default async function QuestionBankPage() {
   const [facets, initial] = await Promise.all([
     questionBankService.facets(),

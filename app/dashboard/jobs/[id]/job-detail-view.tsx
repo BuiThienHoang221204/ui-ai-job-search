@@ -17,17 +17,19 @@ import { toJobCard } from "@/lib/adapters";
 import { Alert } from "@/components/ui/alert";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
-import { CompanyBriefPanel } from "./company-brief-panel";
+import { CompanyBriefPanel } from "./company-brief/company-brief-panel";
 import { JobDescriptionCard } from "./job-description-card";
 import { JobDetailHeader } from "./job-detail-header";
-import { InsightList } from "./match-insights";
-import { MatchPanel } from "./match-panel";
+import { InsightList } from "./match/match-insights";
+import { MatchPanel } from "./match/match-panel";
 import { SalaryGuidePanel } from "./salary-guide-panel";
 import {
+  MatchServerError,
   MatchStreamError,
   streamMatchEvaluation,
   type PartialEvaluation,
 } from "@/lib/match-stream";
+
 const SCORE_POLL_MS = 2_500;
 const APPLY_TOAST_DURATION = 60_000;
 const SCORE_TIMEOUT_MS = 180_000;
@@ -120,7 +122,13 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
           return;
         }
         try {
-          await scoreByQueue(force);
+          // Server đã báo lỗi AI thì bản ghi đã là FAILED: chỉ đọc lại, xếp hàng nữa là chạy lại nguyên chuỗi model.
+          if (err instanceof MatchServerError) {
+            const next = await matchesService.get(jobId);
+            if (next) applyMatch(next as JobMatchDetail);
+          } else {
+            await scoreByQueue(force);
+          }
         } catch (fallbackError) {
           if (apiErrorStatus(fallbackError) === 401)
             router.replace(`/login?next=/dashboard/jobs/${jobId}`);

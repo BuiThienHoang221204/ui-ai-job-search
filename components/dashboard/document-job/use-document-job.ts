@@ -15,29 +15,14 @@ import {
 } from "@/services";
 import { failureMessage } from "@/lib/failure-message";
 
-/**
- * 4 giây: đủ thưa để không nện backend suốt hai phút, đủ dày để người dùng
- * không có cảm giác màn hình đã đứng hình.
- */
 const POLL_INTERVAL_MS = 2000;
 
-/**
- * 40 lần × 4 giây ≈ 2 phút 40 giây. Worker mất 30-90 giây khi mọi thứ bình
- * thường; vượt xa mốc này thì gần như chắc chắn là hàng đợi kẹt chứ không phải
- * model đang viết chậm, và hỏi thêm nữa cũng không đổi được gì.
- */
 const MAX_POLLS = 80;
 
-/**
- * Một LƯỢT theo dõi. Định danh của nó là chính object này, không phải nội dung:
- * bấm lại đúng tài liệu đang xem cũng là một lượt mới (nó có thể vừa đổi trạng
- * thái ở phía worker), nên `open` luôn tạo object mới thay vì so sánh id.
- */
 type Watch =
   | { kind: "starting" }
   | { kind: "watching"; documentId: string };
 
-/** Những gì đọc được, có ĐÓNG DẤU lượt mà chúng thuộc về. */
 interface Progress {
   of: Watch | null;
   document: DocumentRecord | null;
@@ -54,30 +39,12 @@ const NOTHING: Progress = {
   partial: null,
 };
 
-/**
- * Bám theo một tài liệu chạy nền: gọi đường GHI, nhận `documentId`, rồi hỏi
- * lại đường ĐỌC cho tới khi bản ghi rời khỏi PENDING/RUNNING.
- *
- * `phase` KHÔNG được lưu, nó được **suy ra** từ lượt đang chạy và bản ghi đọc
- * được. Trước đây nó là state riêng, và mỗi lần bắt đầu một lượt phải tự đặt lại
- * `phase = "generating"` cùng `error = null` ngay trong thân effect — tức là
- * `phase` có thể nói khác với `document.status`, và đã có đúng một đường để nó
- * nói sai: `recheck()` trên một tài liệu FAILED chỉ tăng số lượt mà không đặt lại
- * `phase`. Suy ra thì không còn hai nguồn để lệch nhau.
- *
- * `Progress` mang theo dấu của lượt sinh ra nó, nên dữ liệu của lượt trước không
- * bao giờ hiện dưới lượt sau. Đó cũng là cách `useAsyncData` làm.
- *
- * `loginNext` là đường dẫn để quay lại sau khi đăng nhập — cookie hết hạn giữa
- * lúc đang chờ 90 giây là chuyện hoàn toàn có thật.
- */
+/** Bám theo một tài liệu chạy nền: gọi đường ghi rồi hỏi lại đường đọc tới khi xong. */
 export function useDocumentJob(loginNext: string): DocumentJob {
   const router = useRouter();
   const [watch, setWatch] = useState<Watch | null>(null);
   const [progress, setProgress] = useState<Progress>(NOTHING);
 
-  // `start` chạy ngoài useEffect nên không có hàm dọn dẹp nào chặn nó; cờ này
-  // là chỗ duy nhất để nó biết component đã tháo mà thôi ghi state.
   const queryClient = useQueryClient();
   const mounted = useRef(true);
   useEffect(() => {
@@ -104,9 +71,6 @@ export function useDocumentJob(loginNext: string): DocumentJob {
 
         if (record.status === "DONE") {
           setProgress({ ...NOTHING, of: watch, document: record });
-          // Kho tài liệu vừa có thêm một dòng. Màn hình đang mở đã tự ghép bản
-          // ghi này vào danh sách, nhưng bản trong cache thì chưa - rời đi rồi
-          // quay lại trong 30 giây sẽ thấy nó biến mất.
           invalidateAfter(queryClient, "createDocument");
           return;
         }
@@ -115,7 +79,6 @@ export function useDocumentJob(loginNext: string): DocumentJob {
             ...NOTHING,
             of: watch,
             document: record,
-            // Lỗi thô (tên model, gateway) chỉ còn trong log và trang admin; người dùng nhận câu theo loại lỗi.
             error: failureMessage(record.failureKind),
           });
           return;
@@ -133,8 +96,6 @@ export function useDocumentJob(loginNext: string): DocumentJob {
         }
 
         setProgress({ ...NOTHING, of: watch, document: record });
-        // Hẹn giờ theo chuỗi chứ không dùng setInterval: nếu một lần đọc chậm
-        // hơn 4 giây, setInterval sẽ chồng nhiều request lên nhau.
         timer = setTimeout(() => {
           void read();
         }, POLL_INTERVAL_MS);
@@ -154,9 +115,6 @@ export function useDocumentJob(loginNext: string): DocumentJob {
 
     void read();
 
-    // Rời trang giữa chừng thì hẹn giờ đang chờ phải bị huỷ, nếu không nó vẫn
-    // gọi API rồi ghi state lên một component đã tháo — và vòng hỏi cứ thế
-    // chạy tiếp suốt gần ba phút sau lưng người dùng.
     return () => {
       cancelled = true;
       if (timer) clearTimeout(timer);
@@ -165,7 +123,6 @@ export function useDocumentJob(loginNext: string): DocumentJob {
 
   const start = useCallback(
     (create: () => Promise<QueuedDocument>) => {
-      // Giữ đúng object này để đóng dấu lỗi vào chính lượt vừa mở.
       const opened: Watch = { kind: "starting" };
       setWatch(opened);
 
@@ -237,7 +194,6 @@ export function useDocumentJob(loginNext: string): DocumentJob {
   }, []);
 
   const recheck = useCallback(() => {
-    // Object MỚI cho cùng một documentId: đó là cách nói "đọc lại lượt này".
     setWatch((now) =>
       now?.kind === "watching" ? { ...now } : now,
     );

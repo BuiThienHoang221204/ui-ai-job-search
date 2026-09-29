@@ -61,19 +61,6 @@ export function ProfileView() {
   const profile = data?.profile ?? null;
   const cv = data?.cv ?? null;
 
-  /*
-   * Gieo bản nháp sửa được từ hồ sơ máy chủ, NGAY TRONG LÚC RENDER.
-   *
-   * Đây là mẫu React khuyến nghị cho "state phải đặt lại khi dữ liệu đổi", và
-   * nó thay cho một `useEffect` gọi `setDraft` — thứ eslint của dự án đã chặn
-   * một lần (`react-hooks/set-state-in-effect`) vì nó tốn thêm một vòng render
-   * và dễ thành vòng lặp.
-   *
-   * Điều kiện so theo THAM CHIẾU của bản ghi, nên nó chỉ chạy khi máy chủ trả
-   * về một bản mới: lần tải đầu, và ngay sau khi lưu. Một lượt nạp lại nền cũng
-   * tạo tham chiếu mới, và đó là lý do phải có `!dirty` - nếu không, người dùng
-   * đang gõ dở mà cache nạp lại là mất sạch những gì họ vừa nhập.
-   */
   const baselineOfDraft = useMemo(
     () => (draftOf ? toDraft(draftOf) : null),
     [draftOf],
@@ -111,12 +98,6 @@ export function ProfileView() {
     setSaving(true);
     try {
       const updated = await profileService.update(changes);
-      // Lấy nguyên bản backend trả về: `completion` được tính lại ở đó, tự dựng
-      // lại con số ở client sẽ lệch ngay khi công thức chấm đổi.
-      //
-      // Ghi vào cache chứ không giữ bản sao riêng, và gieo lại bản nháp NGAY tại
-      // đây: `dirty` vẫn còn true ở vòng render kế nên nhánh gieo lúc render sẽ
-      // không tự chạy.
       queryClient.setQueryData(keys.profile(), (current: ProfileData | undefined) =>
         current ? { ...current, profile: updated } : current,
       );
@@ -125,7 +106,6 @@ export function ProfileView() {
       toast.success(
         "Đã lưu hồ sơ. Mức hoàn thiện được tính lại theo dữ liệu mới.",
       );
-      // Ô "mức độ hoàn thiện hồ sơ" trên Tổng quan tính lại sau mỗi lần lưu.
       invalidateAfter(queryClient, "saveProfile");
     } catch (err) {
       toast.danger(apiErrorMessage(err, "Không lưu được hồ sơ"));
@@ -162,8 +142,6 @@ export function ProfileView() {
                 CV gần nhất: {cv.filename}
               </a>
             )}
-            {/* Lối vào Agent 1. Đặt cạnh nút Lưu vì đây là hai cách điền cùng một
-                hồ sơ: gõ tay, hoặc để AI đọc CV rồi tự chọn nhận phần nào. */}
             <Link href="/dashboard/profile/upload">
               <Button variant="outline">
                 <Upload className="size-4.5" />

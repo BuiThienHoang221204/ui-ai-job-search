@@ -1,19 +1,5 @@
 import type { ProfileProposal, ProfileRecord } from "@/services";
 
-/**
- * Biến một đề xuất của AI thành các dòng SO SÁNH ĐƯỢC với hồ sơ hiện tại.
- *
- * Vì sao cần lớp này: màn xác nhận phải trả lời được đúng một câu cho từng trường
- * — "nhận cái này thì tôi mất gì?". Không đặt cạnh giá trị đang có thì người dùng
- * tích bừa cho xong, và bước xác nhận trở thành hình thức, tức là mất luôn thứ
- * `ProfileDraft` được dựng ra để bảo vệ.
- *
- * Ba dạng dữ liệu, hiện theo ba cách khác nhau, nên `kind` phải có:
- * - `text`: một chuỗi (headline, summary…)
- * - `list`: mảng chuỗi (kỹ năng, ngôn ngữ…)
- * - `items`: mảng object (kinh nghiệm, học vấn…)
- */
-
 export type FieldKind = "text" | "list" | "items";
 export const APPLICABLE_FIELDS = [
   "headline",
@@ -78,13 +64,16 @@ export interface ProposalRow {
 
 const SEP = String.fromCharCode(0);
 
+/** Hai danh sách dòng có cùng nội dung hay không, bỏ qua thứ tự. */
 const sameLines = (a: string[], b: string[]): boolean =>
   a.length === b.length &&
   [...a].sort().join(SEP) === [...b].sort().join(SEP);
 
+/** Chuỗi không rỗng thành mảng một dòng, còn lại thành mảng rỗng. */
 const text = (value: unknown): string[] =>
   typeof value === "string" && value.trim().length > 0 ? [value.trim()] : [];
 
+/** Lọc ra các chuỗi không rỗng từ một mảng bất kỳ. */
 const list = (value: unknown): string[] =>
   Array.isArray(value)
     ? value.filter((item): item is string => typeof item === "string" && item.length > 0)
@@ -99,11 +88,11 @@ const ITEM_PARTS = {
 
 type ItemField = keyof typeof ITEM_PARTS;
 
+/** Trường có phải loại danh sách mục (kinh nghiệm, học vấn...) hay không. */
 const isItemField = (field: ApplicableField): field is ItemField =>
   field in ITEM_PARTS;
 
-/// Rút một phần của mục thành chuỗi. Mảng thì ghép bằng dấu phẩy, còn lại phải là
-/// chuỗi — số và object bị bỏ thay vì in ra "[object Object]".
+/** Rút một phần của mục thành chuỗi; mảng ghép bằng dấu phẩy, kiểu khác bị bỏ. */
 const part = (value: unknown): string => {
   if (Array.isArray(value)) {
     return value
@@ -113,13 +102,7 @@ const part = (value: unknown): string => {
   return typeof value === "string" ? value.trim() : "";
 };
 
-/**
- * Rút một mảng mục (đề xuất HAY hồ sơ) thành các dòng chữ.
- *
- * Không ép kiểu: mỗi phần tử được kiểm riêng, hỏng thì bỏ đúng phần tử đó. Cùng kỷ
- * luật với `lib/document-content.ts`, và có lý do cụ thể — loại lỗi "khai một trường
- * mà dữ liệu không có" đã xảy ra ba lần ở repo này.
- */
+/** Rút một mảng mục (đề xuất hay hồ sơ) thành các dòng chữ, bỏ phần tử hỏng. */
 function itemLines(field: ItemField, value: unknown): string[] {
   if (!Array.isArray(value)) return [];
 
@@ -179,6 +162,7 @@ export function currentLines(
   }
 }
 
+/** Dựng các hàng so sánh đề xuất với hồ sơ hiện tại cho màn xác nhận. */
 export function proposalRows(
   proposal: ProfileProposal,
   profile: ProfileRecord | null,
@@ -203,17 +187,7 @@ export function proposalRows(
   });
 }
 
-/**
- * Những trường được tích SẴN khi mở màn xác nhận.
- *
- * Chỉ tích sẵn các trường **model có dữ liệu**, **hồ sơ đang trống**, và **giá trị
- * thật sự khác**. Ba điều kiện, ba lý do:
- *
- * - Trường sẽ ghi đè thì để người dùng tự tích: tích sẵn một ô ghi đè lên dữ liệu
- *   họ đã gõ tay là biến "đồng ý" thành "không kịp phản đối".
- * - Trường trùng khít cũng không tích: ghi lại đúng giá trị đang có chỉ làm con số
- *   "đã chọn N trường" phồng lên mà không đổi gì trong hồ sơ.
- */
+/** Những trường được tích sẵn khi mở màn xác nhận. */
 export function defaultSelection(rows: ProposalRow[]): ApplicableField[] {
   return rows
     .filter((row) => !row.isEmpty && !row.overwrites && !row.unchanged)

@@ -2,18 +2,7 @@ type BrandLogoProps = {
   className?: string;
 };
 
-/**
- * Logo Careelot: hình sao và chữ nằm trong CÙNG một `svg`.
- *
- * Chữ đã được chuyển thành đường vẽ nên không phụ thuộc font đã tải xong hay
- * chưa - dùng `<text>` thì lần tải đầu sẽ nháy sang font dự phòng.
- *
- * Hai thứ KHÔNG được đổi thành màu cứng:
- * - `fill-primary-600` và `fill-slate-900` để logo theo được chế độ tối, nơi cả
- *   tím lẫn màu chữ đều đổi giá trị.
- * - `data-sidebar-label` trên nhóm chữ để nó mờ dần khi thu gọn thanh bên,
- *   giống hệt các nhãn menu bên dưới.
- */
+/** Logo Careelot dạng SVG (hình sao và chữ), màu theo chủ đề, chữ mờ khi thu gọn sidebar. */
 export function BrandLogo({ className }: BrandLogoProps) {
   return (
     <svg

@@ -20,16 +20,9 @@ import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { ApplicationEmailResult } from "./application-email-result";
 import { ApplicationEmailSourceCard } from "./application-email-source-card";
 
-/** Số tài liệu hiện một lúc trong kho; phần còn lại lật bằng phân trang. */
 const DOCUMENT_PAGE_SIZE = 10;
 
-/**
- * Mail ứng tuyển: chọn nguồn tin, chờ AI viết, đọc kết quả, mở lại bản cũ.
- *
- * Cùng vòng đời với thư xin việc nên dùng lại nguyên bộ khối chung; khác duy
- * nhất ở chỗ nguồn tin có thể là một JD dán tay, và kết quả là một lá mail có
- * tiêu đề chứ không phải một tài liệu để in ra PDF.
- */
+/** Panel mail ứng tuyển: chọn nguồn tin, chờ AI viết, đọc kết quả và mở lại bản cũ. */
 export function ApplicationEmailPanel({
   matches,
   fixedJobId,
@@ -52,22 +45,12 @@ export function ApplicationEmailPanel({
     { errorMessage: "Không tải được kho mail ứng tuyển", keepPrevious: true },
   );
 
-  /**
-   * Bản ghi đang bám theo cũng là một dòng trong lịch sử, và ở đây nó được suy
-   * ra lúc render chứ không được ghi vào state bằng một effect — hai nơi giữ
-   * cùng một bản ghi thì sớm muộn cũng lệch nhau.
-   */
   const documents: DocumentRecord[] | null = useMemo(() => {
     const list = page.data?.items ?? null;
     if (!list) return null;
     return job.document ? upsertDocument(list, job.document) : list;
   }, [page.data, job.document]);
 
-  /**
-   * Nguồn tin của lượt vừa bấm, giữ lại để nút "Thử lại" ở khối trạng thái gửi
-   * đúng JD đó lần nữa. Không giữ thì lần thử lại chỉ đọc lại một bản ghi đã
-   * FAILED, tức là một cái nút không làm gì cả.
-   */
   const [lastInput, setLastInput] = useState<ApplicationEmailInput | null>(
     null,
   );
@@ -122,6 +105,7 @@ export function ApplicationEmailPanel({
   );
 }
 
+/** Khung xám giữ bố cục panel mail trong lúc tải. */
 function EmailPanelSkeleton() {
   return (
     <SkeletonPage>

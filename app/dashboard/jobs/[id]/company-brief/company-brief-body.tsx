@@ -6,6 +6,7 @@ import { VERDICT_LABELS } from "@/lib/company-brief";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 
+/** Điểm đánh giá, số lượt đánh giá và kết luận về công ty. */
 export function Signals({ brief }: { brief: CompanyBriefRecord }) {
   const verdict = VERDICT_LABELS[brief.verdict];
 
@@ -26,6 +27,7 @@ export function Signals({ brief }: { brief: CompanyBriefRecord }) {
   );
 }
 
+/** Nội dung bản tìm hiểu công ty: tóm tắt, điểm mạnh, điểm yếu và nguồn. */
 export function BriefBody({
   brief,
   stale,
@@ -69,6 +71,7 @@ export function BriefBody({
   );
 }
 
+/** Danh sách điểm tốt hoặc xấu kèm biểu tượng tương ứng. */
 function PointList({ items, tone }: { items: string[]; tone: "good" | "bad" }) {
   if (items.length === 0) return null;
   const Icon = tone === "good" ? Check : X;
@@ -91,7 +94,7 @@ function PointList({ items, tone }: { items: string[]; tone: "good" | "bad" }) {
   );
 }
 
-/** Tên miền, đủ để nhận ra nguồn mà không phải đọc cả URL dài. */
+/** Tên miền của nguồn, đủ để nhận ra mà không phải đọc cả URL dài. */
 function labelOf(source: BriefSource): string {
   try {
     return new URL(source.url).hostname.replace(/^www\./, "");
@@ -100,14 +103,7 @@ function labelOf(source: BriefSource): string {
   }
 }
 
-/**
- * Nguồn là phần bắt buộc, không phải trang trí — nó thay thế đúng danh sách
- * link mà người dùng vốn phải tự đi Google để có.
- *
- * Nguồn ĐÃ KIỂM mà không rút ra được gì vẫn hiện: nếu giấu đi thì khi kết luận
- * là "không có đánh giá", thẻ này thành ngõ cụt và người dùng lại phải tra tay
- * đúng những chỗ vừa tra.
- */
+/** Danh sách nguồn đã kiểm, kể cả nguồn không rút ra được gì. */
 function SourceList({ brief }: { brief: CompanyBriefRecord }) {
   const used = brief.sources.filter((s) => s.usedFor !== null);
   const checked = brief.sources.filter((s) => s.usedFor === null);

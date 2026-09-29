@@ -12,16 +12,7 @@ import { Button } from "@/components/ui/button";
 import { SectionTitle } from "@/components/ui/section-title";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * Phần đáp án của một câu hỏi, sinh LƯỜI.
- *
- * Câu chưa ai mở thì chưa có gì trong database, và bấm nút mới gọi model. Lần
- * đầu mất vài chục giây; sinh xong thì lưu vĩnh viễn nên mọi người sau đọc ngay.
- *
- * Với câu HANH_VI và DONG_CO, `canHaveSampleAnswer` là `false` và giao diện
- * KHÔNG hiện ô đáp án mẫu — chỉ hiện khung để ứng viên tự kể trải nghiệm của
- * chính họ. Đây là cùng một quy tắc mà `sampleAnswer` ở backend đang ép.
- */
+/** Phần đáp án của một câu hỏi, chỉ gọi model sinh khi người dùng bấm. */
 export function QuestionAnswer({ question }: { question: QuestionSummary }) {
   const [detail, setDetail] = useState<QuestionDetail | null>(null);
   const [loading, setLoading] = useState(false);

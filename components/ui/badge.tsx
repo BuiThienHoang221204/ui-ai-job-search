@@ -35,6 +35,7 @@ const dotColors: Record<BadgeVariant, string> = {
   outline: "bg-slate-400",
 };
 
+/** Huy hiệu nhỏ theo biến thể màu. */
 export function Badge({ className, variant = "neutral", dot = false, children, ...props }: BadgeProps) {
   return (
     <span

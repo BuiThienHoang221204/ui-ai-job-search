@@ -1,7 +1,6 @@
 import { Check, CircleNotch } from "@phosphor-icons/react/ssr";
 import { ModelElapsed } from "@/components/dashboard/model-elapsed";
 
-/** Đo trên `ai_calls`: `company.brief` khoảng 25 giây, chưa kể các lượt tải trang nguồn trước đó. */
 const EXPECTED_SECONDS = 35;
 
 export interface PartialBrief {
@@ -19,6 +18,7 @@ const ROWS = [
   { label: "Điểm hạn chế", of: (p: PartialBrief) => p.cons?.length },
 ] as const;
 
+/** Tiến độ trực tiếp trong lúc AI đang tìm hiểu công ty. */
 export function BriefLiveProgress({ partial }: { partial: PartialBrief | null }) {
   if (!partial) {
     return (

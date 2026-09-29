@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FailedCard, RunningCard, UploadCard } from "./upload-cards";
 import { ReviewCard } from "./review-card";
-import { useCvUpload } from "./use-cv-upload";
+import { useCvUpload } from "@/hooks/use-cv-upload";
 
+/** Màn tải CV: hiện thẻ theo từng giai đoạn tải, chạy, duyệt hoặc lỗi. */
 export function UploadCvView() {
   const {
     draft,

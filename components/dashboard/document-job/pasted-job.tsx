@@ -3,7 +3,6 @@
 import { useDraftState } from "@/hooks/use-draft-state";
 import { Input, Label, Textarea } from "@/components/ui/form";
 
-/** Sàn của backend cho JD dán tay. Giữ khớp `CreateCvDto`/`CreateApplicationEmailDto`. */
 export const MIN_JD_LENGTH = 50;
 
 export interface PastedJob {
@@ -14,9 +13,7 @@ export interface PastedJob {
 
 export interface PastedJobState {
   ready: boolean;
-  /** Đã `trim`, sẵn sàng gửi đi. */
   value: PastedJob;
-  /** Điền cả ba ô cùng lúc — dùng khi bóc được nội dung từ một đường dẫn. */
   fill: (next: PastedJob) => void;
   raw: {
     jobDescription: string;
@@ -28,12 +25,7 @@ export interface PastedJobState {
   };
 }
 
-/**
- * Ba ô của một tin dán tay, giữ được qua việc đổi tab và tải lại trang.
- *
- * `prefix` phải khác nhau giữa các màn: hai màn dùng chung một khoá thì JD đang
- * soạn dở ở màn này hiện sang màn kia.
- */
+/** Giữ ba ô của một tin dán tay, lưu được qua việc đổi tab và tải lại trang. */
 export function usePastedJob(prefix: string): PastedJobState {
   const [jobDescription, setJobDescription] = useDraftState(`${prefix}-jd`);
   const [company, setCompany] = useDraftState(`${prefix}-company`);
@@ -67,14 +59,7 @@ export function usePastedJob(prefix: string): PastedJobState {
   };
 }
 
-/**
- * Phần hiển thị của `usePastedJob`.
- *
- * Tên công ty và vị trí do NGƯỜI DÙNG gõ chứ không để model đọc ra từ JD: chúng
- * đi thẳng vào tiêu đề mail và lời chào, mà đọc sai tên công ty ở đó thì tài
- * liệu hỏng theo cách khó chịu nhất. Đường dán link có bóc sẵn thì cũng chỉ
- * điền vào ba ô này để người dùng soát lại, không gửi thẳng đi.
- */
+/** Phần hiển thị của `usePastedJob`: tên công ty, vị trí và nội dung JD do người dùng nhập. */
 export function PastedJobFields({
   idPrefix,
   state,
@@ -86,7 +71,6 @@ export function PastedJobFields({
   state: PastedJobState;
   disabled: boolean;
   rows?: number;
-  /** Dòng chữ hiện khi JD đã đủ dài. */
   readyHint: string;
 }) {
   const { raw, value } = state;

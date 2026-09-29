@@ -22,12 +22,7 @@ export function isJsonText(text: string): boolean {
   }
 }
 
-/**
- * Bỏ dấu tiếng Việt và hạ chữ thường, để gõ không dấu vẫn tìm ra.
- *
- * Đổi `đ` trước rồi mới tách dấu: `đ` là một ký tự riêng chứ không phải `d` ghép
- * thêm dấu, nên NFD không tách nó ra được.
- */
+/** Bỏ dấu tiếng Việt và hạ chữ thường, để gõ không dấu vẫn tìm ra. */
 export const fold = (value: string): string =>
   value
     .toLowerCase()

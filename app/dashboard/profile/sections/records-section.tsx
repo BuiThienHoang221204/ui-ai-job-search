@@ -51,6 +51,7 @@ const TRAITS_PLACEHOLDER = `{
   "teamPreference": "Nhóm nhỏ dưới 8 người"
 }`;
 
+/** Khối hồ sơ về kinh nghiệm, dự án, học vấn và chứng chỉ. */
 export function RecordsSection({ draft, update }: ProfileSectionProps) {
   return (
     <SectionCard
@@ -58,9 +59,6 @@ export function RecordsSection({ draft, update }: ProfileSectionProps) {
       title="Kinh nghiệm, dự án & học vấn"
       description="Các khối này được lưu nguyên dạng JSON và đưa thẳng vào phần chấm điểm cùng mọi tài liệu AI viết ra, nên cấu trúc do bạn tự đặt miễn là JSON hợp lệ"
     >
-      {/* Hai ô này cao hơn ba ô còn lại: một mục kinh nghiệm hay dự án chiếm
-          12-14 dòng JSON, nên ở mức 8 dòng mặc định thì không xem trọn nổi một
-          mục mà không cuộn. Học vấn và chứng chỉ thì 4-5 dòng là hết. */}
       <JsonField
         id="p-experiences"
         label="Kinh nghiệm làm việc"
@@ -70,9 +68,6 @@ export function RecordsSection({ draft, update }: ProfileSectionProps) {
         onChange={(value) => update("experiences", value)}
         rows={14}
       />
-      {/* Dự án đứng NGAY SAU kinh nghiệm chứ không nằm cuối: với hồ sơ kỹ
-          thuật, đây thường là phần chứng minh năng lực mạnh nhất, và nó được
-          nhồi vào prompt ngang hàng với kinh nghiệm làm việc. */}
       <JsonField
         id="p-projects"
         label="Dự án"

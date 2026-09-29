@@ -14,6 +14,7 @@ interface JobRowProps {
   onSelect: (jobId: string) => void;
   onSavedChange?: (jobId: string, saved: boolean) => void;
 }
+/** Một dòng việc làm trong bảng, kèm nút lưu. */
 export function JobRow({
   job,
   selected,
@@ -100,7 +101,7 @@ export function JobRow({
               job.systemMatch.total > 0 && (
                 <span
                   className="rounded bg-teal-50 px-1.5 py-0.5 font-mono font-semibold text-teal-700"
-                  title={`Hồ sơ đáp ứng ${job.systemMatch.met}/${job.systemMatch.total} yêu cầu tin nêu ra`}
+                  title={`Hồ sơ có ${job.systemMatch.met}/${job.systemMatch.total} kỹ năng tin nêu ra (${job.systemMatch.percent}% có trọng số, tính cả số năm kinh nghiệm)`}
                 >
                   Khớp {job.systemMatch.met}/{job.systemMatch.total}
                 </span>

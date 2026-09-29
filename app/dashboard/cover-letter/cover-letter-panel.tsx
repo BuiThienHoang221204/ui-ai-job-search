@@ -19,15 +19,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { CoverLetterResult } from "./cover-letter-result";
 
-/** Số tài liệu hiện một lúc trong kho; phần còn lại lật bằng phân trang. */
 const DOCUMENT_PAGE_SIZE = 10;
 
-/**
- * Thư xin việc trang trọng, kết quả có bản `.tex` và tải được PDF.
- *
- * Khác mail ứng tuyển ở nguồn tin: thư xin việc BẮT BUỘC gắn với một tin đã có
- * trong hệ thống, vì bản `.tex` được đặt tên và đóng dấu theo tin đó.
- */
+/** Panel thư xin việc gắn với một tin đã có, kết quả có bản `.tex` và PDF. */
 export function CoverLetterPanel({
   matches,
   fixedJobId,
@@ -37,8 +31,6 @@ export function CoverLetterPanel({
   fixedJobId: string | null;
   loginNext: string;
 }) {
-  // Rỗng nghĩa là chưa chọn. Backend BẮT BUỘC có jobId cho thư xin việc, nên
-  // không có mục "tổng quát" như bên CV.
   const [jobId, setJobId] = useState<string>(fixedJobId ?? "");
   const job = useDocumentJob(loginNext);
   const [documentOffset, setDocumentOffset] = useState(0);
@@ -53,14 +45,6 @@ export function CoverLetterPanel({
     { errorMessage: "Không tải được kho thư xin việc", keepPrevious: true },
   );
 
-  /**
-   * Bản ghi đang bám theo cũng là một dòng trong lịch sử, và ở đây nó được **suy
-   * ra** lúc render chứ không được ghi vào state bằng một effect.
-   *
-   * Trước đây một effect chép `job.document` vào `documents`, tức là cùng một bản
-   * ghi tồn tại ở hai nơi và phải đồng bộ tay. Suy ra thì hai nơi không thể lệch
-   * nhau, vì chỉ còn một nơi.
-   */
   const documents: DocumentRecord[] | null = useMemo(() => {
     const list = page.data?.items ?? null;
     if (!list) return null;

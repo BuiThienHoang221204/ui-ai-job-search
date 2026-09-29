@@ -7,11 +7,7 @@ export const metadata: Metadata = {
     "Tra cứu khoảng lương phổ biến và mức lương trung bình theo từng vị trí công việc, phân tách theo số năm kinh nghiệm.",
 };
 
-/**
- * Lối vào CÔNG KHAI, nằm ngoài `/dashboard` một cách cố ý: `middleware.ts` chỉ
- * chặn `/dashboard`, nên đây là đường duy nhất để Google đọc được.
- * Người đã đăng nhập đi vào cùng nội dung này qua `/dashboard/salary`.
- */
+/** Trang công khai tra cứu lương (ngoài /dashboard để Google đọc được). */
 export default async function SalaryPage() {
   const count = await salaryPositionCount();
 

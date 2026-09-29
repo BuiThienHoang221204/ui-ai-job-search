@@ -24,6 +24,7 @@ import { AnswerBox } from "./answer-box";
 import { InterviewTurnBlock } from "./interview-turns";
 import { failureMessage } from "@/lib/failure-message";
 
+/** Màn luyện phỏng vấn thử: biên bản các lượt, câu đang chảy về và ô trả lời. */
 export function MockInterviewView({ jobId }: { jobId: string }) {
   const {
     job,
@@ -139,8 +140,6 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
             </ol>
           ) : null}
 
-          {/* Câu đang chảy về: vẽ ngay, không chờ database. Con trỏ nhấp nháy
-              để phân biệt "đang viết" với "đã viết xong". */}
           {streaming !== null && (
             <div className="rounded-xl border border-primary-100 bg-primary-50/40 p-4">
               {streaming ? (

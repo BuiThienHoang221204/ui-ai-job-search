@@ -19,13 +19,10 @@ export const metadata: Metadata = {
   title: "Careelot",
   description:
     "Dashboard ứng dụng Careelot: phân tích AI match, tối ưu CV, cover letter và theo dõi quy trình ứng tuyển.",
-  // iOS không đọc manifest để lấy icon và chế độ toàn màn hình khi "Thêm vào màn hình chính".
   appleWebApp: { capable: true, title: "Careelot", statusBarStyle: "default" },
-  // Khai báo icons là Next bỏ favicon tự sinh từ app/icon.svg, nên phải liệt kê lại.
   icons: { icon: "/icon.svg", apple: "/icons/apple-touch-icon.png" },
 };
 
-// Màu thanh trạng thái/tiêu đề cửa sổ khi chạy như app đã cài.
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#4952FF" },
@@ -33,6 +30,7 @@ export const viewport: Viewport = {
   ],
 };
 
+/** Layout gốc: nạp font, script khởi tạo giao diện và các provider toàn cục. */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -45,12 +43,6 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: FONT_SCALE_BOOTSTRAP }} />
         <script dangerouslySetInnerHTML={{ __html: SIDEBAR_BOOTSTRAP }} />
       </head>
-      {/*
-        QueryProvider bọc ở layout GỐC chứ không ở layout dashboard: trang đăng
-        nhập và đăng ký cũng gọi API, và một ngày nào đó chúng cũng sẽ muốn
-        cache. Nó là client component nên phần còn lại của cây vẫn render trên
-        máy chủ như cũ.
-      */}
       <body>
         <QueryProvider>
           <ToastProvider>{children}</ToastProvider>

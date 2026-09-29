@@ -16,13 +16,7 @@ const META = {
   },
 } as const;
 
-/**
- * Một dòng thời gian, dùng chung cho thẻ việc làm và bảng tất cả việc làm.
- *
- * Hai trang phải nói y hệt nhau: cùng một tin mà chỗ ghi "Đăng 3 ngày trước"
- * chỗ ghi "3 ngày trước" thì người đọc phải tự đoán hai con số có cùng nghĩa
- * hay không.
- */
+/** Một dòng thời gian đăng tin, dùng chung cho thẻ việc làm và bảng việc làm. */
 export function JobTime({
   time,
   className,

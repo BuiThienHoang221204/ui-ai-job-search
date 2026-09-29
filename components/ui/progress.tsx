@@ -6,6 +6,7 @@ interface ProgressProps {
   className?: string;
 }
 
+/** Thanh tiến độ ngang. */
 export function Progress({ value, barClassName, className }: ProgressProps) {
   const clamped = Math.min(100, Math.max(0, value));
   return (

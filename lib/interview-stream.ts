@@ -1,23 +1,8 @@
-/**
- * Đọc câu hỏi phỏng vấn theo kiểu chảy dần, thay vì chờ cả câu rồi mới hiện.
- *
- * Dùng `fetch` + `ReadableStream` chứ KHÔNG dùng `EventSource`, và có hai lý do:
- *
- * 1. `EventSource` chỉ GET được, mà gửi câu trả lời thì cần POST — sẽ thành hai
- *    vòng (POST lưu, rồi GET nghe), tức là thêm một chặng độ trễ ở đúng chỗ
- *    đang muốn cắt độ trễ.
- * 2. Phần "tự động kết nối lại" của `EventSource` ở đây là BẤT LỢI: nó sẽ mở
- *    lại request và sinh thêm một lượt gọi model, mà lượt gọi ấy tốn tiền và
- *    sinh ra một câu hỏi khác câu đang dở trên màn.
- */
-
-/** Backend đóng kết nối đột ngột khi lượt hỏng — đó là tín hiệu, không phải sự cố mạng. */
 export class InterviewStreamError extends Error {}
 
 export interface StreamTurnOptions {
   runId: string;
   answer: string;
-  /** Gọi lại sau mỗi mẩu chữ, với TOÀN BỘ phần đã nhận được tới lúc đó. */
   onText: (fullText: string) => void;
   signal?: AbortSignal;
 }
@@ -25,14 +10,7 @@ export interface StreamTurnOptions {
 const API =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
 
-/**
- * Gửi câu trả lời, nhận câu hỏi tiếp theo từng mẩu một.
- *
- * Trả về toàn bộ chữ khi xong. Ném `InterviewStreamError` khi stream đứt giữa
- * chừng — người gọi có trách nhiệm XOÁ phần chữ dở đi, đừng giữ lại trên màn:
- * nửa câu hỏi phỏng vấn tệ hơn không có câu nào, vì người dùng không biết câu
- * hỏi đã hết chưa và có thể trả lời một câu chưa hỏi xong.
- */
+/** Mở buổi phỏng vấn thử và nhận câu hỏi đầu tiên theo kiểu chảy dần. */
 export async function streamInterviewOpen({
   jobId,
   onText,
@@ -93,6 +71,7 @@ export async function streamInterviewOpen({
   return full;
 }
 
+/** Gửi câu trả lời, nhận câu hỏi tiếp theo từng mẩu một. */
 export async function streamInterviewTurn({
   runId,
   answer,
@@ -126,8 +105,6 @@ export async function streamInterviewTurn({
     for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
-      // `stream: true` để một ký tự tiếng Việt bị cắt đôi giữa hai mẩu vẫn ghép
-      // lại đúng, thay vì thành dấu hỏi ngược.
       full += decoder.decode(value, { stream: true });
       onText(full);
     }

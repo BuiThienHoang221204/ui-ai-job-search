@@ -18,6 +18,7 @@ interface FieldsProps {
   onChange: (value: CvContentInput) => void;
 }
 
+/** Chọn bộ ô nhập đúng với phần CV đang sửa. */
 export function SectionFields({
   sectionKey,
   content,
@@ -35,6 +36,7 @@ export function SectionFields({
   return null;
 }
 
+/** Các ô nhập phần thông tin cá nhân. */
 function ProfileFields({ content, onChange }: FieldsProps) {
   return (
     <Textarea
@@ -48,6 +50,7 @@ function ProfileFields({ content, onChange }: FieldsProps) {
   );
 }
 
+/** Các ô nhập phần năng lực cốt lõi. */
 function CompetencyFields({ content, onChange }: FieldsProps) {
   return (
     <LinesField
@@ -59,12 +62,14 @@ function CompetencyFields({ content, onChange }: FieldsProps) {
   );
 }
 
+/** Giữ chỉ số mục con đang mở, mặc định mở mục đầu nếu có. */
 function useOpenEntry(count: number) {
   const [open, setOpen] = useState(count > 0 ? 0 : -1);
   const toggle = (index: number) => setOpen(open === index ? -1 : index);
   return { open, setOpen, toggle };
 }
 
+/** Các ô nhập phần kinh nghiệm làm việc. */
 function ExperienceFields({ content, onChange }: FieldsProps) {
   const list = content.experiences;
   const { open, setOpen, toggle } = useOpenEntry(list.length);
@@ -136,6 +141,7 @@ function ExperienceFields({ content, onChange }: FieldsProps) {
   );
 }
 
+/** Các ô nhập phần dự án. */
 function ProjectFields({ content, onChange }: FieldsProps) {
   const list = content.projects;
   const { open, setOpen, toggle } = useOpenEntry(list.length);
@@ -229,6 +235,7 @@ function ProjectFields({ content, onChange }: FieldsProps) {
   );
 }
 
+/** Các ô nhập phần học vấn. */
 function EducationFields({ content, onChange }: FieldsProps) {
   const list = content.educations;
   const { open, setOpen, toggle } = useOpenEntry(list.length);
@@ -292,6 +299,7 @@ function EducationFields({ content, onChange }: FieldsProps) {
   );
 }
 
+/** Các ô nhập phần nhóm kỹ năng. */
 function SkillFields({ content, onChange }: FieldsProps) {
   const list = content.skillGroups;
   const { open, setOpen, toggle } = useOpenEntry(list.length);
@@ -336,6 +344,7 @@ function SkillFields({ content, onChange }: FieldsProps) {
   );
 }
 
+/** Nút thêm một mục con mới. */
 export function AddButton({
   label,
   onClick,

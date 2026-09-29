@@ -18,15 +18,10 @@ const RUNNING_LABELS = {
 
 interface DocumentJobStatusProps {
   job: DocumentJob;
-  /** Sinh lại từ đầu — tạo một tài liệu MỚI, khác với `recheck`. */
   onRegenerate: () => void;
 }
 
-/**
- * Ba trạng thái mà người dùng phải phân biệt được: đang chạy, hỏng, và chờ quá
- * lâu. Trả về null khi chưa bắt đầu hoặc đã xong — lúc đó trang tự lo phần nội
- * dung.
- */
+/** Hiện trạng thái đang chạy, hỏng hoặc chờ quá lâu; trả null khi chưa bắt đầu hoặc đã xong. */
 export function DocumentJobStatus({
   job,
   onRegenerate,
@@ -45,10 +40,6 @@ export function DocumentJobStatus({
                   ? RUNNING_LABELS.PENDING
                   : RUNNING_LABELS.SENDING}
             </p>
-            {/*
-              Không có thanh tiến độ ở đây, và đó là cố ý: ta không biết còn bao
-              lâu, một thanh chạy đều chỉ là lời hứa bịa ra.
-            */}
             <p className="text-primary-800/80 text-xs leading-relaxed">
               Việc này thường mất 30 đến 90 giây. Bạn cứ để trang mở, trạng thái
               sẽ tự cập nhật khi worker chạy xong.

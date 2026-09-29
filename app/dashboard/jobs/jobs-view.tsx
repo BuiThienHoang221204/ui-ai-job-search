@@ -26,6 +26,7 @@ import { JobList } from "./job-list";
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 500;
 
+/** Màn tìm việc: bộ lọc trên URL, ô tìm kiếm debounce và danh sách phân trang. */
 export function JobsView() {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -154,7 +155,6 @@ export function JobsView() {
   }
 
   return (
-    
     <div className="flex flex-col xl:h-[calc(100dvh-2.5rem)]">
       <JobFilterBar
         value={{ ...filter, q: draftQuery }}
@@ -172,14 +172,18 @@ export function JobsView() {
               {page.data.total} tin
               {scored && (
                 <span className="text-primary-600 ml-1 font-medium">
-                  · AI ≥50%
+                  · Khớp kỹ năng ≥50%
                 </span>
               )}
             </span>
-            <SortSelect
-              value={filter.sort}
-              onChange={(next) => push({ ...filter, sort: next }, 0, selected)}
-            />
+            {scored ? (
+              <span className="text-xs text-slate-500">Mới đăng trước</span>
+            ) : (
+              <SortSelect
+                value={filter.sort}
+                onChange={(next) => push({ ...filter, sort: next }, 0, selected)}
+              />
+            )}
           </div>
           <div
             className={cn(

@@ -16,27 +16,14 @@ import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/ui/section-card";
 import { useToast } from "@/components/ui/toast";
 
-/** Một lượt tìm hiểu đi qua ba câu tìm kiếm, năm trang và một lời gọi model. */
 const POLL_MS = 2_500;
 
 interface CompanyBriefPanelProps {
   jobId: string;
 }
 
-/**
- * Thẻ "Về công ty này" trên trang chi tiết tin.
- *
- * Query RIÊNG chứ không gộp vào `useApiQuery` chung của trang: bản tìm hiểu
- * hỏng thì thẻ này biến mất, phần mô tả công việc vẫn hiện bình thường.
- */
+/** Thẻ "Về công ty này" trên trang chi tiết tin, có query riêng. */
 export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
-  /**
-   * Mốc `updatedAt` tại lúc bấm tra, hoặc `undefined` khi không chờ gì.
-   *
-   * Suy ra trạng thái chờ thay vì giữ một cờ boolean rồi tắt nó đi: tắt cờ là
-   * gọi `setState` giữa lúc render. Mốc này còn phân biệt được "làm mới" với
-   * "tra lần đầu" - bản cũ vẫn hiện trong lúc bản mới đang chạy.
-   */
   const toast = useToast();
   const [pendingSince, setPendingSince] = useState<string | null | undefined>(
     undefined,
@@ -69,10 +56,6 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
       setPendingSince(undefined);
       reload();
     } catch (err: unknown) {
-      /*
-       * Stream hỏng thì quay về đường hàng đợi: nó CÓ chuỗi model dự phòng,
-       * còn stream thì token đầu tiên rời đi là hết đường lùi.
-       */
       try {
         await companiesService.refreshForJob(jobId, force);
         reload();
@@ -130,4 +113,3 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
     </SectionCard>
   );
 }
-

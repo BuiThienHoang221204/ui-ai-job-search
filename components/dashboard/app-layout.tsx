@@ -8,15 +8,14 @@ interface AppLayoutProps {
   sidebar: React.ReactNode;
 }
 
+/** Khung dashboard: sidebar cố định trên desktop, drawer trên mobile, header và nội dung. */
 export function AppLayout({ children, sidebar }: AppLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen bg-surface">
-      {/* Desktop sidebar */}
       <div className="fixed inset-y-0 left-0 z-40 hidden lg:block">{sidebar}</div>
 
-      {/* Mobile drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div

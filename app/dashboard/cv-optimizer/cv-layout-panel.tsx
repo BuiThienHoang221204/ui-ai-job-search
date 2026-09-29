@@ -4,6 +4,7 @@ import { ArrowDown, ArrowUp, Eye, EyeSlash } from "@phosphor-icons/react/ssr";
 import type { CvLayout, CvSectionKey } from "@/services";
 import { SECTION_LABELS, swap } from "./cv-fields";
 
+/** Panel chỉnh bố cục CV: đổi thứ tự và ẩn hiện các phần. */
 export function CvLayoutPanel({
   layout,
   onChange,
