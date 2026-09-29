@@ -85,7 +85,7 @@ export function JobCard({ job, onSavedChange }: JobCardProps) {
                     className="rounded-full bg-teal-50 px-2 py-0.5 font-mono text-2xs font-semibold whitespace-nowrap text-teal-700"
                     title={
                       job.systemMatch.kind === "REQUIREMENTS"
-                        ? `Hồ sơ đáp ứng ${job.systemMatch.met}/${job.systemMatch.total} yêu cầu tin nêu ra (${job.systemMatch.percent}% có trọng số)`
+                        ? `Hồ sơ có ${job.systemMatch.met}/${job.systemMatch.total} kỹ năng tin nêu ra (${job.systemMatch.percent}% có trọng số, tính cả số năm kinh nghiệm)`
                         : `Tin chưa được rút trích yêu cầu; đang đếm kỹ năng của bạn xuất hiện trong tin`
                     }
                   >

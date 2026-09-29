@@ -94,8 +94,8 @@ export function toJobCardFromRecord(job: JobListItem): Job {
     systemMatch: job.systemMatch
       ? {
           kind: job.systemMatch.kind,
-          met: job.systemMatch.met,
-          total: job.systemMatch.total,
+          met: job.systemMatch.skillMet ?? job.systemMatch.met,
+          total: job.systemMatch.skillTotal ?? job.systemMatch.total,
           percent: job.systemMatch.score,
         }
       : null,

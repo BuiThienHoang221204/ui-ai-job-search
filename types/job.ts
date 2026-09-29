@@ -32,6 +32,7 @@ export interface Job {
   aiMatch: number | null;
   systemMatch: {
     kind: "REQUIREMENTS" | "KEYWORDS";
+    /** Số kỹ năng khớp trên số kỹ năng tin nêu ra; percent thì tính cả số năm. */
     met: number;
     total: number;
     percent: number;

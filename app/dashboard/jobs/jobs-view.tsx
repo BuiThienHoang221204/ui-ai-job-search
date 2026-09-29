@@ -172,14 +172,18 @@ export function JobsView() {
               {page.data.total} tin
               {scored && (
                 <span className="text-primary-600 ml-1 font-medium">
-                  · AI ≥50%
+                  · Khớp kỹ năng ≥50%
                 </span>
               )}
             </span>
-            <SortSelect
-              value={filter.sort}
-              onChange={(next) => push({ ...filter, sort: next }, 0, selected)}
-            />
+            {scored ? (
+              <span className="text-xs text-slate-500">Mới đăng trước</span>
+            ) : (
+              <SortSelect
+                value={filter.sort}
+                onChange={(next) => push({ ...filter, sort: next }, 0, selected)}
+              />
+            )}
           </div>
           <div
             className={cn(
