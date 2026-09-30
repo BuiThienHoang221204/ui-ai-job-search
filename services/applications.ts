@@ -1,22 +1,19 @@
 import type {
   Application,
-  ApplicationGroup,
   ApplicationList,
   ApplicationStatus,
 } from "@/types";
 import { api } from "@/lib/axios";
 
 export const applicationsService = {
-  /** Lấy danh sách đơn ứng tuyển, lọc theo nhóm/trạng thái ở backend. */
+  /** Lấy danh sách đơn ứng tuyển, lọc theo trạng thái ở backend. */
   list: (
-    group?: ApplicationGroup,
     page?: { limit?: number; offset?: number },
     status?: ApplicationStatus,
   ) =>
     api
       .get<ApplicationList>("/applications", {
         params: {
-          ...(group ? { group } : {}),
           ...(status ? { status } : {}),
           ...page,
         },

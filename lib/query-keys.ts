@@ -19,8 +19,8 @@ export const keys = {
     ["matches", "page", limit, offset] as const,
 
   applications: () => ["applications"] as const,
-  applicationList: (filter: string, offset: number) =>
-    ["applications", "list", filter, offset] as const,
+  applicationList: (status: string, offset: number) =>
+    ["applications", "list", status, offset] as const,
 
   profile: () => ["profile"] as const,
 

@@ -19,7 +19,6 @@ export interface SystemMatch {
   kind: "REQUIREMENTS" | "KEYWORDS";
   met: number;
   total: number;
-  /** Chỉ đếm dòng kỹ năng — số năm, địa điểm không nằm trong đây. */
   skillMet?: number;
   skillTotal?: number;
   score: number;

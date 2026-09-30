@@ -4,13 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { FileText } from "@phosphor-icons/react/ssr";
+import { Funnel, FileText } from "@phosphor-icons/react/ssr";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
-import type {
-  Application,
-  ApplicationGroup,
-  ApplicationStatus,
-} from "@/types";
+import type { Application, ApplicationStatus } from "@/types";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { invalidateAfter, keys } from "@/lib/query-keys";
 import {
@@ -21,10 +17,8 @@ import {
 import {
   APPLICATION_STATUS_LABELS,
   APPLICATION_STATUS_VARIANTS,
-  APPLICATION_TABS,
   NEXT_STATUSES,
 } from "@/lib/application-status";
-import { Select } from "@/components/ui/form";
 import { companyColor, companyInitials, formatDate, openBlobInNewTab } from "@/utils";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { CompanyLogo } from "@/components/dashboard/company-logo";
@@ -35,7 +29,7 @@ import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
-import { CountTabs } from "@/components/ui/tabs";
+import { SelectMenu } from "@/components/ui/select-menu";
 import { CvPicker, type CvOption } from "@/components/dashboard/cv-picker";
 import {
   Table,
@@ -46,15 +40,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type Filter = "all" | ApplicationGroup;
+type StatusFilter = "all" | ApplicationStatus;
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
+
+const STATUS_OPTIONS: Array<{ value: StatusFilter; label: string }> = [
+  { value: "all", label: "Mọi trạng thái" },
+  ...(Object.keys(APPLICATION_STATUS_LABELS) as ApplicationStatus[]).map(
+    (status) => ({ value: status, label: APPLICATION_STATUS_LABELS[status] }),
+  ),
+];
 
 /** Trang quản lý đơn ứng tuyển: lọc theo trạng thái, phân trang và đổi trạng thái đơn. */
 export default function ApplicationsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [filter, setFilter] = useState<Filter>("all");
+  const [status, setStatus] = useState<StatusFilter>("all");
   const [offset, setOffset] = useState(0);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [rowError, setRowError] = useState<{ id: string; message: string } | null>(
@@ -83,12 +84,12 @@ export default function ApplicationsPage() {
   }, []);
 
   const { data, error } = useApiQuery(
-    keys.applicationList(filter, offset),
+    keys.applicationList(status, offset),
     () =>
-      applicationsService.list(filter === "all" ? undefined : filter, {
-        limit: PAGE_SIZE,
-        offset,
-      }),
+      applicationsService.list(
+        { limit: PAGE_SIZE, offset },
+        status === "all" ? undefined : status,
+      ),
     {
       errorMessage: "Không tải được danh sách đơn",
       keepPrevious: true,
@@ -165,15 +166,18 @@ export default function ApplicationsPage() {
         subtitle="Theo dõi trạng thái từng đơn ứng tuyển của bạn"
       />
 
-      <CountTabs
-        tabs={APPLICATION_TABS}
-        value={filter}
-        onChange={(next) => {
-          setFilter(next);
-          setOffset(0);
-        }}
-        counts={data?.counts}
-      />
+      <div className="flex">
+        <SelectMenu
+          label="Mọi trạng thái"
+          icon={Funnel}
+          value={status}
+          options={STATUS_OPTIONS}
+          onChange={(next) => {
+            setStatus(next);
+            setOffset(0);
+          }}
+        />
+      </div>
 
       {error ? (
         <Alert tone="danger">{error}</Alert>
@@ -193,7 +197,7 @@ export default function ApplicationsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.items.map((application) => (
+              {data.items.map((application, index) => (
                 <TableRow key={application.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -270,31 +274,32 @@ export default function ApplicationsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Select
-                      aria-label={`Đổi trạng thái đơn ${application.job.title}`}
-                      className="h-9 min-w-40 text-xs"
+                    <SelectMenu<"" | ApplicationStatus>
+                      variant="field"
+                      className="min-w-40"
+                      side={
+                        index >= data.items.length - 2 && index >= 2
+                          ? "top"
+                          : "bottom"
+                      }
+                      align="right"
+                      label={
+                        savingId === application.id
+                          ? "Đang lưu…"
+                          : "Đổi trạng thái…"
+                      }
                       value=""
                       disabled={savingId === application.id}
-                      onChange={(event) => {
-                        const next = event.target.value;
-                        if (!next) return;
-                        void changeStatus(
-                          application,
-                          next as ApplicationStatus,
-                        );
+                      options={NEXT_STATUSES[application.status].map(
+                        (next) => ({
+                          value: next,
+                          label: APPLICATION_STATUS_LABELS[next],
+                        }),
+                      )}
+                      onChange={(next) => {
+                        if (next) void changeStatus(application, next);
                       }}
-                    >
-                      <option value="">
-                        {savingId === application.id
-                          ? "Đang lưu…"
-                          : "Đổi trạng thái…"}
-                      </option>
-                      {NEXT_STATUSES[application.status].map((status) => (
-                        <option key={status} value={status}>
-                          {APPLICATION_STATUS_LABELS[status]}
-                        </option>
-                      ))}
-                    </Select>
+                    />
                     {rowError?.id === application.id && (
                       <p className="mt-1 text-xs text-rose-600">
                         {rowError.message}
