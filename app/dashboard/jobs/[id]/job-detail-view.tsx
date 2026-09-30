@@ -59,7 +59,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
       const [record, current, appList] = await Promise.all([
         jobsService.get(jobId),
         profileService.get().catch(() => null),
-        applicationsService.list(undefined, { limit: 100, offset: 0 }).catch(() => null),
+        applicationsService.list({ limit: 100, offset: 0 }).catch(() => null),
       ]);
       const existingApp = appList?.items.find((a: { jobId: string }) => a.jobId === jobId);
       return {

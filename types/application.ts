@@ -1,7 +1,5 @@
 export type ApplicationStatus = "VIEWED" | "APPLIED" | "WITHDRAWN";
 
-export type ApplicationGroup = "open" | "closed";
-
 export interface ApplicationDocument {
   id: string;
   jobId: string | null;
@@ -37,5 +35,4 @@ export interface ApplicationList {
   total: number;
   limit: number;
   offset: number;
-  counts: Record<"all" | ApplicationGroup, number>;
 }

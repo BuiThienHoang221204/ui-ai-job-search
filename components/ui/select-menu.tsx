@@ -19,6 +19,7 @@ interface SelectMenuProps<T extends string | number> {
   icon?: PhosphorIcon;
   disabled?: boolean;
   align?: "left" | "right";
+  side?: "bottom" | "top";
   className?: string;
   variant?: "chip" | "field";
   searchPlaceholder?: string;
@@ -34,6 +35,7 @@ export function SelectMenu<T extends string | number>({
   icon: Icon,
   disabled,
   align = "left",
+  side = "bottom",
   className,
   variant = "chip",
   searchPlaceholder,
@@ -176,9 +178,10 @@ export function SelectMenu<T extends string | number>({
           id={listId}
           role="listbox"
           className={cn(
-            "absolute top-11 z-20 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg",
+            "absolute z-20 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg",
             field ? "w-full" : "w-max min-w-full max-w-72",
             align === "right" ? "right-0" : "left-0",
+            side === "top" ? "bottom-11" : "top-11",
           )}
         >
           {searchPlaceholder && (

@@ -26,7 +26,6 @@ export type {
 
 export type {
   Application,
-  ApplicationGroup,
   ApplicationList,
   ApplicationStatus,
 } from "./application";

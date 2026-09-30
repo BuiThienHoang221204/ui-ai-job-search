@@ -21,8 +21,8 @@ export function PrepLauncher({ onQueued }: { onQueued: () => void }) {
   const [error, setError] = useState<string | null>(null);
 
   const applied = useApiQuery(
-    ["applications", "list", "APPLIED", 0],
-    () => applicationsService.list(undefined, { limit: LIMIT }, "APPLIED"),
+    ["applications", "prep-picker"],
+    () => applicationsService.list({ limit: LIMIT }, "APPLIED"),
     { errorMessage: "Không tải được danh sách đơn đã nộp" },
   );
 
