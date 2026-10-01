@@ -1,11 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const AUTH_COOKIE = "aijob_token";
+/** Cờ "còn phiên hay không", KHÔNG httpOnly - access token chỉ sống 15 phút nên dùng nó làm dấu hiệu đăng nhập sẽ đá người dùng hợp lệ về /login mỗi 15 phút. */
+const SESSION_HINT_COOKIE = "aijob_session";
 
-/** Chuyển hướng về /login khi vào /dashboard mà chưa có cookie đăng nhập. */
+/** Chỉ chặn ở tầng điều hướng (không xác thực chữ ký) - bảo vệ dữ liệu thật vẫn là JwtAuthGuard ở backend. */
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get(AUTH_COOKIE)?.value;
-  if (token) return NextResponse.next();
+  const session = request.cookies.get(SESSION_HINT_COOKIE)?.value;
+  if (session) return NextResponse.next();
 
   const loginUrl = new URL("/login", request.url);
   loginUrl.searchParams.set("next", request.nextUrl.pathname);
