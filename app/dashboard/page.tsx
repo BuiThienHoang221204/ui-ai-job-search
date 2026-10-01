@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { dashboardService } from "@/services";
 import { AISuggestionCard } from "@/components/dashboard/ai-suggestion-card";
+import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
 import { useSession } from "@/components/dashboard/session";
 import { PageError } from "@/components/ui/alert";
 import { Skeleton, SkeletonGrid, SkeletonPage } from "@/components/ui/skeleton";
@@ -46,6 +47,7 @@ export default function DashboardPage() {
     <div className="space-y-5">
       <QuickStrip data={data} />
       <TopMatches matches={data.topMatches} />
+      <ResponsiveBannerAd align="start" />
 
       <AISuggestionCard suggestions={data.suggestions} />
       <ScoreBreakdown todayScore={data.todayScore} />

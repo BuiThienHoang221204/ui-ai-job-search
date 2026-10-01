@@ -17,6 +17,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { SearchInput } from "@/components/ui/search-input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StickyRailAd } from "@/components/ads/ad-slot";
 import { QuestionAnswer } from "./question-answer";
 
 const PAGE_SIZE = 20;
@@ -90,7 +91,7 @@ function QuestionRow({ question }: { question: QuestionSummary }) {
   );
 }
 
-/** Trình duyệt ngân hàng câu hỏi kèm bộ lọc và danh sách câu hỏi. */
+/** Trình duyệt ngân hàng câu hỏi: bộ lọc full width, bên dưới là danh sách và cột quảng cáo bên phải. */
 export function QuestionBankBrowser({
   facets: initialFacets,
   initial,
@@ -215,37 +216,44 @@ export function QuestionBankBrowser({
         )}
       </Card>
 
-      <p className="text-sm text-slate-500">
-        {page.total.toLocaleString("vi-VN")} câu hỏi khớp bộ lọc
-      </p>
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="min-w-0 space-y-5">
+          <p className="text-sm text-slate-500">
+            {page.total.toLocaleString("vi-VN")} câu hỏi khớp bộ lọc
+          </p>
 
-      {pending ? (
-        <div className="space-y-3">
-          {Array.from({ length: 5 }, (_, i) => (
-            <Skeleton key={i} className="h-24 w-full" />
-          ))}
-        </div>
-      ) : page.items.length === 0 ? (
-        <EmptyState
-          title="Không có câu hỏi nào khớp"
-          description="Thử bỏ bớt một bộ lọc, hoặc tìm bằng từ khoá ngắn hơn."
-        />
-      ) : (
-        <div className="space-y-3">
-          {page.items.map((question) => (
-            <QuestionRow key={question.id} question={question} />
-          ))}
-        </div>
-      )}
+          {pending ? (
+            <div className="space-y-3">
+              {Array.from({ length: 5 }, (_, i) => (
+                <Skeleton key={i} className="h-24 w-full" />
+              ))}
+            </div>
+          ) : page.items.length === 0 ? (
+            <EmptyState
+              title="Không có câu hỏi nào khớp"
+              description="Thử bỏ bớt một bộ lọc, hoặc tìm bằng từ khoá ngắn hơn."
+            />
+          ) : (
+            <div className="space-y-3">
+              {page.items.map((question) => (
+                <QuestionRow key={question.id} question={question} />
+              ))}
+            </div>
+          )}
 
-      <Pagination
-        total={page.total}
-        limit={PAGE_SIZE}
-        offset={offset}
-        onOffsetChange={setOffset}
-        noun="câu hỏi"
-        disabled={pending}
-      />
+          <Pagination
+            total={page.total}
+            limit={PAGE_SIZE}
+            offset={offset}
+            onOffsetChange={setOffset}
+            noun="câu hỏi"
+            disabled={pending}
+          />
+        </div>
+        <aside className="hidden self-stretch xl:block">
+          <StickyRailAd />
+        </aside>
+      </div>
     </div>
   );
 }
