@@ -202,7 +202,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
 
   return (
     <div className="space-y-6">
-      <ResponsiveBannerAd />
+      <ResponsiveBannerAd align="start"/>
 
       <JobDetailHeader
         card={card}
