@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Sparkle, UserPlus, WarningCircle } from "@phosphor-icons/react/ssr";
+import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
@@ -26,6 +27,12 @@ function RegisterForm() {
   const [duplicate, setDuplicate] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  /** Dùng chung cho cả form và Google: điều hướng về `next` sau khi cookie đã được backend đặt xong. */
+  function goToNext() {
+    router.replace(next);
+    router.refresh();
+  }
+
   /** Kiểm tra dữ liệu, gọi API đăng ký và xử lý lỗi trùng email. */
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -44,9 +51,7 @@ function RegisterForm() {
     setLoading(true);
     try {
       await authService.register(email, password, name);
-
-      router.replace(next);
-      router.refresh();
+      goToNext();
     } catch (err) {
       if (apiErrorStatus(err) === 409) {
         setDuplicate(true);
@@ -160,6 +165,19 @@ function RegisterForm() {
             {!loading && <UserPlus className="size-4.5" />}
             Tạo tài khoản
           </Button>
+
+          <div className="flex items-center gap-3 text-xs text-slate-400">
+            <span className="h-px flex-1 bg-slate-200" />
+            hoặc
+            <span className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleSignInButton
+              onSuccess={goToNext}
+              onError={(message) => setError(message)}
+            />
+          </div>
         </form>
 
         <p className="text-center text-xs text-slate-500">

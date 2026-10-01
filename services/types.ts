@@ -2,6 +2,7 @@ import type { AuthUser } from "@/types";
 
 export interface AuthResult {
   accessToken: string;
+  refreshToken: string;
   user: AuthUser;
 }
 

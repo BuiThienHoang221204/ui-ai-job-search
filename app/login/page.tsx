@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SignIn, Sparkle, WarningCircle } from "@phosphor-icons/react/ssr";
+import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
@@ -21,6 +22,12 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  /** Dùng chung cho cả email/mật khẩu và Google: điều hướng về `next` sau khi cookie đã được backend đặt xong. */
+  function goToNext() {
+    router.replace(next);
+    router.refresh();
+  }
+
   /** Gửi thông tin đăng nhập, điều hướng khi thành công hoặc hiện lỗi. */
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -29,9 +36,7 @@ function LoginForm() {
 
     try {
       await authService.login(email, password);
-
-      router.replace(next);
-      router.refresh();
+      goToNext();
     } catch (error) {
       setError(
         apiErrorStatus(error) === 401
@@ -102,6 +107,19 @@ function LoginForm() {
             {!loading && <SignIn className="size-4.5" />}
             Đăng nhập
           </Button>
+
+          <div className="flex items-center gap-3 text-xs text-slate-400">
+            <span className="h-px flex-1 bg-slate-200" />
+            hoặc
+            <span className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleSignInButton
+              onSuccess={goToNext}
+              onError={(message) => setError(message)}
+            />
+          </div>
         </form>
 
         <p className="text-center text-xs text-slate-500">
