@@ -21,6 +21,15 @@ const ALIGN_CLASS: Record<AdAlign, string> = {
   end: "justify-end",
 };
 
+const SCRIPT_TIMEOUT_MS = 8000;
+
+let bannerQueue: Promise<void> = Promise.resolve();
+
+/** Xếp hàng nạp banner: script đọc rồi xoá `atOptions` toàn cục nên mỗi lần chỉ được nạp một banner. */
+function enqueueBanner(task: () => Promise<void>) {
+  bannerQueue = bannerQueue.then(task, task);
+}
+
 /** Lấy mã định danh ở cuối URL script quảng cáo. */
 const lastSegment = (src: string | null) => src?.split("/").pop() ?? null;
 
@@ -57,7 +66,7 @@ function AdFrame({
   );
 }
 
-/** Banner kích thước cố định; mỗi trang chỉ đặt một banner vì script đọc biến toàn cục `atOptions`. */
+/** Banner kích thước cố định, nạp lần lượt qua hàng đợi để nhiều banner cùng trang không giẫm `atOptions` của nhau. */
 export function BannerAd({
   size,
   align,
@@ -75,12 +84,25 @@ export function BannerAd({
   useEffect(() => {
     const root = host.current;
     if (!root || !src || !key) return;
-    const options = document.createElement("script");
-    options.text = `atOptions=${JSON.stringify({ key, format: "iframe", height, width, params: {} })};`;
-    const script = document.createElement("script");
-    script.src = src;
-    root.append(options, script);
-    return () => root.replaceChildren();
+    let cancelled = false;
+    enqueueBanner(
+      () =>
+        new Promise<void>((resolve) => {
+          if (cancelled || !root.isConnected) return resolve();
+          const options = document.createElement("script");
+          options.text = `atOptions=${JSON.stringify({ key, format: "iframe", height, width, params: {} })};`;
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = () => resolve();
+          script.onerror = () => resolve();
+          setTimeout(resolve, SCRIPT_TIMEOUT_MS);
+          root.append(options, script);
+        }),
+    );
+    return () => {
+      cancelled = true;
+      root.replaceChildren();
+    };
   }, [src, key, width, height]);
 
   if (!src || !key) return null;
