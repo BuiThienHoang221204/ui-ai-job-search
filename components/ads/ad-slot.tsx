@@ -1,41 +1,63 @@
 "use client";
 
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
+import { X } from "@phosphor-icons/react/ssr";
 import { cn } from "@/utils";
 
 const BANNER_SRC: Record<"300x250" | "728x90", string | null> = {
   "300x250": "https://bauval.org/22/60aacb930c6729e804806d6db74e6f5c",
-  "728x90": null,
+  "728x90": "https://bauval.org/22/8f081c5f58fd8255f6a81079656d34fb",
 };
 
 const NATIVE_SRC: string | null = "https://bauval.org/21/d7963d5bfeb88dec2954b557fd490eca";
 
 type BannerSize = keyof typeof BANNER_SRC;
 
+const DISMISS_KEY = "ads-dismissed";
+
+/** Cho biết người dùng đã tắt quảng cáo trong phiên này chưa. */
+function isAdDismissed() {
+  try {
+    return sessionStorage.getItem(DISMISS_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/** Ghi nhớ người dùng đã tắt quảng cáo cho tới hết phiên. */
+function rememberAdDismissed() {
+  try {
+    sessionStorage.setItem(DISMISS_KEY, "1");
+  } catch {}
+}
+
 /** Lấy mã định danh ở cuối URL script quảng cáo. */
 const lastSegment = (src: string | null) => src?.split("/").pop() ?? null;
 
-const DESKTOP_QUERY = "(min-width: 768px)";
-
-/** Theo dõi màn hình có đủ rộng cho banner 728x90 hay không. */
-function useIsDesktop() {
-  return useSyncExternalStore(
-    (notify) => {
-      const media = window.matchMedia(DESKTOP_QUERY);
-      media.addEventListener("change", notify);
-      return () => media.removeEventListener("change", notify);
-    },
-    () => window.matchMedia(DESKTOP_QUERY).matches,
-    () => false,
-  );
-}
-
-/** Khung chung cho mọi ô quảng cáo, kèm nhãn "Quảng cáo". */
+/** Khung chung cho mọi ô quảng cáo: nhãn "Quảng cáo" góc trái trên, nút tắt góc phải trên. */
 function AdFrame({ className, children }: { className?: string; children: React.ReactNode }) {
+  const [closed, setClosed] = useState(false);
+  if (closed) return null;
+
   return (
-    <div className={cn("flex flex-col items-center gap-1", className)}>
-      <span className="text-[10px] tracking-wide text-slate-400 uppercase">Quảng cáo</span>
-      {children}
+    <div className={cn("flex justify-center", className)}>
+      <div className="flex max-w-full flex-col gap-1">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] tracking-wide text-slate-400 uppercase">Quảng cáo</span>
+          <button
+            type="button"
+            aria-label="Tắt quảng cáo"
+            onClick={() => {
+              rememberAdDismissed();
+              setClosed(true);
+            }}
+            className="flex size-4 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700"
+          >
+            <X className="size-2.5" weight="bold" />
+          </button>
+        </div>
+        {children}
+      </div>
     </div>
   );
 }
@@ -67,10 +89,29 @@ export function BannerAd({ size, className }: { size: BannerSize; className?: st
   );
 }
 
-/** Banner 728x90 trên máy tính, tự đổi sang 300x250 trên điện thoại. */
+/** Banner 728x90 khi khung đủ rộng, tự đổi sang 300x250 khi khung hẹp hơn. */
 export function ResponsiveBannerAd({ className }: { className?: string }) {
-  const desktop = useIsDesktop() && BANNER_SRC["728x90"] !== null;
-  return <BannerAd key={desktop ? "wide" : "box"} size={desktop ? "728x90" : "300x250"} className={className} />;
+  const box = useRef<HTMLDivElement>(null);
+  const [wide, setWide] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    if (isAdDismissed()) return;
+    const observer = new ResizeObserver(([entry]) => {
+      setWide(entry.contentRect.width >= 728);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={box} className={cn("w-full", className)}>
+      {wide !== null && (
+        <BannerAd key={wide ? "wide" : "box"} size={wide ? "728x90" : "300x250"} />
+      )}
+    </div>
+  );
 }
 
 /** Native banner hoà vào nội dung, nạp script trực tiếp vào trang vì nó tự dựng khối theo container. */

@@ -23,7 +23,6 @@ import { Pagination } from "@/components/ui/pagination";
 import { Skeleton, SkeletonGrid, SkeletonPage } from "@/components/ui/skeleton";
 import { JobDetailView } from "./[id]/job-detail-view";
 import { JobList } from "./job-list";
-import { NativeAd } from "@/components/ads/ad-slot";
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 500;
 
@@ -198,7 +197,6 @@ export function JobsView() {
               onSelect={handleSelect}
               onSavedChange={handleSavedChange}
             />
-            <NativeAd className="border-t border-slate-100 p-4" />
           </div>
 
           <div className="shrink-0 border-t border-slate-100">
