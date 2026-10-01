@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState } from "react";
 import { Briefcase, CaretDown, ChatCircleDots, TrendUp } from "@phosphor-icons/react/ssr";
-import {
-  questionBankService,
-  type QuestionFacets,
-  type QuestionPage,
-  type QuestionSummary,
+import type {
+  QuestionFacets,
+  QuestionPage,
+  QuestionSummary,
 } from "@/services/question-bank";
+import {
+  QUESTION_PAGE_SIZE,
+  useQuestionBank,
+  type QuestionFilterOption,
+} from "@/hooks/use-question-bank";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FilterChip } from "@/components/ui/filter-chip";
@@ -17,15 +21,12 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { SearchInput } from "@/components/ui/search-input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StickyRailAd } from "@/components/ads/ad-slot";
+import { RAIL_AD_AVAILABLE, StickyRailAd } from "@/components/ads/ad-slot";
+import { cn } from "@/utils";
 import { QuestionAnswer } from "./question-answer";
 
-const PAGE_SIZE = 20;
-
-type Option = { code: string; name: string; count: number };
-
 /** Mục "tất cả" luôn đứng đầu, rồi tới từng lựa chọn kèm số câu. */
-function menuOptions(options: Option[], allLabel: string) {
+function menuOptions(options: QuestionFilterOption[], allLabel: string) {
   return [
     { value: "", label: allLabel },
     ...options.map((o) => ({
@@ -37,15 +38,8 @@ function menuOptions(options: Option[], allLabel: string) {
 }
 
 /** Tìm tên hiển thị của một mã trong danh sách lựa chọn. */
-function labelOf(options: Option[], code: string | null): string {
+function labelOf(options: QuestionFilterOption[], code: string | null): string {
   return options.find((o) => o.code === code)?.name ?? code ?? "";
-}
-
-/** Đảm bảo mục đang chọn luôn có trong danh sách, kể cả khi số đếm về 0. */
-function withSelected(options: Option[], value: string | null, fallback: Option[]): Option[] {
-  if (!value || options.some((o) => o.code === value)) return options;
-  const known = fallback.find((o) => o.code === value);
-  return [...options, { code: value, name: known?.name ?? value, count: 0 }];
 }
 
 /** Một dòng câu hỏi, bấm để mở phần đáp án. */
@@ -99,160 +93,113 @@ export function QuestionBankBrowser({
   facets: QuestionFacets;
   initial: QuestionPage;
 }) {
-  const [term, setTerm] = useState("");
-  const [industry, setIndustry] = useState<string | null>(null);
-  const [type, setType] = useState<string | null>(null);
-  const [difficulty, setDifficulty] = useState<string | null>(null);
-  const [offset, setOffset] = useState(0);
-  const [page, setPage] = useState<QuestionPage>(initial);
-  const [facets, setFacets] = useState<QuestionFacets>(initialFacets);
-  const [pending, startTransition] = useTransition();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      startTransition(async () => {
-        const filters = {
-          industry: industry ?? undefined,
-          type: type ?? undefined,
-          difficulty: difficulty ?? undefined,
-          q: term.trim() || undefined,
-        };
-        const [nextPage, nextFacets] = await Promise.all([
-          questionBankService.browse({ ...filters, limit: PAGE_SIZE, offset }),
-          questionBankService.browseFacets(filters),
-        ]);
-        setPage(nextPage);
-        setFacets(nextFacets);
-      });
-    }, 250);
-    return () => clearTimeout(timer);
-  }, [term, industry, type, difficulty, offset]);
-
-  function change<T>(setter: (next: T) => void) {
-    return (next: T) => {
-      setter(next);
-      setOffset(0);
-    };
-  }
-
-  function clearAll() {
-    setIndustry(null);
-    setType(null);
-    setDifficulty(null);
-    setOffset(0);
-  }
-
-  const industryOptions = withSelected(
-    facets.industries,
-    industry,
-    initialFacets.industries,
-  );
-  const typeOptions = withSelected(facets.types, type, initialFacets.types);
-  const difficultyOptions = withSelected(
-    facets.difficulties.map((d) => ({ code: d.name, name: d.name, count: d.count })),
-    difficulty,
-    initialFacets.difficulties.map((d) => ({ code: d.name, name: d.name, count: d.count })),
-  );
-
-  const activeCount = [industry, type, difficulty].filter(Boolean).length;
+  const bank = useQuestionBank(initialFacets, initial);
+  const [railOpen, setRailOpen] = useState(RAIL_AD_AVAILABLE);
 
   return (
     <div className="space-y-5">
       <Card className="space-y-4 p-4">
         <SearchInput
-          value={term}
-          onChange={change(setTerm)}
+          value={bank.term}
+          onChange={bank.setTerm}
           placeholder="Tìm trong nội dung câu hỏi…"
         />
         <div className="flex flex-wrap items-center gap-2">
           <SelectMenu
             label="Mọi ngành nghề"
             icon={Briefcase}
-            value={industry ?? ""}
-            onChange={(next) => change(setIndustry)(next || null)}
-            options={menuOptions(industryOptions, "Mọi ngành nghề")}
+            value={bank.industry ?? ""}
+            onChange={(next) => bank.setIndustry(next || null)}
+            options={menuOptions(bank.industryOptions, "Mọi ngành nghề")}
             searchPlaceholder="Tìm ngành nghề…"
           />
           <SelectMenu
             label="Mọi loại câu hỏi"
             icon={ChatCircleDots}
-            value={type ?? ""}
-            onChange={(next) => change(setType)(next || null)}
-            options={menuOptions(typeOptions, "Mọi loại câu hỏi")}
+            value={bank.type ?? ""}
+            onChange={(next) => bank.setType(next || null)}
+            options={menuOptions(bank.typeOptions, "Mọi loại câu hỏi")}
           />
           <SelectMenu
             label="Mọi độ khó"
             icon={TrendUp}
-            value={difficulty ?? ""}
-            onChange={(next) => change(setDifficulty)(next || null)}
-            options={menuOptions(difficultyOptions, "Mọi độ khó")}
+            value={bank.difficulty ?? ""}
+            onChange={(next) => bank.setDifficulty(next || null)}
+            options={menuOptions(bank.difficultyOptions, "Mọi độ khó")}
           />
         </div>
 
-        {activeCount > 0 && (
+        {bank.activeCount > 0 && (
           <div className="flex flex-wrap items-center gap-2">
-            {industry && (
+            {bank.industry && (
               <FilterChip
-                label={`Ngành nghề: ${labelOf(industryOptions, industry)}`}
-                onRemove={() => change(setIndustry)(null)}
+                label={`Ngành nghề: ${labelOf(bank.industryOptions, bank.industry)}`}
+                onRemove={() => bank.setIndustry(null)}
               />
             )}
-            {type && (
+            {bank.type && (
               <FilterChip
-                label={`Loại: ${labelOf(typeOptions, type)}`}
-                onRemove={() => change(setType)(null)}
+                label={`Loại: ${labelOf(bank.typeOptions, bank.type)}`}
+                onRemove={() => bank.setType(null)}
               />
             )}
-            {difficulty && (
+            {bank.difficulty && (
               <FilterChip
-                label={`Độ khó: ${difficulty}`}
-                onRemove={() => change(setDifficulty)(null)}
+                label={`Độ khó: ${bank.difficulty}`}
+                onRemove={() => bank.setDifficulty(null)}
               />
             )}
-            <Button variant="ghost" size="sm" onClick={clearAll}>
+            <Button variant="ghost" size="sm" onClick={bank.clearFilters}>
               Bỏ chọn tất cả
             </Button>
           </div>
         )}
       </Card>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
+      <div
+        className={cn(
+          "grid items-start gap-6",
+          railOpen && "xl:grid-cols-[minmax(0,1fr)_300px]",
+        )}
+      >
         <div className="min-w-0 space-y-5">
           <p className="text-sm text-slate-500">
-            {page.total.toLocaleString("vi-VN")} câu hỏi khớp bộ lọc
+            {bank.page.total.toLocaleString("vi-VN")} câu hỏi khớp bộ lọc
           </p>
 
-          {pending ? (
+          {bank.pending ? (
             <div className="space-y-3">
               {Array.from({ length: 5 }, (_, i) => (
                 <Skeleton key={i} className="h-24 w-full" />
               ))}
             </div>
-          ) : page.items.length === 0 ? (
+          ) : bank.page.items.length === 0 ? (
             <EmptyState
               title="Không có câu hỏi nào khớp"
               description="Thử bỏ bớt một bộ lọc, hoặc tìm bằng từ khoá ngắn hơn."
             />
           ) : (
             <div className="space-y-3">
-              {page.items.map((question) => (
+              {bank.page.items.map((question) => (
                 <QuestionRow key={question.id} question={question} />
               ))}
             </div>
           )}
 
           <Pagination
-            total={page.total}
-            limit={PAGE_SIZE}
-            offset={offset}
-            onOffsetChange={setOffset}
+            total={bank.page.total}
+            limit={QUESTION_PAGE_SIZE}
+            offset={bank.offset}
+            onOffsetChange={bank.setOffset}
             noun="câu hỏi"
-            disabled={pending}
+            disabled={bank.pending}
           />
         </div>
-        <aside className="hidden self-stretch xl:block">
-          <StickyRailAd />
-        </aside>
+        {railOpen && (
+          <aside className="hidden self-stretch xl:block">
+            <StickyRailAd onEmpty={() => setRailOpen(false)} />
+          </aside>
+        )}
       </div>
     </div>
   );
