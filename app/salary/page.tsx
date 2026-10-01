@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SalaryList, salaryPositionCount } from "@/components/salary/salary-list";
+import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
 
 export const metadata: Metadata = {
   title: "Tra cứu mức lương theo vị trí và ngành nghề",
@@ -22,6 +23,8 @@ export default async function SalaryPage() {
           kinh nghiệm.
         </p>
       </header>
+
+      <ResponsiveBannerAd className="mb-8" />
 
       <SalaryList basePath="/salary" />
     </main>
