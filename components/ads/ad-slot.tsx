@@ -13,44 +13,39 @@ const NATIVE_SRC: string | null = "https://bauval.org/21/d7963d5bfeb88dec2954b55
 
 type BannerSize = keyof typeof BANNER_SRC;
 
-const DISMISS_KEY = "ads-dismissed";
+type AdAlign = "start" | "center" | "end";
 
-/** Cho biết người dùng đã tắt quảng cáo trong phiên này chưa. */
-function isAdDismissed() {
-  try {
-    return sessionStorage.getItem(DISMISS_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-/** Ghi nhớ người dùng đã tắt quảng cáo cho tới hết phiên. */
-function rememberAdDismissed() {
-  try {
-    sessionStorage.setItem(DISMISS_KEY, "1");
-  } catch {}
-}
+const ALIGN_CLASS: Record<AdAlign, string> = {
+  start: "justify-start",
+  center: "justify-center",
+  end: "justify-end",
+};
 
 /** Lấy mã định danh ở cuối URL script quảng cáo. */
 const lastSegment = (src: string | null) => src?.split("/").pop() ?? null;
 
-/** Khung chung cho mọi ô quảng cáo: nhãn "Quảng cáo" góc trái trên, nút tắt góc phải trên. */
-function AdFrame({ className, children }: { className?: string; children: React.ReactNode }) {
+/** Khung chung cho mọi ô quảng cáo: nhãn "Quảng cáo" góc trái trên, nút tắt chỉ ẩn ô này tới khi rời trang. */
+function AdFrame({
+  className,
+  align = "start",
+  children,
+}: {
+  className?: string;
+  align?: AdAlign;
+  children: React.ReactNode;
+}) {
   const [closed, setClosed] = useState(false);
   if (closed) return null;
 
   return (
-    <div className={cn("flex justify-center", className)}>
+    <div className={cn("flex", ALIGN_CLASS[align], className)}>
       <div className="flex max-w-full flex-col gap-1">
         <div className="flex items-center justify-between">
           <span className="text-[10px] tracking-wide text-slate-400 uppercase">Quảng cáo</span>
           <button
             type="button"
             aria-label="Tắt quảng cáo"
-            onClick={() => {
-              rememberAdDismissed();
-              setClosed(true);
-            }}
+            onClick={() => setClosed(true)}
             className="flex size-4 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700"
           >
             <X className="size-2.5" weight="bold" />
@@ -63,7 +58,15 @@ function AdFrame({ className, children }: { className?: string; children: React.
 }
 
 /** Banner kích thước cố định; mỗi trang chỉ đặt một banner vì script đọc biến toàn cục `atOptions`. */
-export function BannerAd({ size, className }: { size: BannerSize; className?: string }) {
+export function BannerAd({
+  size,
+  align,
+  className,
+}: {
+  size: BannerSize;
+  align?: AdAlign;
+  className?: string;
+}) {
   const host = useRef<HTMLDivElement>(null);
   const src = BANNER_SRC[size];
   const key = lastSegment(src);
@@ -83,21 +86,20 @@ export function BannerAd({ size, className }: { size: BannerSize; className?: st
   if (!src || !key) return null;
 
   return (
-    <AdFrame className={className}>
+    <AdFrame className={className} align={align}>
       <div ref={host} className="max-w-full overflow-hidden" style={{ width, height }} />
     </AdFrame>
   );
 }
 
 /** Banner 728x90 khi khung đủ rộng, tự đổi sang 300x250 khi khung hẹp hơn. */
-export function ResponsiveBannerAd({ className }: { className?: string }) {
+export function ResponsiveBannerAd({ align, className }: { align?: AdAlign; className?: string }) {
   const box = useRef<HTMLDivElement>(null);
   const [wide, setWide] = useState<boolean | null>(null);
 
   useEffect(() => {
     const el = box.current;
     if (!el) return;
-    if (isAdDismissed()) return;
     const observer = new ResizeObserver(([entry]) => {
       setWide(entry.contentRect.width >= 728);
     });
@@ -108,14 +110,38 @@ export function ResponsiveBannerAd({ className }: { className?: string }) {
   return (
     <div ref={box} className={cn("w-full", className)}>
       {wide !== null && (
-        <BannerAd key={wide ? "wide" : "box"} size={wide ? "728x90" : "300x250"} />
+        <BannerAd key={wide ? "wide" : "box"} size={wide ? "728x90" : "300x250"} align={align} />
       )}
     </div>
   );
 }
 
+const RAIL_QUERY = "(min-width: 1280px)";
+
+/** Cột phải gồm hai banner 300x250 cùng dính lại khi cuộn; chỉ nạp khi màn hình đủ rộng. */
+export function StickyRailAd({ className }: { className?: string }) {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia(RAIL_QUERY);
+    const sync = () => setShow(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  if (!show) return null;
+
+  return (
+    <div className={cn("sticky top-6 flex flex-col gap-6", className)}>
+      <BannerAd size="300x250" />
+      <BannerAd size="300x250" />
+    </div>
+  );
+}
+
 /** Native banner hoà vào nội dung, nạp script trực tiếp vào trang vì nó tự dựng khối theo container. */
-export function NativeAd({ className }: { className?: string }) {
+export function NativeAd({ align, className }: { align?: AdAlign; className?: string }) {
   const host = useRef<HTMLDivElement>(null);
   const containerId = lastSegment(NATIVE_SRC);
 
@@ -135,7 +161,7 @@ export function NativeAd({ className }: { className?: string }) {
   if (!NATIVE_SRC || !containerId) return null;
 
   return (
-    <AdFrame className={className}>
+    <AdFrame className={className} align={align}>
       <div ref={host} className="w-full" />
     </AdFrame>
   );
