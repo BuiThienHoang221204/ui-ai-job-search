@@ -66,8 +66,8 @@ export function OccupationPicker({
       setDraftSubs(draftSubs.filter((row) => !subs.includes(row)));
       return;
     }
+    // Không tự tích cả nghề con: backend AND occupation với subOccupation, tích hết nghề con sẽ loại mất tin chỉ khớp nhóm mà không khớp nghề con nào.
     setDraftGroups([...draftGroups, code]);
-    setDraftSubs([...new Set([...draftSubs, ...subs])]);
   };
 
   const toggleSub = (code: string) => {
