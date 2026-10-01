@@ -4,14 +4,23 @@ import { useEffect, useRef, useState } from "react";
 import { X } from "@phosphor-icons/react/ssr";
 import { cn } from "@/utils";
 
+// Tạm tắt quảng cáo tới khi Adsterra chặn xong nhóm cờ bạc/cho vay; bật lại bằng cách thay null bằng link đang comment.
 const BANNER_SRC: Record<"300x250" | "728x90", string | null> = {
-  "300x250": "https://bauval.org/22/60aacb930c6729e804806d6db74e6f5c",
-  "728x90": "https://bauval.org/22/8f081c5f58fd8255f6a81079656d34fb",
+  // "300x250": "https://bauval.org/22/60aacb930c6729e804806d6db74e6f5c",
+  "300x250": null,
+  // "728x90": "https://bauval.org/22/8f081c5f58fd8255f6a81079656d34fb",
+  "728x90": null,
 };
 
-const NATIVE_SRC: string | null = "https://bauval.org/21/d7963d5bfeb88dec2954b557fd490eca";
+// const NATIVE_SRC: string | null = "https://bauval.org/21/d7963d5bfeb88dec2954b557fd490eca";
+const NATIVE_SRC: string | null = null;
 
 type BannerSize = keyof typeof BANNER_SRC;
+
+/** Cho biết một kích thước banner đang có mã quảng cáo hay không. */
+const hasBanner = (size: BannerSize) => BANNER_SRC[size] !== null;
+
+export const RAIL_AD_AVAILABLE = hasBanner("300x250");
 
 type AdAlign = "start" | "center" | "end";
 
@@ -137,14 +146,17 @@ export function ResponsiveBannerAd({ align, className }: { align?: AdAlign; clas
     return () => observer.disconnect();
   }, []);
 
-  if (closed) return null;
+  const size: BannerSize = wide ? "728x90" : "300x250";
+  if (closed || (wide !== null && !hasBanner(size)) || (!hasBanner("728x90") && !hasBanner("300x250"))) {
+    return null;
+  }
 
   return (
     <div ref={box} className={cn("w-full", className)}>
       {wide !== null && (
         <BannerAd
-          key={wide ? "wide" : "box"}
-          size={wide ? "728x90" : "300x250"}
+          key={size}
+          size={size}
           align={align}
           onClose={() => setClosed(true)}
         />
@@ -177,7 +189,7 @@ export function StickyRailAd({ className, onEmpty }: { className?: string; onEmp
     if (next >= RAIL_SLOTS) onEmpty?.();
   };
 
-  if (!show || closedCount >= RAIL_SLOTS) return null;
+  if (!RAIL_AD_AVAILABLE || !show || closedCount >= RAIL_SLOTS) return null;
 
   return (
     <div className={cn("sticky top-6 flex flex-col gap-6", className)}>

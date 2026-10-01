@@ -21,7 +21,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { SearchInput } from "@/components/ui/search-input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StickyRailAd } from "@/components/ads/ad-slot";
+import { RAIL_AD_AVAILABLE, StickyRailAd } from "@/components/ads/ad-slot";
 import { cn } from "@/utils";
 import { QuestionAnswer } from "./question-answer";
 
@@ -94,7 +94,7 @@ export function QuestionBankBrowser({
   initial: QuestionPage;
 }) {
   const bank = useQuestionBank(initialFacets, initial);
-  const [railOpen, setRailOpen] = useState(true);
+  const [railOpen, setRailOpen] = useState(RAIL_AD_AVAILABLE);
 
   return (
     <div className="space-y-5">
