@@ -11,6 +11,9 @@ export const authService = {
       .post<AuthResult>("/auth/register", { email, password, name })
       .then((r) => r.data),
 
+  googleLogin: (idToken: string) =>
+    api.post<AuthResult>("/auth/google", { idToken }).then((r) => r.data),
+
   logout: () => api.post<{ ok: true }>("/auth/logout").then((r) => r.data),
 
   /** Lấy thông tin người dùng hiện tại, vai trò đọc tươi từ database. */
