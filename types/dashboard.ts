@@ -21,6 +21,8 @@ export interface TodayScore {
 
 export interface DashboardOverview {
   profileCompletion: number;
+  /** `null` khi chưa qua "Chọn nhanh" lẫn CV. */
+  occupationCode: string | null;
   matchingJobs: { total: number; newThisWeek: number };
   averageMatchScore: number | null;
   topMatches: JobMatchWithJob[];

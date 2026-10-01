@@ -28,6 +28,9 @@ export interface ProfileRecord {
   drainingTasks: string[];
   targetSectors: string[];
   dealBreakers: string[];
+  occupationCode: string | null;
+  subOccupationCode: string | null;
+  experienceLevel: string;
   experiences: unknown;
   projects: unknown;
   educations: unknown;
@@ -37,9 +40,19 @@ export interface ProfileRecord {
   updatedAt: string;
 }
 
+export interface QuickStartInput {
+  occupationCode: string;
+  subOccupationCode?: string;
+  experienceLevel?: string;
+}
+
 export const profileService = {
   get: () => api.get<ProfileRecord>("/profile").then((r) => r.data),
 
   update: (input: Partial<Omit<ProfileRecord, "id" | "userId" | "completion" | "createdAt" | "updatedAt">>) =>
     api.put<ProfileRecord>("/profile", input).then((r) => r.data),
+
+  /** Bước "Chọn nhanh" lúc đăng ký - ghi tường minh, không qua suy luận như `update`. */
+  quickStart: (input: QuickStartInput) =>
+    api.post<ProfileRecord>("/profile/quick-start", input).then((r) => r.data),
 };

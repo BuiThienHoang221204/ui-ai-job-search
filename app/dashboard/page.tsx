@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { dashboardService } from "@/services";
 import { AISuggestionCard } from "@/components/dashboard/ai-suggestion-card";
@@ -8,6 +9,7 @@ import { PageError } from "@/components/ui/alert";
 import { Skeleton, SkeletonGrid, SkeletonPage } from "@/components/ui/skeleton";
 import { onboardingLevel } from "./onboarding-state";
 import { FirstRun } from "./first-run";
+import { QuickStartOnboarding } from "./quick-start-onboarding";
 import { QuickStrip } from "./quick-strip";
 import { ScoreBreakdown } from "./score-breakdown";
 import { TopMatches } from "./top-matches";
@@ -15,15 +17,26 @@ import { TopMatches } from "./top-matches";
 /** Trang tổng quan của dashboard. */
 export default function DashboardPage() {
   const { user, loading: loadingUser } = useSession();
-  const { data, error } = useApiQuery(
+  const { data, error, reload } = useApiQuery(
     ["dashboard", "overview"],
     () => dashboardService.overview(),
     { errorMessage: "Không tải được dữ liệu tổng quan" },
   );
+  const [skippedQuickStart, setSkippedQuickStart] = useState(false);
 
   if (error) return <PageError title="Không tải được dữ liệu" message={error} />;
   if (!data || loadingUser) return <DashboardSkeleton />;
   const firstName = user?.name.split(" ").slice(-2).join(" ") ?? "bạn";
+
+  if (!data.occupationCode && !skippedQuickStart) {
+    return (
+      <QuickStartOnboarding
+        firstName={firstName}
+        onDone={reload}
+        onSkip={() => setSkippedQuickStart(true)}
+      />
+    );
+  }
 
   if (onboardingLevel(data) === "takeover") {
     return <FirstRun firstName={firstName} data={data} />;
