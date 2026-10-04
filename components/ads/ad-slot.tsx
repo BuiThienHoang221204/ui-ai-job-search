@@ -6,14 +6,14 @@ import { cn } from "@/utils";
 
 // Tạm tắt quảng cáo tới khi Adsterra chặn xong nhóm cờ bạc/cho vay; bật lại bằng cách thay null bằng link đang comment.
 const BANNER_SRC: Record<"300x250" | "728x90", string | null> = {
-  // "300x250": "https://bauval.org/22/60aacb930c6729e804806d6db74e6f5c",
-  "300x250": null,
-  // "728x90": "https://bauval.org/22/8f081c5f58fd8255f6a81079656d34fb",
-  "728x90": null,
+  "300x250": "https://bauval.org/22/60aacb930c6729e804806d6db74e6f5c",
+  // "300x250": null,
+  "728x90": "https://bauval.org/22/8f081c5f58fd8255f6a81079656d34fb",
+  // "728x90": null,
 };
 
-// const NATIVE_SRC: string | null = "https://bauval.org/21/d7963d5bfeb88dec2954b557fd490eca";
-const NATIVE_SRC: string | null = null;
+const NATIVE_SRC: string | null = "https://bauval.org/21/d7963d5bfeb88dec2954b557fd490eca";
+// const NATIVE_SRC: string | null = null;
 
 type BannerSize = keyof typeof BANNER_SRC;
 
