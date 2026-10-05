@@ -10,10 +10,10 @@ import { cn } from "@/utils";
 
 /** Đồng hồ đếm thời gian cho một tác vụ gọi model, so với thời gian dự kiến. */
 export function ModelElapsed({
-  expected,
+  expected = 10,
   className,
 }: {
-  expected: number;
+  expected?: number;
   className?: string;
 }) {
   const elapsed = useElapsedSeconds();
