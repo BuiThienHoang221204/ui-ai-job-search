@@ -32,6 +32,7 @@ export function GoogleSignInButton({
         }}
         onError={() => onError("Đăng nhập bằng Google không thành công")}
         width="312"
+        shape="rectangular"
       />
     </GoogleOAuthProvider>
   );

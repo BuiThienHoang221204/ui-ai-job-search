@@ -16,11 +16,14 @@ const googleSans = Google_Sans_Flex({
 });
 
 export const metadata: Metadata = {
-  title: "Careelot",
+  title: "Careelot | Tìm việc làm bằng AI",
   description:
     "Dashboard ứng dụng Careelot: phân tích AI match, tối ưu CV, cover letter và theo dõi quy trình ứng tuyển.",
   appleWebApp: { capable: true, title: "Careelot", statusBarStyle: "default" },
-  icons: { icon: "/icon.svg", apple: "/icons/apple-touch-icon.png" },
+  icons: {
+    icon: "/Careelot_Square.svg",
+    apple: "/Careelot_Square.svg",
+  },
 };
 
 export const viewport: Viewport = {

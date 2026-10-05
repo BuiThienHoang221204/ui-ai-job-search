@@ -2,7 +2,7 @@
 // Đổi VERSION mỗi khi sửa file này hoặc offline.html để máy người dùng bỏ cache cũ.
 const VERSION = "careelot-v1";
 const OFFLINE_URL = "/offline.html";
-const PRECACHE = [OFFLINE_URL, "/icons/icon-192.png", "/icons/icon-512.png"];
+const PRECACHE = [OFFLINE_URL, "/Careelot_Square.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

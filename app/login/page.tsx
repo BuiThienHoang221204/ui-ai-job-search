@@ -11,6 +11,8 @@ import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { authService } from "@/services";
 import { safeNextPath } from "@/utils";
 
+import { BrandLogo } from "@/components/dashboard/brand-logo";
+
 /** Form đăng nhập bằng email/mật khẩu, xong chuyển về trang `next`. */
 function LoginForm() {
   const router = useRouter();
@@ -51,13 +53,8 @@ function LoginForm() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
       <div className="w-full max-w-sm space-y-6">
-        <div className="space-y-2 text-center">
-          <span className="inline-flex size-11 items-center justify-center text-primary-600">
-            <Sparkle className="size-5.5" />
-          </span>
-          <h1 className="text-xl font-semibold tracking-tight text-slate-900">
-            Careelot
-          </h1>
+        <div className="flex flex-col items-center gap-3 text-center">
+          <BrandLogo className="h-[40px] w-[160px]" />
           <p className="text-sm text-slate-500">
             Đăng nhập để xem việc làm phù hợp với hồ sơ của bạn
           </p>

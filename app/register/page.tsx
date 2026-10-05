@@ -11,6 +11,8 @@ import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { authService } from "@/services";
 import { safeNextPath } from "@/utils";
 
+import { BrandLogo } from "@/components/dashboard/brand-logo";
+
 const MIN_PASSWORD_LENGTH = 8;
 
 /** Form tạo tài khoản mới, kiểm tra mật khẩu rồi đăng ký và chuyển về `next`. */
@@ -65,11 +67,9 @@ function RegisterForm() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
       <div className="w-full max-w-sm space-y-6">
-        <div className="space-y-2 text-center">
-          <span className="inline-flex size-11 items-center justify-center text-primary-600">
-            <Sparkle className="size-5.5" />
-          </span>
-          <h1 className="text-xl font-semibold tracking-tight text-slate-900">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <BrandLogo className="h-[40px] w-[160px]" />
+          <h1 className="text-lg font-semibold tracking-tight text-slate-900">
             Tạo tài khoản
           </h1>
           <p className="text-sm text-slate-500">
