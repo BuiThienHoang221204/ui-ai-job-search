@@ -10,13 +10,10 @@ const LIVE_ROWS = [
   { label: "Nhận xét tổng hợp", of: (p: PartialEvaluation) => p.recommendation },
 ] as const;
 
-/** Đo trên `ai_calls`: `match.evaluate` trung bình khoảng 40 giây qua omniroute. */
-const EXPECTED_SCORING_SECONDS = 40;
-
 export function LiveScoringCard({ partial }: { partial: PartialEvaluation | null }) {
   return (
     <SectionCard compact title="Đang chấm điểm">
-      <ModelElapsed expected={EXPECTED_SCORING_SECONDS} />
+      <ModelElapsed />
       <ul className="space-y-2">
         {LIVE_ROWS.map(({ label, of }) => {
           const value = partial ? of(partial) : undefined;

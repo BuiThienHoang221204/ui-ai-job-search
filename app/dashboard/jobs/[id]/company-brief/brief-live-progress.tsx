@@ -1,7 +1,6 @@
 import { Check, CircleNotch } from "@phosphor-icons/react/ssr";
 import { ModelElapsed } from "@/components/dashboard/model-elapsed";
 
-const EXPECTED_SECONDS = 35;
 
 export interface PartialBrief {
   verdict?: string;
@@ -23,7 +22,7 @@ export function BriefLiveProgress({ partial }: { partial: PartialBrief | null })
   if (!partial) {
     return (
       <div>
-        <ModelElapsed expected={EXPECTED_SECONDS} />
+        <ModelElapsed />
         <p className="flex items-center gap-2 text-sm text-slate-500">
           <CircleNotch className="size-4.5 animate-spin text-slate-300" />
           Đang tìm và đọc các nguồn đánh giá…

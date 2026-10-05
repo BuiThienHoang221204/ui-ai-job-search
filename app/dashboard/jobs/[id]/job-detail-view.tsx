@@ -29,6 +29,7 @@ import {
   streamMatchEvaluation,
   type PartialEvaluation,
 } from "@/lib/match-stream";
+import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
 
 const SCORE_POLL_MS = 2_500;
 const APPLY_TOAST_DURATION = 60_000;
@@ -201,6 +202,8 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
 
   return (
     <div className="space-y-6">
+      <ResponsiveBannerAd align="start"/>
+
       <JobDetailHeader
         card={card}
         job={job}
