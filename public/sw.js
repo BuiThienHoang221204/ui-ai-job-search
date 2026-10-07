@@ -1,10 +1,3 @@
-self.options = {
-  domain: "5gvci.com",
-  zoneId: 11977123,
-};
-self.lary = "";
-importScripts("https://5gvci.com/act/files/service-worker.min.js?r=sw");
-
 // Service worker Careelot: chỉ cache tệp tĩnh, KHÔNG BAO GIỜ đụng /api (dữ liệu phải mới và đúng phiên đăng nhập).
 // Đổi VERSION mỗi khi sửa file này hoặc offline.html để máy người dùng bỏ cache cũ.
 const VERSION = "careelot-v2";
