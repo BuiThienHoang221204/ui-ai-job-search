@@ -28,8 +28,10 @@ interface AISuggestionCardProps {
 
 /** Thẻ gợi ý tối ưu; gợi ý có `href` thì bấm được, không có thì chỉ hiển thị. */
 export function AISuggestionCard({ suggestions }: AISuggestionCardProps) {
+  if (suggestions.length === 0) return null;
+
   return (
-    <Card className="overflow-hidden border-slate-200/90 bg-white">
+    <Card className="h-full overflow-hidden border-slate-200/90 bg-white">
       <div className="flex items-center justify-between px-5 pt-5 pb-2 border-b border-slate-100">
         <div className="flex items-center gap-2">
           <div className="flex size-7 items-center justify-center rounded-md bg-primary-50 text-primary-700">
@@ -41,7 +43,7 @@ export function AISuggestionCard({ suggestions }: AISuggestionCardProps) {
         </div>
       </div>
 
-      <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 p-4 grid-cols-1">
         {suggestions.map((suggestion) => {
           const meta = typeMeta[suggestion.type];
           const Icon = meta.icon;

@@ -30,6 +30,8 @@ import {
   type PartialEvaluation,
 } from "@/lib/match-stream";
 import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
+import { SkillResources } from "@/components/ads/affiliate-inline";
+import { missingSkillsOf } from "@/lib/affiliate";
 
 const SCORE_POLL_MS = 2_500;
 const APPLY_TOAST_DURATION = 60_000;
@@ -242,6 +244,12 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
               items={match.gaps}
             />
           )}
+
+          <SkillResources
+            jobId={job.id}
+            occupation={job.occupationCode}
+            skills={missingSkillsOf(job.systemMatch)}
+          />
 
           <JobDescriptionCard
             description={job.description}

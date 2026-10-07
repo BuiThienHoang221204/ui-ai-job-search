@@ -21,7 +21,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { SearchInput } from "@/components/ui/search-input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RAIL_AD_AVAILABLE, StickyRailAd } from "@/components/ads/ad-slot";
+import { SponsoredRailCard } from "@/components/ads/affiliate-inline";
+import { AFFILIATE_OFFERS, pickOffer } from "@/lib/affiliate";
 import { cn } from "@/utils";
 import { QuestionAnswer } from "./question-answer";
 
@@ -94,7 +95,7 @@ export function QuestionBankBrowser({
   initial: QuestionPage;
 }) {
   const bank = useQuestionBank(initialFacets, initial);
-  const [railOpen, setRailOpen] = useState(RAIL_AD_AVAILABLE);
+  const [railOpen, setRailOpen] = useState(() => pickOffer(AFFILIATE_OFFERS, "question-bank") !== null);
 
   return (
     <div className="space-y-5">
@@ -197,7 +198,7 @@ export function QuestionBankBrowser({
         </div>
         {railOpen && (
           <aside className="hidden self-stretch xl:block">
-            <StickyRailAd onEmpty={() => setRailOpen(false)} />
+            <SponsoredRailCard onClose={() => setRailOpen(false)} />
           </aside>
         )}
       </div>

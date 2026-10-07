@@ -57,6 +57,7 @@ export interface SalaryGuide {
 
 export type JobRecord = Omit<JobListItem, "match"> & {
   description: string;
+  occupationCode: string | null;
   match: JobMatchDetail | null;
   salaryGuide: SalaryGuide | null;
 };
