@@ -26,3 +26,6 @@ next-env.d.ts
 
 test/visual/screenshots/
 test/visual/.output/
+
+# mockup HTML để duyệt giao diện, không đưa lên repo
+mockups/

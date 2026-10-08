@@ -2,80 +2,65 @@
 
 import Link from "next/link";
 import { ArrowLeft } from "@phosphor-icons/react/ssr";
-import { PageHeader } from "@/components/dashboard/page-header";
-import { Alert } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { FailedCard, RunningCard, UploadCard } from "./upload-cards";
-import { ReviewCard } from "./review-card";
 import { useCvUpload } from "@/hooks/use-cv-upload";
+import { Alert } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ReviewCard } from "./review-card";
+import { UploadPanel, UploadTips } from "./upload-cards";
 
-/** Màn tải CV: hiện thẻ theo từng giai đoạn tải, chạy, duyệt hoặc lỗi. */
+/** Màn đọc CV: tải lên (kèm tiến độ đọc) hoặc xem lại hồ sơ đã điền sẵn, tuỳ trạng thái lượt đọc. */
 export function UploadCvView() {
-  const {
-    draft,
-    loading,
-    error,
-    file,
-    setFile,
-    uploading,
-    retrying,
-    selected,
-    applying,
-    rows,
-    running,
-    partial,
-    upload,
-    retry,
-    apply,
-    toggle,
-  } = useCvUpload();
+  const cv = useCvUpload();
+
+  const note = cv.reviewing
+    ? "Bỏ hoặc sửa chỗ AI đọc sai rồi bấm Lưu."
+    : cv.reading
+      ? `Đang đọc ${cv.file?.name ?? cv.draft?.filename ?? "CV"}…`
+      : "AI đọc CV rồi điền sẵn hồ sơ cho bạn xem lại.";
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Đọc hồ sơ từ CV"
-        subtitle="Nộp CV PDF, AI đọc thành đề xuất — bạn chọn nhận phần nào"
-        actions={
-          <Link href="/dashboard/profile">
-            <Button variant="outline">
-              <ArrowLeft className="size-4.5" />
-              Về hồ sơ
-            </Button>
-          </Link>
-        }
-      />
+    <div className="mx-auto w-full max-w-340 space-y-5 pb-6">
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            Cập nhật hồ sơ từ CV
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">{note}</p>
+        </div>
+        <Link
+          href="/dashboard/profile"
+          className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary-600"
+        >
+          <ArrowLeft className="size-4" />
+          Về hồ sơ
+        </Link>
+      </header>
 
-      {error && <Alert tone="danger">{error}</Alert>}
+      {cv.error && <Alert tone="danger">{cv.error}</Alert>}
 
-      <UploadCard
-        file={file}
-        onPick={setFile}
-        onUpload={() => void upload()}
-        uploading={uploading}
-        disabled={running}
-      />
-
-      {loading ? (
-        <Skeleton className="h-48 animate-pulse" />
-      ) : running ? (
-        <RunningCard draft={draft} partial={partial} />
-      ) : draft?.status === "FAILED" ? (
-        <FailedCard
-          draft={draft}
-          onRetry={() => void retry()}
-          retrying={retrying}
-        />
-      ) : draft?.status === "DONE" ? (
+      {cv.loading ? (
+        <Skeleton className="h-72" />
+      ) : cv.reviewing && cv.draft ? (
         <ReviewCard
-          draft={draft}
-          rows={rows}
-          selected={selected}
-          onToggle={toggle}
-          onApply={() => void apply()}
-          applying={applying}
+          draft={cv.draft}
+          profile={cv.profile}
+          saving={cv.saving}
+          onSave={(values) => void cv.apply(values)}
+          onDismiss={cv.dismiss}
         />
-      ) : null}
+      ) : (
+        <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(18.75rem,1fr)]">
+          <UploadPanel
+            reading={cv.reading}
+            file={cv.file}
+            draft={cv.draft}
+            partial={cv.partial}
+            onPick={(file) => void cv.upload(file)}
+            onRetry={() => void cv.retry()}
+          />
+          <UploadTips />
+        </div>
+      )}
     </div>
   );
 }

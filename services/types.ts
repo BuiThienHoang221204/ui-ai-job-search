@@ -20,11 +20,6 @@ export interface QueuedReport extends QueuedResult {
   mode: "AGGREGATE" | "TARGETED";
 }
 
-export interface QueuedScrapeRun extends QueuedResult {
-  runId: string;
-  portal: string;
-}
-
 export type WorkStatus = "PENDING" | "RUNNING" | "DONE" | "FAILED";
 
 export interface Paginated<T> {

@@ -1,8 +1,8 @@
 export { openBlobInNewTab } from "./blob";
 export { cn } from "./cn";
 export { companyColor, companyInitials, personInitials } from "./company";
-export { formatDate, formatDateTime, relativeDay, relativeTime } from "./date";
-export { formatCount, formatDuration } from "./duration";
+export { formatDate, relativeDay, relativeTime } from "./date";
+export { formatCount } from "./duration";
 export {
   displayLocation,
   LOCATION_UNKNOWN,
@@ -20,9 +20,8 @@ export {
   matchTone,
   matchToneClasses,
   scoreBarClass,
-  successRateTone,
   type ScoreTone,
   type ToneClasses,
 } from "./score";
-export { fold, isJsonText, joinList, parseList, toJsonText } from "./text";
+export { fold } from "./text";
 export { safeNextPath } from "./redirect";

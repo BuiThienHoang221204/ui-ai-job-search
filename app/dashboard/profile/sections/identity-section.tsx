@@ -1,74 +1,55 @@
 "use client";
 
-import { IdentificationCard } from "@phosphor-icons/react/ssr";
-import { AreaField, ListField, TextField } from "@/components/ui/field";
-import { SectionCard } from "@/components/ui/section-card";
-import type { ProfileSectionProps } from "../profile-draft";
+import { PencilSimple, User } from "@phosphor-icons/react/ssr";
+import { DashSection } from "@/components/dashboard/dash-section";
+import { useProfile, useProfileUi } from "../use-profile";
 
-const TEXT_FIELDS = [
-  {
-    key: "headline",
-    label: "Chức danh",
-    placeholder: "Frontend Engineer",
-  },
-  {
-    key: "employmentStatus",
-    label: "Tình trạng hiện tại",
-    placeholder: "Đang đi làm / Đang tìm việc",
-  },
-  {
-    key: "location",
-    label: "Địa điểm",
-    placeholder: "Thành phố Hồ Chí Minh",
-  },
-  {
-    key: "phone",
-    label: "Số điện thoại",
-    placeholder: "0901234567",
-  },
-  { key: "country", label: "Quốc gia", placeholder: "Việt Nam" },
-  { key: "citizenship", label: "Quốc tịch", placeholder: "Việt Nam" },
-  {
-    key: "workPermit",
-    label: "Giấy phép lao động",
-    placeholder: "Không cần / Đã có / Cần bảo lãnh",
-  },
-] as const;
+const EDIT_BUTTON =
+  "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-600 hover:border-primary-300 hover:text-primary-600";
 
-export function IdentitySection({ draft, update }: ProfileSectionProps) {
+/** Phần "Giới thiệu": đoạn tự giới thiệu và vài thông tin liên hệ; sửa trong modal. */
+export function IdentitySection() {
+  const { data: profile } = useProfile();
+  const edit = useProfileUi((state) => state.edit);
+  if (!profile) return null;
+
+  const facts = [
+    ["Nơi ở", [profile.location, profile.country].filter(Boolean).join(", ")],
+    ["Điện thoại", profile.phone],
+    ["Ngôn ngữ", profile.languages.join(", ")],
+    ["Tình trạng", profile.employmentStatus],
+  ];
+
   return (
-    <SectionCard
-      icon={IdentificationCard}
-      title="Định danh & điều kiện ứng tuyển"
-      description="Quốc tịch và giấy phép lao động quyết định một tin tuyển dụng có được coi là đủ điều kiện ứng tuyển hay không"
+    <DashSection
+      title="Giới thiệu"
+      icon={User}
+      action={
+        <button
+          type="button"
+          className={EDIT_BUTTON}
+          onClick={() => edit({ kind: "basic" })}
+        >
+          <PencilSimple className="size-3.5" />
+          Sửa
+        </button>
+      }
     >
-      <div className="grid gap-4 sm:grid-cols-2">
-        {TEXT_FIELDS.map((field) => (
-          <TextField
-            key={field.key}
-            id={`p-${field.key}`}
-            label={field.label}
-            placeholder={field.placeholder}
-            value={draft[field.key]}
-            onChange={(value) => update(field.key, value)}
-          />
+      <p className="max-w-[68ch] text-sm text-slate-700">
+        {profile.summary || (
+          <span className="text-slate-400">
+            Chưa có đoạn giới thiệu. AI dùng đoạn này làm mở đầu CV.
+          </span>
+        )}
+      </p>
+      <dl className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-500">
+        {facts.map(([label, value]) => (
+          <div key={label} className="flex gap-1">
+            <dt>{label}</dt>
+            <dd className="font-medium text-slate-700">{value || "—"}</dd>
+          </div>
         ))}
-      </div>
-      <ListField
-        id="p-languages"
-        label="Ngôn ngữ"
-        placeholder="Tiếng Việt, Tiếng Anh"
-        value={draft.languages}
-        onChange={(value) => update("languages", value)}
-      />
-      <AreaField
-        id="p-summary"
-        label="Giới thiệu bản thân"
-        rows={5}
-        placeholder="Vài dòng về kinh nghiệm, thế mạnh và điều bạn đang tìm kiếm"
-        value={draft.summary}
-        onChange={(value) => update("summary", value)}
-      />
-    </SectionCard>
+      </dl>
+    </DashSection>
   );
 }

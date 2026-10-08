@@ -2,15 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import type { PartialProposal } from "@/lib/profile-partial";
 import { ModelStreamError, streamModel } from "@/lib/model-stream";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
+import { invalidateAfter } from "@/lib/query-keys";
 import { useToast } from "@/components/ui/toast";
-import {
-  defaultSelection,
-  proposalRows,
-  type ApplicableField,
-} from "@/lib/profile-draft-content";
 import {
   profileDraftService,
   profileService,
@@ -19,223 +16,145 @@ import {
 } from "@/services";
 
 const LOGIN_NEXT = "/login?next=/dashboard/profile/upload";
-
 const POLL_MS = 2_000;
 const MAX_POLLS = 105;
 
-/** Toàn bộ trạng thái và tác vụ của màn đọc CV: nộp, chờ, chạy lại và áp dụng đề xuất. */
+/** Trạng thái và tác vụ của màn đọc CV: nộp file, chờ đọc, chạy lại và lưu vào hồ sơ. */
 export function useCvUpload() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const toast = useToast();
   const mounted = useRef(true);
 
   const [profile, setProfile] = useState<ProfileRecord | null>(null);
   const [draft, setDraft] = useState<ProfileDraftRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [file, setFile] = useState<File | null>(null);
   const [partial, setPartial] = useState<PartialProposal | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const toast = useToast();
-  const [waiting, setWaiting] = useState(false);
-  const [retrying, setRetrying] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
-  const [selected, setSelected] = useState<ApplicableField[]>([]);
-  const [applying, setApplying] = useState(false);
+  const fail = (err: unknown, fallback: string) => {
+    if (!mounted.current) return;
+    if (apiErrorStatus(err) === 401) router.replace(LOGIN_NEXT);
+    else setError(apiErrorMessage(err, fallback));
+  };
 
   useEffect(() => {
     mounted.current = true;
+    void Promise.all([
+      profileService.get().catch(() => null),
+      profileDraftService.latest().catch((err: unknown) => {
+        if (apiErrorStatus(err) === 404) return null;
+        throw err;
+      }),
+    ])
+      .then(([current, latest]) => {
+        if (!mounted.current) return;
+        setProfile(current);
+        setDraft(latest);
+      })
+      .catch((err: unknown) => fail(err, "Không tải được dữ liệu hồ sơ"))
+      .finally(() => mounted.current && setLoading(false));
     return () => {
       mounted.current = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    void (async () => {
-      try {
-        const [current, latest] = await Promise.all([
-          profileService.get().catch(() => null),
-          profileDraftService.latest().catch((err: unknown) => {
-            if (apiErrorStatus(err) === 404) return null;
-            throw err;
-          }),
-        ]);
-        if (cancelled) return;
-        setProfile(current);
-        setDraft(latest);
-        if (latest?.proposal) {
-          setSelected(defaultSelection(proposalRows(latest.proposal, current)));
-        }
-      } catch (err) {
-        if (cancelled) return;
-        if (apiErrorStatus(err) === 401) {
-          router.replace(LOGIN_NEXT);
-          return;
-        }
-        setError(apiErrorMessage(err, "Không tải được dữ liệu hồ sơ"));
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [router]);
-
-  /** Hỏi lại trạng thái bản nháp theo chuỗi cho tới khi xong hoặc hỏng. */
+  /** Hỏi lại trạng thái bản nháp tới khi đọc xong hoặc hỏng (dùng sau khi bấm Thử lại). */
   const waitForDraft = async (draftId: string) => {
-    setWaiting(true);
     for (let attempt = 0; attempt < MAX_POLLS; attempt += 1) {
       await new Promise((resolve) => setTimeout(resolve, POLL_MS));
       if (!mounted.current) return;
-
-      try {
-        const current = await profileDraftService.get(draftId);
-        if (!mounted.current) return;
-        setDraft(current);
-
-        if (current.status === "DONE" || current.status === "FAILED") {
-          setWaiting(false);
-          if (current.proposal) {
-            setSelected(
-              defaultSelection(proposalRows(current.proposal, profile)),
-            );
-          }
-          return;
-        }
-      } catch (err) {
-        if (!mounted.current) return;
-        if (apiErrorStatus(err) === 401) {
-          router.replace(LOGIN_NEXT);
-          return;
-        }
-      }
+      const current = await profileDraftService.get(draftId).catch(() => null);
+      if (!mounted.current || !current) continue;
+      setDraft(current);
+      if (current.status === "DONE" || current.status === "FAILED") return;
     }
-
-    if (!mounted.current) return;
-    setWaiting(false);
-    setError(
-      "Chờ quá lâu mà chưa có kết quả. Lượt đọc vẫn đang chạy ở nền — mở lại trang sau ít phút.",
-    );
+    if (mounted.current)
+      setError(
+        "Chờ quá lâu mà chưa có kết quả. Lượt đọc vẫn chạy ở nền, mở lại trang sau ít phút.",
+      );
   };
 
-  const upload = async () => {
-    if (!file) return;
-    setUploading(true);
+  /** Nộp file rồi đọc bằng stream để danh sách "đang đọc" hiện dần. */
+  const upload = async (picked: File) => {
+    setFile(picked);
+    setBusy(true);
     setError(null);
-
+    setDismissed(false);
     try {
-      const receipt = await profileDraftService.uploadCv(file, true);
+      const receipt = await profileDraftService.uploadCv(picked, true);
       if (!mounted.current) return;
       setDraft(await profileDraftService.get(receipt.draftId));
-      setFile(null);
-
-      try {
-        const done = await streamModel<ProfileDraftRecord, PartialProposal>({
-          path: `/profile-drafts/${receipt.draftId}/synthesize-stream`,
-          onPartial: (value) => {
-            if (mounted.current) setPartial(value);
-          },
-        });
-        if (mounted.current) setDraft(done);
-      } catch (streamError) {
-        if (!mounted.current) return;
-        setError(
-          streamError instanceof ModelStreamError
-            ? streamError.message
-            : "Không đọc được CV",
-        );
-      } finally {
-        if (mounted.current) setPartial(null);
-      }
+      const done = await streamModel<ProfileDraftRecord, PartialProposal>({
+        path: `/profile-drafts/${receipt.draftId}/synthesize-stream`,
+        onPartial: (value) => mounted.current && setPartial(value),
+      });
+      if (mounted.current) setDraft(done);
     } catch (err) {
-      if (!mounted.current) return;
-      if (apiErrorStatus(err) === 401) {
-        router.replace(LOGIN_NEXT);
-        return;
-      }
-      setError(apiErrorMessage(err, "Không nộp được CV"));
+      if (err instanceof ModelStreamError) setError(err.message);
+      else fail(err, "Không đọc được CV");
     } finally {
-      if (mounted.current) setUploading(false);
+      if (mounted.current) {
+        setBusy(false);
+        setPartial(null);
+      }
     }
   };
 
-  /** Chạy lại lượt đọc CV trên bản nháp hiện có mà không cần nộp lại file. */
   const retry = async () => {
     if (!draft) return;
-    setRetrying(true);
+    setBusy(true);
     setError(null);
-
     try {
       const restarted = await profileDraftService.retry(draft.id);
       if (!mounted.current) return;
       setDraft(restarted);
-      void waitForDraft(restarted.id);
+      await waitForDraft(restarted.id);
     } catch (err) {
-      if (!mounted.current) return;
-      if (apiErrorStatus(err) === 401) {
-        router.replace(LOGIN_NEXT);
-        return;
-      }
-      setError(apiErrorMessage(err, "Không chạy lại được lượt đọc"));
+      fail(err, "Không chạy lại được lượt đọc");
     } finally {
-      if (mounted.current) setRetrying(false);
+      if (mounted.current) setBusy(false);
     }
   };
 
-  const apply = async () => {
-    if (!draft || selected.length === 0) return;
-    setApplying(true);
-    setError(null);
-
+  /** Lưu giá trị đã duyệt rồi về trang Hồ sơ. */
+  const apply = async (values: Record<string, unknown>) => {
+    if (!draft) return;
+    setSaving(true);
     try {
-      const updated = await profileDraftService.apply(draft.id, selected);
-      if (!mounted.current) return;
-      setDraft(updated);
-      setProfile(await profileService.get().catch(() => profile));
-      toast.success("Đã ghi những trường bạn chọn vào hồ sơ.");
+      await profileDraftService.apply(draft.id, values);
+      invalidateAfter(queryClient, "saveProfile");
+      toast.success("Đã cập nhật hồ sơ từ CV");
+      router.push("/dashboard/profile");
     } catch (err) {
-      if (!mounted.current) return;
-      if (apiErrorStatus(err) === 401) {
-        router.replace(LOGIN_NEXT);
-        return;
-      }
-      toast.danger(apiErrorMessage(err, "Không áp dụng được vào hồ sơ"));
-    } finally {
-      if (mounted.current) setApplying(false);
+      toast.danger(apiErrorMessage(err, "Không lưu được vào hồ sơ"));
+      if (mounted.current) setSaving(false);
     }
   };
 
-  const toggle = (field: ApplicableField) =>
-    setSelected((current) =>
-      current.includes(field)
-        ? current.filter((item) => item !== field)
-        : [...current, field],
-    );
-
-  const rows = draft?.proposal ? proposalRows(draft.proposal, profile) : [];
-  const running =
-    waiting || draft?.status === "PENDING" || draft?.status === "RUNNING";
+  const reading =
+    busy || draft?.status === "PENDING" || draft?.status === "RUNNING";
+  const reviewing =
+    !reading && !dismissed && draft?.status === "DONE" && !draft.appliedAt;
 
   return {
+    profile,
     draft,
     loading,
     error,
     file,
-    setFile,
-    uploading,
-    retrying,
-    selected,
-    applying,
-    rows,
     partial,
-    running,
+    reading,
+    reviewing,
+    saving,
     upload,
     retry,
     apply,
-    toggle,
+    dismiss: () => setDismissed(true),
   };
 }

@@ -1,6 +1,5 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 
-export const AUTH_COOKIE = "aijob_token";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api",

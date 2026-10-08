@@ -105,29 +105,6 @@ export function Paragraph({
   );
 }
 
-/** Khung một mục con, kèm nút xoá ở góc. */
-export function EntryBox({
-  onRemove,
-  children,
-}: {
-  onRemove: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="relative space-y-2 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
-      <button
-        type="button"
-        onClick={onRemove}
-        aria-label="Xoá mục này"
-        className="absolute right-2 top-2 rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700"
-      >
-        <X className="size-4" />
-      </button>
-      {children}
-    </div>
-  );
-}
-
 /** Mục con thu gọn được, kèm nút đổi thứ tự và xoá. */
 export function CollapsibleEntry({
   title,

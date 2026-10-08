@@ -48,13 +48,6 @@ export function matchToneClasses(score: number): ToneClasses {
   return TONE_CLASSES[matchTone(score)];
 }
 
-/** Bộ class màu theo tỷ lệ thành công của AI gateway (ngưỡng cao hơn `matchTone`). */
-export function successRateTone(rate: number): ToneClasses {
-  if (rate >= 95) return TONE_CLASSES.good;
-  if (rate >= 80) return TONE_CLASSES.mid;
-  return TONE_CLASSES.low;
-}
-
 /** Màu thanh cho điểm từng chiều đánh giá, `null` thì tô xám. */
 export function scoreBarClass(value: number | null): string {
   if (value === null) return "bg-slate-200";

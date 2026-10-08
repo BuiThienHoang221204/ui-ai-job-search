@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "@phosphor-icons/react/ssr";
 import { cn } from "@/utils";
 
@@ -12,13 +12,8 @@ const BANNER_SRC = {
   "728x90": null as string | null,
 };
 
-// const NATIVE_SRC: string | null = "https://bauval.org/21/d7963d5bfeb88dec2954b557fd490eca";
-const NATIVE_SRC: string | null = null;
-
 export type BannerSize = keyof typeof BANNER_SRC;
 export type AdAlign = "start" | "center" | "end";
-
-export const RAIL_AD_AVAILABLE = Boolean(BANNER_SRC["300x250"]);
 
 let bannerQueue: Promise<void> = Promise.resolve();
 
@@ -146,66 +141,3 @@ export function ResponsiveBannerAd({ align, className }: { align?: AdAlign; clas
   );
 }
 
-/** Cột phải gồm 2 banner 300x250 dính lại khi cuộn màn hình rộng >= 1280px */
-export function StickyRailAd({ className, onEmpty }: { className?: string; onEmpty?: () => void }) {
-  const isDesktop = useSyncExternalStore(
-    (cb) => {
-      const media = window.matchMedia("(min-width: 1280px)");
-      media.addEventListener("change", cb);
-      return () => media.removeEventListener("change", cb);
-    },
-    () => window.matchMedia("(min-width: 1280px)").matches,
-    () => false,
-  );
-  const [closedCount, setClosedCount] = useState(0);
-
-  const closeOne = () => {
-    const next = closedCount + 1;
-    setClosedCount(next);
-    if (next >= 2) onEmpty?.();
-  };
-
-  if (!RAIL_AD_AVAILABLE || !isDesktop || closedCount >= 2) return null;
-
-  return (
-    <div className={cn("sticky top-6 flex flex-col gap-6", className)}>
-      <BannerAd size="300x250" onClose={closeOne} />
-      <BannerAd size="300x250" onClose={closeOne} />
-    </div>
-  );
-}
-
-/** Native banner hoà vào nội dung */
-export function NativeAd({
-  align,
-  className,
-  onClose,
-}: {
-  align?: AdAlign;
-  className?: string;
-  onClose?: () => void;
-}) {
-  const host = useRef<HTMLDivElement>(null);
-  const containerId = NATIVE_SRC?.split("/").pop();
-
-  useEffect(() => {
-    const root = host.current;
-    if (!root || !NATIVE_SRC || !containerId) return;
-    const container = document.createElement("div");
-    container.id = `container-${containerId}`;
-    const script = document.createElement("script");
-    script.async = true;
-    script.dataset.cfasync = "false";
-    script.src = NATIVE_SRC;
-    root.append(script, container);
-    return () => root.replaceChildren();
-  }, [containerId]);
-
-  if (!NATIVE_SRC || !containerId) return null;
-
-  return (
-    <AdFrame className={className} align={align} onClose={onClose}>
-      <div ref={host} className="w-full" />
-    </AdFrame>
-  );
-}

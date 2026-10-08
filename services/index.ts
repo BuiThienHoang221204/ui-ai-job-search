@@ -9,7 +9,6 @@ export { interviewService } from "./interview";
 export { upskillService } from "./upskill";
 export { profileService } from "./profile";
 export { profileDraftService } from "./profile-draft";
-export { scraperService } from "./scraper";
 export { companiesService } from "./companies";
 
 export type {
@@ -18,7 +17,6 @@ export type {
   QueuedDocument,
   QueuedReport,
   QueuedResult,
-  QueuedScrapeRun,
   WorkStatus,
 } from "./types";
 
@@ -56,7 +54,7 @@ export type {
 } from "./documents";
 export type { InterviewPrepRecord } from "./interview";
 export type { UpskillReportRecord } from "./upskill";
-export type { ProfileRecord } from "./profile";
+export type { ProfileRecord, QuickStartInput } from "./profile";
 export type {
   CvUploadReceipt,
   EvidenceRecord,
@@ -76,4 +74,3 @@ export type {
   CompanyBriefView,
   CompanyVerdict,
 } from "./companies";
-export type { ScrapeRunRecord } from "./scraper";

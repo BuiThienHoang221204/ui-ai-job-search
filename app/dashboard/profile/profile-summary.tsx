@@ -1,85 +1,138 @@
-import type { AuthUser } from "@/types";
-import type { ProfileRecord } from "@/services";
-import { Badge } from "@/components/ui/badge";
+"use client";
+
+import Link from "next/link";
+import { PencilSimple } from "@phosphor-icons/react/ssr";
+import { useApiQuery } from "@/hooks/use-api-query";
+import { keys } from "@/lib/query-keys";
+import { jobsService } from "@/services";
+import { useSession } from "@/components/dashboard/session";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { ProgressCircle } from "@/components/ui/progress-circle";
+import { SelectMenu } from "@/components/ui/select-menu";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
-import { personInitials } from "@/utils";
+import { cn, personInitials } from "@/utils";
+import { EXPERIENCE_LEVELS } from "./profile-config";
+import { useProfile, useProfileUi, useSaveProfile } from "./use-profile";
 
-/** Một dòng "nhãn: giá trị"; thiếu dữ liệu thì nói thẳng là chưa điền. */
-function SummaryLine({ label, value }: { label: string; value: string }) {
-  return (
-    <p>
-      <span className="text-slate-400">{label}: </span>
-      {value || "chưa điền"}
-    </p>
+/** Đầu trang hồ sơ: tên, chức danh và hai ô Ngành / Cấp bậc quyết định "Việc làm phù hợp". */
+export function ProfileHeader() {
+  const { user } = useSession();
+  const { data: profile } = useProfile();
+  const edit = useProfileUi((state) => state.edit);
+  const { saveSearch, saving } = useSaveProfile();
+  const filters = useApiQuery(
+    ["jobs", "filters"],
+    () => jobsService.filters(),
+    {
+      errorMessage: "Không tải được danh mục ngành nghề",
+    },
   );
-}
+  const matching = useApiQuery(
+    keys.jobList({ scored: true, limit: 1 }),
+    () => jobsService.list({ scored: true, limit: 1 }),
+    { errorMessage: "Không đếm được việc làm phù hợp" },
+  );
+  if (!profile) return null;
 
-/** Thẻ danh thiếp và vòng tròn mức hoàn thiện, đặt trên các tab chỉnh sửa. */
-export function ProfileSummary({
-  profile,
-  user,
-}: {
-  profile: ProfileRecord;
-  user: AuthUser | null;
-}) {
+  const occupation = profile.occupationCode ?? "";
+  const level =
+    profile.experienceLevel === "UNKNOWN" ? "" : profile.experienceLevel;
+
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
-      <Card className="p-5 lg:col-span-2">
-        <div className="flex items-center gap-3">
-          <div className="from-primary-600 flex size-12 items-center justify-center rounded-full bg-gradient-to-br to-indigo-500 text-sm font-bold text-white">
-            {personInitials(user?.name)}
-          </div>
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="font-semibold text-slate-900">
-                {user?.name ?? "—"}
-              </p>
-              {user?.role === "ADMIN" && (
-                <Badge variant="primary">Quản trị</Badge>
-              )}
-            </div>
-            <p className="truncate text-xs text-slate-400">
-              {user?.email ?? "—"}
+    <Card className="p-5 sm:p-6">
+      <div className="flex items-center gap-4">
+        <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary-600 text-lg font-bold text-white">
+          {personInitials(user?.name)}
+        </div>
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-xl font-bold tracking-tight text-slate-900">
+            {user?.name ?? "Hồ sơ của tôi"}
+          </h1>
+          <p className="truncate text-sm text-slate-500">
+            {profile.headline || "Chưa có chức danh"}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => edit({ kind: "basic" })}
+          className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 self-start rounded-lg border border-slate-200 px-2.5 text-xs font-semibold text-slate-600 hover:border-primary-300 hover:text-primary-600"
+        >
+          <PencilSimple className="size-3.5" />
+          Sửa
+        </button>
+      </div>
+
+      <div id="profile-search" className="mt-5 rounded-2xl bg-primary-50 p-4">
+        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <p className="text-sm font-semibold text-slate-900">
+              Hệ thống đang tìm việc cho bạn theo
+            </p>
+            <p className="text-xs text-slate-500">
+              “Việc làm phù hợp” chỉ hiện tin đúng ngành này, cấp bậc lệch tối
+              đa một bậc.
             </p>
           </div>
+          <p className="text-sm text-slate-600">
+            <b className="mr-1 text-xl text-primary-600 tabular-nums">
+              {matching.data?.total ?? "…"}
+            </b>
+            tin phù hợp
+            <Link
+              href="/dashboard/jobs?scored=1"
+              className="ml-2 font-semibold text-primary-600 hover:text-primary-700"
+            >
+              Xem việc →
+            </Link>
+          </p>
         </div>
-        <div className="mt-4 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
-          <SummaryLine label="Chức danh" value={profile.headline ?? ""} />
-          <SummaryLine
-            label="Địa điểm"
-            value={[profile.location, profile.country].filter(Boolean).join(", ")}
-          />
-          <SummaryLine
-            label="Tình trạng"
-            value={profile.employmentStatus ?? ""}
-          />
-          <SummaryLine
-            label="Kỹ năng chính"
-            value={
-              profile.primarySkills.length > 0
-                ? `${profile.primarySkills.length} kỹ năng`
-                : ""
-            }
-          />
-        </div>
-      </Card>
 
-      <Card className="flex flex-col items-center gap-3 p-5">
-        <ProgressCircle value={profile.completion} size={110} strokeWidth={9}>
-          <span className="font-mono text-xl font-bold text-slate-900">
-            {profile.completion}%
-          </span>
-          <span className="text-3xs text-slate-400">hoàn thiện</span>
-        </ProgressCircle>
-        <Progress value={profile.completion} className="w-full" />
-        <p className="text-center text-xs leading-relaxed text-slate-400">
-          Hồ sơ chưa đủ dữ liệu sẽ bị bỏ qua khi hệ thống chấm điểm tự động.
-        </p>
-      </Card>
-    </div>
+        <div className="grid gap-2.5 sm:grid-cols-2">
+          <div>
+            <p className="mb-1 text-2xs text-slate-500">Ngành</p>
+            <SelectMenu
+              variant="field"
+              label="Chưa chọn"
+              searchPlaceholder="Tìm ngành…"
+              value={occupation}
+              disabled={saving}
+              options={(filters.data?.occupations ?? []).map((group) => ({
+                value: group.code,
+                label: group.name,
+              }))}
+              onChange={(next) =>
+                saveSearch({
+                  occupationCode: next,
+                  experienceLevel: level || undefined,
+                })
+              }
+            />
+          </div>
+          <div>
+            <p
+              className={cn(
+                "mb-1 text-2xs",
+                level ? "text-slate-500" : "text-amber-600",
+              )}
+            >
+              Cấp bậc{level ? "" : " · chưa chọn, đang suy từ số năm trong CV"}
+            </p>
+            <SelectMenu
+              variant="field"
+              label="Chưa chọn"
+              value={level}
+              disabled={saving || !occupation}
+              options={EXPERIENCE_LEVELS}
+              onChange={(next) =>
+                saveSearch({
+                  occupationCode: occupation,
+                  experienceLevel: next,
+                })
+              }
+            />
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 }
 
@@ -87,13 +140,11 @@ export function ProfileSummary({
 export function ProfileSkeleton() {
   return (
     <SkeletonPage>
-      <Skeleton className="h-14 w-72" />
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Skeleton className="h-44 lg:col-span-2" />
-        <Skeleton className="h-44" />
+      <Skeleton className="h-48" />
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(18.75rem,1fr)]">
+        <Skeleton className="h-96" />
+        <Skeleton className="h-72" />
       </div>
-      <Skeleton className="h-11" />
-      <Skeleton className="h-96" />
     </SkeletonPage>
   );
 }

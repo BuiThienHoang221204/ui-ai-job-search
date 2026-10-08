@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { apiErrorMessage } from "@/lib/axios";
 import { mockInterviewService, jobsService } from "@/services";
@@ -40,23 +40,6 @@ export function useMockInterview(jobId: string) {
 
   const runId = startedId ?? history.data?.items[0]?.id ?? null;
   const { run, error, timedOut, refresh } = useMockInterviewRun(runId, loginNext);
-
-  const send = useCallback(
-    async (action: () => Promise<{ runId: string }>, fallback: string) => {
-      setSending(true);
-      try {
-        const receipt = await action();
-        setStartedId(receipt.runId);
-        refresh();
-        invalidateAfter(queryClient, "mockInterview");
-      } catch (err) {
-        toast.danger(apiErrorMessage(err, fallback));
-      } finally {
-        setSending(false);
-      }
-    },
-    [refresh, queryClient, toast],
-  );
 
   const start = () => {
     setSending(true);

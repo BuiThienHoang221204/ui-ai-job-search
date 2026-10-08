@@ -43,7 +43,7 @@ export const keys = {
 const AFFECTED: Record<string, readonly (readonly string[])[]> = {
   saveJob: [keys.jobs(), ["job"]],
   applicationStatus: [keys.applications(), keys.dashboard()],
-  saveProfile: [keys.profile(), keys.dashboard()],
+  saveProfile: [keys.profile(), keys.dashboard(), keys.jobLists()],
   createDocument: [keys.documents()],
   scoreJob: [keys.matches(), keys.jobs(), ["job"], keys.dashboard()],
   mockInterview: [keys.mockInterviews()],

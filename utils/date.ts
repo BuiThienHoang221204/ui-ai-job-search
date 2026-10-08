@@ -7,16 +7,6 @@ export function formatDate(date: string): string {
   }).format(new Date(date));
 }
 
-/** Định dạng ngày kèm giờ phút, không kèm năm. */
-export function formatDateTime(iso: string): string {
-  return new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso));
-}
-
 const MINUTE_MS = 60_000;
 const HOUR_MS = 3_600_000;
 const DAY_MS = 86_400_000;

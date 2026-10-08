@@ -25,27 +25,18 @@ export function readSidebar(): SidebarState {
   return savedSidebar();
 }
 
-const listeners = new Set<() => void>();
-
-/** Đăng ký lắng nghe thay đổi sidebar, trả về hàm huỷ đăng ký. */
-export function subscribeSidebar(listener: () => void): () => void {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
 /** Gắn trạng thái sidebar lên thẻ html mà không lưu lại. */
 export function paintSidebar(state: SidebarState): void {
   if (typeof document === "undefined") return;
   document.documentElement.dataset.sidebar = state;
 }
 
-/** Áp dụng trạng thái sidebar, lưu lại và báo cho người nghe. */
+/** Áp dụng trạng thái sidebar và lưu lại. */
 export function applySidebar(state: SidebarState): void {
   paintSidebar(state);
   try {
     window.localStorage.setItem(SIDEBAR_KEY, state);
   } catch {}
-  for (const listener of listeners) listener();
 }
 
 /** Đảo trạng thái thu gọn/mở rộng của sidebar. */
@@ -63,8 +54,7 @@ export function squeezeSidebar(): () => void {
     paintSidebar(
       window.innerWidth < SPLIT_ROOMY_WIDTH ? "collapsed" : savedSidebar(),
     );
-    for (const listener of listeners) listener();
-  };
+    };
 
   fit();
   window.addEventListener("resize", fit);
@@ -72,12 +62,8 @@ export function squeezeSidebar(): () => void {
   return () => {
     window.removeEventListener("resize", fit);
     paintSidebar(savedSidebar());
-    for (const listener of listeners) listener();
-  };
+    };
 }
-
-/** Ảnh chụp cho `useSyncExternalStore`; trên máy chủ luôn là mặc định. */
-export const serverSidebar = (): SidebarState => DEFAULT_SIDEBAR;
 
 export const SIDEBAR_BOOTSTRAP = `
 (function(){

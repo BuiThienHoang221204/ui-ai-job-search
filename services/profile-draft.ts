@@ -127,8 +127,9 @@ export const profileDraftService = {
       .post<ProfileDraftRecord>(`/profile-drafts/${id}/retry`)
       .then((r) => r.data),
 
-  apply: (id: string, fields: string[]) =>
+  /** Lưu vào hồ sơ đúng những giá trị người dùng đã duyệt từ bản đọc này. */
+  apply: (id: string, values: Record<string, unknown>) =>
     api
-      .put<ProfileDraftRecord>(`/profile-drafts/${id}/apply`, { fields })
+      .put<ProfileDraftRecord>(`/profile-drafts/${id}/apply`, values)
       .then((r) => r.data),
 };

@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Sparkle, UserPlus, WarningCircle } from "@phosphor-icons/react/ssr";
+import { UserPlus, WarningCircle } from "@phosphor-icons/react/ssr";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
