@@ -8,7 +8,7 @@ import { EmptyHint } from "@/components/ui/empty-state";
 const GRID =
   "grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(100%,18.75rem),1fr))] md:grid-rows-[auto] md:auto-rows-[0] md:gap-y-0 md:overflow-hidden";
 
-/** Lưới các việc phù hợp nhất; số cột luôn là 1 hoặc 3. */
+/** 4 tin chấm bằng AI gần nhất; từ tablet trở lên chỉ hiện đúng một hàng. */
 export function TopMatches({
   matches,
 }: {
@@ -19,18 +19,18 @@ export function TopMatches({
       <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
         <div>
           <h2 className="text-sm font-semibold tracking-tight text-slate-900 sm:text-base">
-            Việc làm phù hợp nhất
+            Đã chấm bằng AI gần đây
           </h2>
           <p className="text-xs text-slate-500">
-            Xếp hạng theo điểm phù hợp tổng hợp, đã loại tin không đủ điều kiện
+            Những tin bạn chấm điểm gần nhất, đã loại tin không đủ điều kiện
             ứng tuyển
           </p>
         </div>
         <Link
-          href="/dashboard/jobs"
+          href="/dashboard/matches"
           className="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 text-xs font-semibold transition-colors"
         >
-          Xem tất cả việc làm <ArrowRight className="size-4" />
+          Xem tất cả tin đã chấm <ArrowRight className="size-4" />
         </Link>
       </div>
 
