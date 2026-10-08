@@ -5,7 +5,8 @@ import { toJobCard } from "@/lib/adapters";
 import { JobCard } from "@/components/dashboard/job-card";
 import { EmptyHint } from "@/components/ui/empty-state";
 
-const GRID = "grid gap-4 xl:grid-cols-3";
+const GRID =
+  "grid gap-4 grid-cols-[repeat(auto-fill,minmax(min(100%,18.75rem),1fr))] md:grid-rows-[auto] md:auto-rows-[0] md:gap-y-0 md:overflow-hidden";
 
 /** Lưới các việc phù hợp nhất; số cột luôn là 1 hoặc 3. */
 export function TopMatches({

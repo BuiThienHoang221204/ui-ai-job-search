@@ -20,7 +20,6 @@ const EXPERIENCE_OPTIONS = [
 interface QuickStartOnboardingProps {
   firstName: string;
   onDone: () => void;
-  onSkip: () => void;
 }
 
 /** Hàng chọn 2 cột (nhóm ngành -> nghề), chọn ĐÚNG MỘT, dùng chung style với OccupationPicker nhưng đơn chọn. */
@@ -176,7 +175,7 @@ function ExperienceStep({
         <Button variant="ghost" onClick={onBack}>
           Quay lại
         </Button>
-        <Button loading={submitting} onClick={onFinish}>
+        <Button loading={submitting} disabled={!experienceLevel} onClick={onFinish}>
           Hoàn thành
         </Button>
       </div>
@@ -184,12 +183,8 @@ function ExperienceStep({
   );
 }
 
-/** Bước "Chọn nhanh" ngay sau đăng ký - mở khoá "Việc làm phù hợp" trong lúc chờ user tải CV thật lên. Bỏ qua được, không ép. */
-export function QuickStartOnboarding({
-  firstName,
-  onDone,
-  onSkip,
-}: QuickStartOnboardingProps) {
+/** Bước bắt buộc sau đăng ký: chọn ngành và kinh nghiệm - "Việc làm phù hợp" lọc theo đúng hai câu trả lời này. */
+export function QuickStartOnboarding({ firstName, onDone }: QuickStartOnboardingProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [occupationCode, setOccupationCode] = useState<string | null>(null);
   const [subOccupationCode, setSubOccupationCode] = useState<string | null>(null);
@@ -198,14 +193,14 @@ export function QuickStartOnboarding({
   const [error, setError] = useState<string | null>(null);
 
   async function handleFinish() {
-    if (!occupationCode) return;
+    if (!occupationCode || !experienceLevel) return;
     setSubmitting(true);
     setError(null);
     try {
       await profileService.quickStart({
         occupationCode,
         subOccupationCode: subOccupationCode ?? undefined,
-        experienceLevel: experienceLevel ?? undefined,
+        experienceLevel,
       });
       onDone();
     } catch (err) {
@@ -223,16 +218,9 @@ export function QuickStartOnboarding({
               Chào {firstName}, cho chúng tôi biết thêm về bạn
             </h1>
             <p className="mt-1 max-w-xl text-xs leading-relaxed text-slate-500 sm:text-sm">
-              Vài giây để thấy việc làm phù hợp ngay, trong lúc bạn hoàn thiện hồ sơ đầy đủ sau.
+              Chọn ngành và kinh nghiệm để chúng tôi hiển thị đúng việc làm phù hợp với bạn.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onSkip}
-            className="shrink-0 text-xs font-semibold text-slate-400 hover:text-slate-600"
-          >
-            Bỏ qua
-          </button>
         </div>
 
         <div className="mt-5">

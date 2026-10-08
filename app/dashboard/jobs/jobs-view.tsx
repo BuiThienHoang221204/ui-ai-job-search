@@ -18,7 +18,8 @@ import {
 } from "@/components/dashboard/job-filter-bar";
 import { cn } from "@/utils";
 import { Alert } from "@/components/ui/alert";
-import { EmptyHint } from "@/components/ui/empty-state";
+import Link from "next/link";
+import { EmptyHint, EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton, SkeletonGrid, SkeletonPage } from "@/components/ui/skeleton";
 import { JobDetailView } from "./[id]/job-detail-view";
@@ -154,6 +155,20 @@ export function JobsView() {
     );
   }
 
+  if (page.data.needsOccupation) {
+    return (
+      <EmptyState
+        title="Chọn ngành nghề để xem việc làm phù hợp"
+        description="Trang này hiển thị việc làm đúng ngành và kinh nghiệm của bạn. Hãy chọn ngành nghề ở trang Tổng quan trước."
+        action={
+          <Link href="/dashboard" className="text-primary-600 hover:text-primary-700 text-sm font-semibold">
+            Đi tới Tổng quan
+          </Link>
+        }
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col xl:h-[calc(100dvh-2.5rem)]">
       <JobFilterBar
@@ -172,7 +187,7 @@ export function JobsView() {
               {page.data.total} tin
               {scored && (
                 <span className="text-primary-600 ml-1 font-medium">
-                  · Khớp kỹ năng ≥50%
+                  · Đúng ngành và kinh nghiệm
                 </span>
               )}
             </span>

@@ -11,8 +11,10 @@ export type EvaluateResult =
       verdict: JobMatchWithJob["verdict"];
     };
 
+export type MatchSort = "newest" | "score_desc" | "score_asc";
+
 export const matchesService = {
-  list: (params?: { limit?: number; offset?: number }) =>
+  list: (params?: { limit?: number; offset?: number; sort?: MatchSort }) =>
     api
       .get<Paginated<JobMatchWithJob>>("/matches", { params })
       .then((r) => r.data),

@@ -69,11 +69,11 @@ export function SkillResources({
   });
   if (picked.length === 0) return null;
 
-  const defaultTitle = isDashboard ? "Gợi ý cho ngành của bạn" : "Gợi ý cho công việc này";
+  const defaultTitle = isDashboard ? "Gợi ý sản phẩm cho ngành của bạn" : "Gợi ý sản phẩm cho công việc này";
   const headerLabel = picked.every((item) => item.skill) ? "Tài liệu cho kỹ năng còn thiếu" : defaultTitle;
 
   return (
-    <div className={cn("grid gap-2.5 rounded-xl border border-slate-200/80 bg-white p-4", className)}>
+    <div className={cn("@container grid gap-2.5 rounded-xl border border-slate-200/80 bg-white p-4", className)}>
       <Header label={headerLabel} />
 
       <div
@@ -81,7 +81,7 @@ export function SkillResources({
           "grid gap-2.5",
           isDashboard
             ? "grid-cols-1 max-h-[245px] overflow-y-auto pr-1.5 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200 hover:[&::-webkit-scrollbar-thumb]:bg-slate-300"
-            : "grid-cols-1 sm:grid-cols-2",
+            : "grid-cols-1 @2xl:grid-cols-2",
         )}
       >
         {picked.map(({ offer, skill }) => (

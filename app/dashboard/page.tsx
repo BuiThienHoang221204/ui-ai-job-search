@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { dashboardService } from "@/services";
 import { AISuggestionCard } from "@/components/dashboard/ai-suggestion-card";
@@ -25,20 +24,13 @@ export default function DashboardPage() {
     () => dashboardService.overview(),
     { errorMessage: "Không tải được dữ liệu tổng quan" },
   );
-  const [skippedQuickStart, setSkippedQuickStart] = useState(false);
 
   if (error) return <PageError title="Không tải được dữ liệu" message={error} />;
   if (!data || loadingUser) return <DashboardSkeleton />;
   const firstName = user?.name.split(" ").slice(-2).join(" ") ?? "bạn";
 
-  if (!data.occupationCode && !skippedQuickStart) {
-    return (
-      <QuickStartOnboarding
-        firstName={firstName}
-        onDone={reload}
-        onSkip={() => setSkippedQuickStart(true)}
-      />
-    );
+  if (!data.occupationCode || data.occupationCode === "OTHER") {
+    return <QuickStartOnboarding firstName={firstName} onDone={reload} />;
   }
 
   if (onboardingLevel(data) === "takeover") {

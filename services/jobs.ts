@@ -111,7 +111,9 @@ export interface CreateJobInput {
 
 export const jobsService = {
   list: (params?: JobListParams) =>
-    api.get<Paginated<JobListItem>>("/jobs", { params }).then((r) => r.data),
+    api
+      .get<Paginated<JobListItem> & { needsOccupation?: boolean }>("/jobs", { params })
+      .then((r) => r.data),
   filters: () => api.get<JobFilters>("/jobs/filters").then((r) => r.data),
 
   listSaved: (page?: { limit?: number; offset?: number }) =>

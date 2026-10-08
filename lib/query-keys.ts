@@ -15,8 +15,8 @@ export const keys = {
 
   matches: () => ["matches"] as const,
   matchList: (limit: number) => ["matches", "list", limit] as const,
-  matchPage: (limit: number, offset: number) =>
-    ["matches", "page", limit, offset] as const,
+  matchPage: (limit: number, offset: number, sort: string) =>
+    ["matches", "page", limit, offset, sort] as const,
 
   applications: () => ["applications"] as const,
   applicationList: (status: string, offset: number) =>
