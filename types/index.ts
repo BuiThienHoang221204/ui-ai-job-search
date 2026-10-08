@@ -34,5 +34,6 @@ export type {
   AiSuggestion,
   AiSuggestionType,
   DashboardOverview,
+  OccupationMarket,
   TodayScore,
 } from "./dashboard";

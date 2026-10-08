@@ -40,12 +40,15 @@ export function Stepper({ steps, current, onStepClick, className }: StepperProps
               </button>
               <span
                 className={cn(
-                  "mt-2 hidden text-xs font-medium sm:block",
+                  "mt-2 hidden text-center text-xs font-medium sm:block",
                   state === "active" ? "text-primary-700" : state === "done" ? "text-slate-700" : "text-slate-400",
                 )}
               >
                 {step.label}
               </span>
+              {step.description && (
+                <span className="mt-0.5 hidden text-center text-2xs text-slate-500 sm:block">{step.description}</span>
+              )}
             </div>
             {index < steps.length - 1 && (
               <div

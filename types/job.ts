@@ -53,6 +53,7 @@ export interface JobMatchWithJob {
   experienceScore: number | null;
   strengths: string[];
   gaps: string[];
+  evaluatedAt?: string | null;
   job: {
     id: string;
     title: string;

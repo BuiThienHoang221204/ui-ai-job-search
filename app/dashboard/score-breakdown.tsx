@@ -1,97 +1,94 @@
+"use client";
+
 import Link from "next/link";
-import { FileText, Percent } from "@phosphor-icons/react/ssr";
+import { ChartBar } from "@phosphor-icons/react/ssr";
 import type { DashboardOverview } from "@/types";
-import { AIMatchProgress } from "@/components/dashboard/ai-match-progress";
-import { ScoreBar } from "@/components/dashboard/score-row";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { cn } from "@/utils";
+import { DashSection } from "@/components/dashboard/dash-section";
+import { useDashboard } from "./use-dashboard";
+
+const GOOD_SCORE = 70;
 
 const SCORE_ROWS = [
   { key: "skills", label: "Kỹ năng chuyên môn", weight: "30%" },
-  { key: "experience", label: "Kinh nghiệm làm việc", weight: "25%" },
+  { key: "career", label: "Định hướng nghề", weight: "30%" },
+  { key: "experience", label: "Kinh nghiệm", weight: "25%" },
   { key: "behavioral", label: "Hành vi & văn hoá", weight: "15%" },
-  { key: "career", label: "Định hướng nghề nghiệp", weight: "30%" },
 ] as const;
 
-/** Bốn hàng điểm theo các chiều có trọng số dưới vòng tròn điểm phù hợp. */
-export function ScoreBreakdown({
-  todayScore,
-}: {
-  todayScore: DashboardOverview["todayScore"];
-}) {
-  const overall = todayScore.overall;
+type TodayScore = DashboardOverview["todayScore"];
 
-  const weakest = SCORE_ROWS.filter(
-    (row) => todayScore[row.key] !== null,
-  ).sort((a, b) => todayScore[a.key]! - todayScore[b.key]!)[0];
+/** Khóa của chiều có điểm thấp nhất, `null` khi chưa chiều nào có điểm. */
+function weakestKey(score: TodayScore) {
+  let weakest: (typeof SCORE_ROWS)[number]["key"] | null = null;
+  for (const row of SCORE_ROWS) {
+    const value = score[row.key];
+    if (value === null) continue;
+    if (weakest === null || value < (score[weakest] ?? Infinity)) weakest = row.key;
+  }
+  return weakest;
+}
+
+/** Điểm phù hợp gần đây: một con số lớn và bốn chiều điểm dạng thanh mảnh, có vạch mốc 70. */
+export function ScoreBreakdown() {
+  const { data } = useDashboard();
+  if (!data) return null;
+  const todayScore = data.todayScore;
+  const overall = todayScore.overall;
+  const weakest = weakestKey(todayScore);
+
+  const action = (
+    <Link href="/dashboard/cv-optimizer" className="text-xs font-semibold text-primary-600 hover:text-primary-700">
+      Mở CV Optimizer →
+    </Link>
+  );
 
   return (
-    <Card className="border-slate-200/90 bg-white">
-      <CardHeader className="border-b border-slate-100 pb-3">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <span className="bg-primary-50 text-primary-700 flex size-6 items-center justify-center rounded-md">
-            <Percent className="size-4" />
-          </span>
-          Điểm phù hợp gần đây
-        </CardTitle>
-        <CardDescription className="text-xs">
-          {overall === null
-            ? "Chưa có lần chấm nào"
-            : `Trung bình ${todayScore.sampleSize} lần chấm gần nhất`}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-4">
-        {overall === null ? (
-          <div className="w-full py-6 text-center">
-            <p className="text-sm font-semibold text-slate-700">
-              Chưa đủ dữ liệu để chấm
+    <DashSection title="Điểm phù hợp gần đây" icon={ChartBar} action={action}>
+      {overall === null ? (
+        <p className="text-sm text-slate-500">Chưa có lần chấm nào. Mở một tin và bấm chấm điểm để thấy phân tích ở đây.</p>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-[9.5rem_minmax(0,1fr)]">
+          <div>
+            <p className="flex items-baseline gap-1">
+              <span className="text-5xl font-bold tracking-tight text-slate-900 tabular-nums">{overall}</span>
+              <span className="text-lg text-slate-400">/100</span>
             </p>
-            <p className="mt-1 text-xs text-slate-500">
-              Hoàn thiện hồ sơ và quét tin tuyển dụng, hệ thống sẽ chấm độ phù hợp
-              rồi hiện phân tích tại đây.
+            <p className="mt-2 text-sm text-slate-500">
+              Trung bình {todayScore.sampleSize} lần chấm gần nhất.
+              {overall < GOOD_SCORE && ` Cần thêm khoảng ${GOOD_SCORE - overall} điểm để đạt mốc ${GOOD_SCORE}.`}
             </p>
           </div>
-        ) : (
-          <div className="grid items-center gap-6 lg:grid-cols-[190px_1fr_210px]">
-            <AIMatchProgress value={overall} size={130} strokeWidth={9} />
 
-            <div className="grid gap-x-8 gap-y-3.5 sm:grid-cols-2">
-              {SCORE_ROWS.map((row) => (
-                <ScoreBar
-                  key={row.key}
-                  label={row.label}
-                  weight={row.weight}
-                  value={todayScore[row.key]}
-                />
-              ))}
-            </div>
-
-            <div>
-              <Link href="/dashboard/cv-optimizer" className="w-full">
-                <Button variant="secondary" className="w-full">
-                  <FileText className="size-4.5" />
-                  Mở CV Optimizer
-                </Button>
-              </Link>
-              {weakest && (
-                <p className="mt-2 text-center text-2xs leading-relaxed text-slate-500">
-                  Thấp nhất là{" "}
-                  <span className="font-semibold text-slate-700">
-                    {weakest.label}
-                  </span>{" "}
-                  — bắt đầu từ đó
-                </p>
-              )}
-            </div>
+          <div className="grid gap-3.5 pt-1">
+            {SCORE_ROWS.map((row) => {
+              const value = todayScore[row.key];
+              const isWeakest = row.key === weakest;
+              return (
+                <div key={row.key} className="grid grid-cols-[minmax(0,1fr)_1.75rem] items-center gap-x-3 gap-y-1.5">
+                  <span className="col-span-2 flex justify-between gap-2 text-sm text-slate-700">
+                    {row.label}
+                    <span className={cn("text-xs text-slate-400", isWeakest && "text-amber-600")}>
+                      {row.weight}
+                      {isWeakest && " · thấp nhất"}
+                    </span>
+                  </span>
+                  <span className="relative h-1.5 rounded-full bg-slate-100">
+                    <span
+                      className={cn("absolute inset-y-0 left-0 rounded-full", isWeakest ? "bg-amber-500" : "bg-primary-200")}
+                      style={{ width: `${value ?? 0}%` }}
+                    />
+                    <span className="absolute -inset-y-1 w-px bg-slate-400" style={{ left: `${GOOD_SCORE}%` }} />
+                  </span>
+                  <span className={cn("text-right text-sm font-semibold tabular-nums", isWeakest ? "text-amber-600" : "text-slate-800")}>
+                    {value ?? "—"}
+                  </span>
+                </div>
+              );
+            })}
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </DashSection>
   );
 }

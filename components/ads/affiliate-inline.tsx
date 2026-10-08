@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useSyncExternalStore, useMemo } from "react";
-import { ArrowUpRight } from "@phosphor-icons/react/ssr";
+import { ArrowSquareOut, ArrowUpRight, Gift } from "@phosphor-icons/react/ssr";
+import { DashSection } from "@/components/dashboard/dash-section";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/utils";
 import {
   AFFILIATE_OFFERS,
   affiliateLink,
   pickOffers,
+  type AffiliateOffer,
   type AffiliatePlacement,
 } from "@/lib/affiliate";
 
@@ -39,6 +42,38 @@ function Header({ label }: { label: string }) {
   );
 }
 
+/** Một dòng sản phẩm: ảnh, tên, dòng phụ (kỹ năng hoặc nơi bán) và icon mở link; dùng chung cho mọi thẻ gợi ý sản phẩm. */
+function OfferRow({ href, offer, skill }: { href: string; offer: AffiliateOffer; skill?: string | null }) {
+  return (
+    <li className="border-t border-slate-100 first:border-t-0">
+      <a
+        href={href}
+        target="_blank"
+        rel="sponsored noopener noreferrer"
+        className="group grid grid-cols-[5rem_minmax(0,1fr)_auto] items-center gap-4 py-3"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={offer.images["300x250"]}
+          alt=""
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          className="size-20 rounded-xl bg-slate-100 object-cover"
+        />
+        <span className="min-w-0">
+          <span className="line-clamp-2 text-sm font-semibold text-slate-900 group-hover:text-primary-600">
+            {offer.title}
+          </span>
+          <span className="block text-xs text-slate-500">
+            {skill ? `Cho kỹ năng ${skill} · ${offer.provider}` : offer.provider}
+          </span>
+        </span>
+        <ArrowSquareOut className="size-4 text-slate-400 group-hover:text-primary-600" />
+      </a>
+    </li>
+  );
+}
+
 /**
  * Thẻ gợi ý sản phẩm theo kỹ năng / ngành nghề:
  * Tự động cấu hình số lượng, tiêu đề và cuộn (scroll) theo vị trí (dashboard hoặc job-detail).
@@ -58,61 +93,50 @@ export function SkillResources({
   jobId?: string;
   className?: string;
 }) {
-  const isDashboard = placement === "dashboard";
   const activeSkills = skills ?? missingSkills ?? [];
   const rotation = useRotation(jobId ?? occupation);
   const picked = pickOffers(AFFILIATE_OFFERS, {
     skills: activeSkills,
     occupation,
-    max: isDashboard ? 50 : 2,
+    max: placement === "dashboard" ? 10 : 2,
     rotation,
   });
   if (picked.length === 0) return null;
 
-  const defaultTitle = isDashboard ? "Gợi ý sản phẩm cho ngành của bạn" : "Gợi ý sản phẩm cho công việc này";
-  const headerLabel = picked.every((item) => item.skill) ? "Tài liệu cho kỹ năng còn thiếu" : defaultTitle;
+  if (placement === "dashboard") {
+    return (
+      <Card className={className}>
+      <DashSection
+        title="Sản phẩm cho ngành của bạn"
+        icon={Gift}
+        action={<span className="text-2xs font-semibold tracking-[0.06em] text-slate-400 uppercase">Tài trợ</span>}
+      >
+        <ul className="max-h-[209px] overflow-y-auto pr-1.5 [scrollbar-width:thin]">
+          {picked.map(({ offer, skill }) => (
+            <OfferRow key={offer.id} href={affiliateLink(offer, placement, skill)} offer={offer} skill={skill} />
+          ))}
+        </ul>
+        <p className="mt-2 text-xs text-slate-400">
+          Careelot có thể nhận hoa hồng khi bạn mua qua các liên kết này. Giá bạn trả không đổi.
+        </p>
+      </DashSection>
+      </Card>
+    );
+  }
+
+  const headerLabel = picked.every((item) => item.skill)
+    ? "Tài liệu cho kỹ năng còn thiếu"
+    : "Gợi ý sản phẩm cho công việc này";
 
   return (
     <div className={cn("@container grid gap-2.5 rounded-xl border border-slate-200/80 bg-white p-4", className)}>
       <Header label={headerLabel} />
 
-      <div
-        className={cn(
-          "grid gap-2.5",
-          isDashboard
-            ? "grid-cols-1 max-h-[245px] overflow-y-auto pr-1.5 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-200 hover:[&::-webkit-scrollbar-thumb]:bg-slate-300"
-            : "grid-cols-1 @2xl:grid-cols-2",
-        )}
-      >
+      <ul className="grid gap-x-6 @2xl:grid-cols-2 @2xl:[&>li]:border-t-0">
         {picked.map(({ offer, skill }) => (
-          <a
-            key={offer.id}
-            href={affiliateLink(offer, placement, skill)}
-            target="_blank"
-            rel="sponsored noopener noreferrer"
-            className="grid grid-cols-[80px_minmax(0,1fr)_auto] items-center gap-3.5 rounded-xl border border-slate-200/80 bg-white p-3 transition-colors hover:border-primary-300 hover:shadow-xs"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={offer.images["300x250"]}
-              alt=""
-              loading="lazy"
-              referrerPolicy="no-referrer"
-              className="size-20 rounded-lg bg-slate-50 object-cover shrink-0"
-            />
-            <span className="min-w-0">
-              <span className="line-clamp-2 text-[13.5px] leading-snug font-medium text-slate-900">{offer.title}</span>
-              <span className="mt-1 block text-xs text-slate-500">
-                {skill ? `Cho kỹ năng: ${skill} · ${offer.provider}` : `Hợp với ngành nghề · ${offer.provider}`}
-              </span>
-            </span>
-            <span className="flex items-center gap-0.5 text-xs font-semibold whitespace-nowrap text-primary-600">
-              Xem
-              <ArrowUpRight className="size-3.5" />
-            </span>
-          </a>
+          <OfferRow key={offer.id} href={affiliateLink(offer, placement, skill)} offer={offer} skill={skill} />
         ))}
-      </div>
+      </ul>
 
       <p className="text-[11px] leading-snug text-slate-500">
         Careelot có thể nhận hoa hồng khi bạn mua qua các liên kết này. Giá bạn trả không đổi.
