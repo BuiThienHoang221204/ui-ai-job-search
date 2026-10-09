@@ -15,6 +15,14 @@ const GOALS = [
   { key: "interviews", label: "Luyện phỏng vấn", icon: Microphone },
 ] as const;
 
+const WEEKDAYS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+
+/** Hôm nay là ngày thứ mấy trong tuần (0 = thứ Hai), theo giờ Việt Nam như backend. */
+const todayIndex = () => {
+  const name = new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: "Asia/Ho_Chi_Minh" }).format(new Date());
+  return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].indexOf(name);
+};
+
 /** Cột phải trang Tổng quan: mục tiêu tuần kèm chuỗi ngày hoạt động, rồi các kỹ năng nên học tiếp. */
 export function ProgressPanel() {
   const { data } = useDashboard();
@@ -22,6 +30,13 @@ export function ProgressPanel() {
 
   const done = GOALS.reduce((sum, goal) => sum + Math.min(data.weekly[goal.key].done, data.weekly[goal.key].goal), 0);
   const total = GOALS.reduce((sum, goal) => sum + data.weekly[goal.key].goal, 0);
+  const today = todayIndex();
+  const { days, week } = data.streak;
+  const hint = week[today]
+    ? "Hôm nay bạn đã giữ chuỗi"
+    : days
+      ? "Làm một việc hôm nay để giữ chuỗi"
+      : "Tạo CV, nộp đơn hoặc luyện phỏng vấn để bắt đầu";
 
   return (
     <Card className="flex flex-col divide-y divide-slate-100">
@@ -35,12 +50,22 @@ export function ProgressPanel() {
           <div>
             <p className="flex items-center gap-1.5 text-sm font-semibold text-amber-600">
               <Fire className="size-4" />
-              {data.streak.days} ngày liên tiếp
+              {days ? `${days} ngày liên tiếp` : "Chưa có chuỗi ngày"}
             </p>
-            <p className="text-xs text-slate-500">Tạo CV, nộp đơn hoặc luyện phỏng vấn mỗi ngày</p>
+            <p className="text-xs text-slate-500">{hint}</p>
             <div className="mt-2 flex gap-1">
-              {data.streak.week.map((active, index) => (
-                <span key={index} className={cn("h-1.5 w-5 rounded-full", active ? "bg-amber-500" : "bg-slate-200")} />
+              {week.map((active, index) => (
+                <span key={WEEKDAYS[index]} className="grid w-5 justify-items-center gap-0.5">
+                  <span className={cn("h-1.5 w-5 rounded-full", active ? "bg-amber-500" : "bg-slate-200")} />
+                  <span
+                    className={cn(
+                      "text-[9px] leading-none",
+                      index === today ? "font-bold text-slate-900" : "text-slate-400",
+                    )}
+                  >
+                    {WEEKDAYS[index]}
+                  </span>
+                </span>
               ))}
             </div>
           </div>
