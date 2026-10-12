@@ -42,7 +42,8 @@ test("cau hanh vi khong hien dap an mau", async ({ page }) => {
   await page.getByRole("option", { name: /Hành vi/ }).click();
   await page.waitForTimeout(1500);
 
-  const the = page.locator("[aria-expanded]").first();
+  // Thẻ câu hỏi là nút có đoạn chữ câu hỏi; nút mở bộ lọc cũng mang aria-expanded.
+  const the = page.locator("button[aria-expanded]:has(p)").first();
   await the.click();
 
   // Đáp án sinh LƯỜI: bung thẻ ra chưa gọi model, phải bấm nút mới gọi.

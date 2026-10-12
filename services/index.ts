@@ -21,7 +21,6 @@ export type {
 } from "./types";
 
 export type {
-  CreateJobInput,
   JobRecord,
   JobMatchDetail,
   JobListItem,
@@ -57,9 +56,7 @@ export type { UpskillReportRecord } from "./upskill";
 export type { ProfileRecord, QuickStartInput } from "./profile";
 export type {
   CvUploadReceipt,
-  EvidenceRecord,
   ProfileDraftRecord,
-  ProfileDraftSummary,
   ProfileProposal,
   ProposedCertificate,
   ProposedEducation,

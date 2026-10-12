@@ -28,14 +28,28 @@ describe("invalidateAfter", () => {
     expect(invalidatedBy("scoreJob")).toEqual(["jobList", "dashboard"]);
   });
 
-  test("lưu tin: tải lại danh sách và chi tiết tin, KHÔNG tải lại bộ đếm thanh lọc", () => {
-    expect(invalidatedBy("saveJob")).toEqual(["jobList", "job"]);
+  test("lưu tin: tải lại danh sách và tổng quan, KHÔNG tải lại chi tiết tin (đã sửa thẳng cache) hay bộ đếm thanh lọc", () => {
+    expect(invalidatedBy("saveJob")).toEqual(["jobList", "dashboard"]);
   });
 
-  test("đổi trạng thái đơn: không tải lại chi tiết tin (đã ghi thẳng vào cache)", () => {
+  test("đổi trạng thái đơn: tải lại danh sách (lọc đã ứng tuyển), không tải lại mọi chi tiết tin", () => {
     expect(invalidatedBy("applicationStatus")).toEqual([
+      "jobList",
       "dashboard",
       "applications",
+    ]);
+  });
+
+  test("tạo tài liệu: tổng quan cũng đếm CV và thư nên được làm mới", () => {
+    expect(invalidatedBy("createDocument")).toEqual(["dashboard"]);
+  });
+
+  test("chọn ngành lần đầu: tải lại hồ sơ, tổng quan, khoảng trống kỹ năng và danh sách", () => {
+    expect(invalidatedBy("quickStart")).toEqual([
+      "jobList",
+      "profile",
+      "dashboard",
+      "skillGaps",
     ]);
   });
 

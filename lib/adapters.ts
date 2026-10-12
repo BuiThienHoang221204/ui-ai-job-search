@@ -1,5 +1,6 @@
 import type {
   Job,
+  JobMatchCard,
   JobMatchWithJob,
   JobTimestamp,
   SalaryCurrency,
@@ -75,7 +76,7 @@ function toCardBase(
 }
 
 /** Chuyển một kết quả chấm điểm của backend thành thẻ công việc của giao diện. */
-export function toJobCard(match: JobMatchWithJob): Job {
+export function toJobCard(match: JobMatchCard): Job {
   return {
     ...toCardBase(match.job),
     aiMatch: match.overallScore,

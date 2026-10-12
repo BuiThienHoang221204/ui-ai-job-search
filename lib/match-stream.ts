@@ -1,4 +1,4 @@
-import type { JobMatchWithJob } from "@/types";
+import type { JobMatchDetail } from "@/services";
 import { streamModel } from "./model-stream";
 
 export {
@@ -31,8 +31,8 @@ export function streamMatchEvaluation({
   onPartial,
   force,
   signal,
-}: StreamMatchOptions): Promise<JobMatchWithJob> {
-  return streamModel<JobMatchWithJob, PartialEvaluation>({
+}: StreamMatchOptions): Promise<JobMatchDetail> {
+  return streamModel<JobMatchDetail, PartialEvaluation>({
     path: `/matches/evaluate-stream/${jobId}`,
     onPartial,
     force,

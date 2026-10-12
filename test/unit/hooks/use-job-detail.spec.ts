@@ -1,6 +1,10 @@
 import { QueryClient } from "@tanstack/react-query";
 import { describe, expect, test } from "vitest";
-import { updateJobDetail, type JobDetailData } from "@/hooks/use-job-detail";
+import {
+  afterSaveJob,
+  updateJobDetail,
+  type JobDetailData,
+} from "@/hooks/use-job-detail";
 import { keys } from "@/lib/query-keys";
 
 const detail = (): JobDetailData =>
@@ -28,5 +32,20 @@ describe("updateJobDetail", () => {
     const client = new QueryClient();
     updateJobDetail(client, "job-2", (data) => data);
     expect(client.getQueryData(keys.job("job-2"))).toBeUndefined();
+  });
+});
+
+describe("afterSaveJob", () => {
+  test("sửa cờ đã lưu trong cache chi tiết mà không tải lại tin, chỉ làm mới danh sách", () => {
+    const client = new QueryClient();
+    client.setQueryData(keys.job("job-1"), detail());
+    client.setQueryData(keys.jobList({}), {});
+
+    afterSaveJob(client, "job-1", true);
+
+    const data = client.getQueryData<JobDetailData>(keys.job("job-1"));
+    expect(data?.job.saved).toBe(true);
+    expect(client.getQueryState(keys.job("job-1"))?.isInvalidated).toBe(false);
+    expect(client.getQueryState(keys.jobList({}))?.isInvalidated).toBe(true);
   });
 });

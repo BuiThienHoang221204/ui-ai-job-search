@@ -3,8 +3,7 @@ import { blobErrorToError, textErrorToError } from "./blob-error";
 import type { Paginated, QueuedDocument, WorkStatus } from "./types";
 import type { AiFailureKind } from "@/lib/failure-message";
 
-export type DocumentKind =
-  "CV" | "COVER_LETTER" | "APPLICATION_EMAIL" | "FORM_ANSWER";
+export type DocumentKind = "CV" | "COVER_LETTER" | "APPLICATION_EMAIL";
 
 export type ApplicationEmailInput =
   | { jobId: string }
@@ -90,7 +89,12 @@ export interface DocumentRecord {
   failureKind: AiFailureKind | null;
   createdAt: string;
   updatedAt: string;
-  job?: { id: string; title: string; company: string } | null;
+  job?: {
+    id: string;
+    title: string;
+    company: string;
+    companyLogo: string | null;
+  } | null;
 }
 
 export const documentsService = {
@@ -164,37 +168,11 @@ export const documentsService = {
       .post<QueuedDocument>("/documents/application-email", input)
       .then((r) => r.data),
 
-  /** Tạo câu trả lời cho ô văn bản tự do trên form ứng tuyển. */
-  createFormAnswer: (input: {
-    question: string;
-    jobId?: string;
-    characterLimit?: number;
-  }) =>
-    api
-      .post<QueuedDocument>("/documents/form-answer", input)
-      .then((r) => r.data),
-
   /** Lấy danh mục mẫu CV từ backend. */
   cvTemplates: () =>
     api
       .get<{ items: CvTemplate[] }>("/documents/cv-templates")
       .then((r) => r.data.items),
-
-  /** Lấy HTML xem trước CV, có thể thử mẫu/màu khác mà không lưu. */
-  previewHtml: async (
-    id: string,
-    override?: { templateId?: string; accent?: string },
-  ) => {
-    try {
-      const response = await api.get<string>(`/documents/${id}/preview`, {
-        params: override,
-        responseType: "text",
-      });
-      return response.data;
-    } catch (error) {
-      throw textErrorToError(error);
-    }
-  },
 
   /** Lấy HTML xem trước bản nháp CV chưa lưu. */
   previewDraft: async (
@@ -229,11 +207,5 @@ export const documentsService = {
   setTemplate: (id: string, templateId: string, accent?: string) =>
     api
       .put<DocumentRecord>(`/documents/${id}/template`, { templateId, accent })
-      .then((r) => r.data),
-
-  /** Sinh ngay một tài liệu đã tạo (đồng bộ, dùng để thử nghiệm). */
-  generateSync: (id: string) =>
-    api
-      .post<DocumentRecord>(`/documents/${id}/generate-sync`)
       .then((r) => r.data),
 };

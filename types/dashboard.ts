@@ -1,4 +1,4 @@
-import type { JobMatchWithJob } from "./job";
+import type { JobMatchCard } from "./job";
 
 export type AiSuggestionType = "cv" | "apply" | "network" | "skill";
 
@@ -42,7 +42,7 @@ export interface DashboardOverview {
   matchingJobs: { total: number; newThisWeek: number };
   averageMatchScore: number | null;
   /** Tin chấm điểm cao nhất mà người dùng chưa nộp đơn. */
-  pendingMatches: JobMatchWithJob[];
+  pendingMatches: JobMatchCard[];
   skillGaps: { skill: string; jobCount: number }[];
   totalScored: number;
   journey: { cvs: number; applied: number; interviews: number };

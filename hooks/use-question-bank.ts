@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState } from "react";
 import {
   questionBankService,
   type QuestionFacets,
   type QuestionPage,
 } from "@/services/question-bank";
+import { useApiQuery } from "@/hooks/use-api-query";
+import { useDebounce } from "@/hooks/use-debounce";
+import { keys } from "@/lib/query-keys";
 
 export const QUESTION_PAGE_SIZE = 20;
 
@@ -51,41 +54,39 @@ export function useQuestionBank(initialFacets: QuestionFacets, initial: Question
   const [type, setType] = useState<string | null>(null);
   const [difficulty, setDifficulty] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
-  const [fetchedPage, setPage] = useState<QuestionPage | null>(null);
-  const [fetchedFacets, setFacets] = useState<QuestionFacets | null>(null);
-  const [pending, startTransition] = useTransition();
+  const searched = useDebounce(term, SEARCH_DEBOUNCE_MS);
 
-  const filters = questionFilters(term, industry, type, difficulty);
-  const page = !filters && offset === 0 ? initial : (fetchedPage ?? initial);
-  const facets = filters ? (fetchedFacets ?? initialFacets) : initialFacets;
+  const filters = questionFilters(searched, industry, type, difficulty);
+  const pageQuery = useApiQuery(
+    keys.questionPage(filters, offset),
+    () =>
+      questionBankService.browse({
+        ...filters,
+        limit: QUESTION_PAGE_SIZE,
+        offset,
+      }),
+    {
+      errorMessage: "Không tải được danh sách câu hỏi",
+      enabled: Boolean(filters) || offset > 0,
+      keepPrevious: true,
+    },
+  );
+  const facetsQuery = useApiQuery(
+    keys.questionFacets(filters),
+    () => questionBankService.browseFacets(filters ?? {}),
+    {
+      errorMessage: "Không tải được bộ lọc câu hỏi",
+      enabled: Boolean(filters),
+      keepPrevious: true,
+    },
+  );
 
-  useEffect(() => {
-    const filters = questionFilters(term, industry, type, difficulty);
-    if (!filters && offset === 0) return;
-    const timer = setTimeout(() => {
-      startTransition(async () => {
-        setPage(
-          await questionBankService.browse({
-            ...filters,
-            limit: QUESTION_PAGE_SIZE,
-            offset,
-          }),
-        );
-      });
-    }, SEARCH_DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [term, industry, type, difficulty, offset]);
-
-  useEffect(() => {
-    const filters = questionFilters(term, industry, type, difficulty);
-    if (!filters) return;
-    const timer = setTimeout(() => {
-      startTransition(async () => {
-        setFacets(await questionBankService.browseFacets(filters));
-      });
-    }, SEARCH_DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [term, industry, type, difficulty]);
+  const page: QuestionPage =
+    !filters && offset === 0 ? initial : (pageQuery.data ?? initial);
+  const facets: QuestionFacets = filters
+    ? (facetsQuery.data ?? initialFacets)
+    : initialFacets;
+  const pending = pageQuery.loading || facetsQuery.loading;
 
   /** Bọc một setter để mỗi lần đổi bộ lọc thì quay về trang đầu. */
   function resetting<T>(setter: (next: T) => void) {

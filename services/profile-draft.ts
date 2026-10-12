@@ -1,18 +1,6 @@
 import type { AiFailureKind } from "@/lib/failure-message";
 import { api } from "@/lib/axios";
-import type { Paginated, WorkStatus } from "./types";
-
-export interface EvidenceRecord {
-  kind:
-    | "CV_PDF_TEXT"
-    | "CV_PDF_VISION"
-    | "GITHUB"
-    | "LINKEDIN_EXPORT"
-    | "MANUAL";
-  label: string;
-  text: string;
-  meta: Record<string, string | number | boolean>;
-}
+import type { WorkStatus } from "./types";
 
 export interface ProposedExperience {
   company: string;
@@ -64,7 +52,6 @@ export interface ProfileProposal {
 export interface ProfileDraftRecord {
   id: string;
   status: WorkStatus;
-  evidence: EvidenceRecord[] | null;
   proposal: ProfileProposal | null;
   filename: string | null;
   storageKey: string | null;
@@ -75,17 +62,6 @@ export interface ProfileDraftRecord {
   createdAt: string;
   updatedAt: string;
 }
-
-export interface ProfileDraftSummary {
-  id: string;
-  status: WorkStatus;
-  filename: string | null;
-  createdAt: string;
-  generatedAt: string | null;
-  appliedAt: string | null;
-  failureKind: AiFailureKind | null;
-}
-
 export interface CvUploadReceipt {
   draftId: string;
   queued: boolean;
@@ -110,13 +86,6 @@ export const profileDraftService = {
 
   get: (id: string) =>
     api.get<ProfileDraftRecord>(`/profile-drafts/${id}`).then((r) => r.data),
-
-  history: (page?: { limit?: number; offset?: number }) =>
-    api
-      .get<Paginated<ProfileDraftSummary>>("/profile-drafts/history", {
-        params: page,
-      })
-      .then((r) => r.data),
 
   /** Trả về link mở file CV gốc của bản nháp trong tab mới. */
   fileUrl: (id: string) => `${api.defaults.baseURL}/profile-drafts/${id}/file`,

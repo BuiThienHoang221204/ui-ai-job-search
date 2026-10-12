@@ -1,4 +1,5 @@
 import type { JobMatchWithJob } from "@/types";
+import type { JobMatchDetail } from "./jobs";
 import { api } from "@/lib/axios";
 import type { Paginated, QueuedResult } from "./types";
 
@@ -20,15 +21,10 @@ export const matchesService = {
       .then((r) => r.data),
 
   get: (jobId: string) =>
-    api.get<JobMatchWithJob>(`/matches/${jobId}`).then((r) => r.data),
+    api.get<JobMatchDetail>(`/matches/${jobId}`).then((r) => r.data),
 
   evaluate: (jobId: string, force = false) =>
     api
       .post<EvaluateResult>("/matches/evaluate", { jobId, force })
-      .then((r) => r.data),
-
-  evaluateSync: (jobId: string, force = false) =>
-    api
-      .post<JobMatchWithJob>("/matches/evaluate-sync", { jobId, force })
       .then((r) => r.data),
 };

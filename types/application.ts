@@ -3,7 +3,7 @@ export type ApplicationStatus = "VIEWED" | "APPLIED" | "WITHDRAWN";
 export interface ApplicationDocument {
   id: string;
   jobId: string | null;
-  kind: "CV" | "COVER_LETTER" | "APPLICATION_EMAIL" | "FORM_ANSWER";
+  kind: "CV" | "COVER_LETTER" | "APPLICATION_EMAIL";
   title: string;
   status: string;
   templateId: string;

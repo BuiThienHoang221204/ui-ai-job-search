@@ -11,6 +11,7 @@ import { ArrowsClockwise, GraduationCap } from "@phosphor-icons/react/ssr";
 import { failureMessage } from "@/lib/failure-message";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { useApiQuery } from "@/hooks/use-api-query";
+import { keys } from "@/lib/query-keys";
 import { upskillService, type UpskillReportRecord } from "@/services";
 
 import { formatDate } from "@/utils";
@@ -24,8 +25,6 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const LOGIN_NEXT = "/login?next=/dashboard/upskill";
-
-const LATEST_KEY = ["upskill", "latest"];
 
 const POLL_INTERVAL_MS = 2000;
 const MAX_POLLS = 80;
@@ -57,7 +56,7 @@ export function  UpskillView() {
   );
 
   const query = useApiQuery(
-    LATEST_KEY,
+    keys.upskill(),
     () =>
       upskillService.latest().catch((err: unknown) => {
         if (apiErrorStatus(err) === 404) return null;
@@ -71,7 +70,7 @@ export function  UpskillView() {
 
   /** Thay cho `setReport`: vòng hỏi lại ghi thẳng kết quả vào cache. */
   const putReport = useCallback(
-    (next: UpskillReportRecord) => queryClient.setQueryData(LATEST_KEY, next),
+    (next: UpskillReportRecord) => queryClient.setQueryData(keys.upskill(), next),
     [queryClient],
   );
 

@@ -1,6 +1,6 @@
 import type { ApplicationStatus, JobMatchWithJob } from "@/types";
 import { api } from "@/lib/axios";
-import type { Paginated, QueuedResult, WorkStatus } from "./types";
+import type { Paginated, WorkStatus } from "./types";
 
 export interface JobMatchState {
   status: WorkStatus;
@@ -29,7 +29,7 @@ export type JobListItem = JobMatchWithJob["job"] & {
   source: string;
   workMode: string | null;
   match: JobMatchState | null;
-  systemMatch: SystemMatch | null;
+  systemMatch: Omit<SystemMatch, "checks"> | null;
 };
 export type JobMatchDetail = Omit<JobMatchWithJob, "job">;
 export type SalaryBasis = "POSITION" | "SUB_OCCUPATION";
@@ -55,7 +55,8 @@ export interface SalaryGuide {
   positionSlug: string | null;
 }
 
-export type JobRecord = Omit<JobListItem, "match"> & {
+export type JobRecord = Omit<JobListItem, "match" | "systemMatch"> & {
+  systemMatch: SystemMatch | null;
   description: string;
   occupationCode: string | null;
   match: JobMatchDetail | null;
@@ -93,35 +94,12 @@ export interface JobFilters {
   occupations: OccupationOption[];
   remote: FilterOption;
 }
-
-export interface CreateJobInput {
-  title: string;
-  company: string;
-  description: string;
-  url?: string;
-  source?: string;
-  externalId?: string;
-  companyLogo?: string;
-  location?: string;
-  workMode?: string;
-  salaryRaw?: string;
-  salaryMin?: number;
-  salaryMax?: number;
-  currency?: string;
-  tags?: string[];
-}
-
 export const jobsService = {
   list: (params?: JobListParams) =>
     api
       .get<Paginated<JobListItem> & { needsOccupation?: boolean }>("/jobs", { params })
       .then((r) => r.data),
   filters: () => api.get<JobFilters>("/jobs/filters").then((r) => r.data),
-
-  listSaved: (page?: { limit?: number; offset?: number }) =>
-    api
-      .get<Paginated<JobListItem>>("/jobs/saved", { params: page })
-      .then((r) => r.data),
 
   get: (id: string) => api.get<JobRecord>(`/jobs/${id}`).then((r) => r.data),
 
@@ -130,9 +108,4 @@ export const jobsService = {
 
   unsave: (id: string) =>
     api.delete<{ saved: false }>(`/jobs/${id}/save`).then((r) => r.data),
-
-  create: (input: CreateJobInput) =>
-    api
-      .post<{ job: JobRecord } & QueuedResult>("/jobs", input)
-      .then((r) => r.data),
 };

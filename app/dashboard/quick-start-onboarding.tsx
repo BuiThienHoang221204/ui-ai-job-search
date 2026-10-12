@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Check } from "@phosphor-icons/react/ssr";
 import { useApiQuery } from "@/hooks/use-api-query";
-import { keys } from "@/lib/query-keys";
+import { invalidateAfter, keys } from "@/lib/query-keys";
 import { apiErrorMessage } from "@/lib/axios";
 import { jobsService, profileService } from "@/services";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,6 @@ const EXPERIENCE_OPTIONS = [
 
 interface QuickStartOnboardingProps {
   firstName: string;
-  onDone: () => void;
 }
 
 /** Hàng chọn 2 cột (nhóm ngành -> nghề), chọn ĐÚNG MỘT, dùng chung style với OccupationPicker nhưng đơn chọn. */
@@ -185,7 +185,8 @@ function ExperienceStep({
 }
 
 /** Bước bắt buộc sau đăng ký: chọn ngành và kinh nghiệm - "Việc làm phù hợp" lọc theo đúng hai câu trả lời này. */
-export function QuickStartOnboarding({ firstName, onDone }: QuickStartOnboardingProps) {
+export function QuickStartOnboarding({ firstName }: QuickStartOnboardingProps) {
+  const queryClient = useQueryClient();
   const [step, setStep] = useState<1 | 2>(1);
   const [occupationCode, setOccupationCode] = useState<string | null>(null);
   const [subOccupationCode, setSubOccupationCode] = useState<string | null>(null);
@@ -203,7 +204,7 @@ export function QuickStartOnboarding({ firstName, onDone }: QuickStartOnboarding
         subOccupationCode: subOccupationCode ?? undefined,
         experienceLevel,
       });
-      onDone();
+      invalidateAfter(queryClient, "quickStart");
     } catch (err) {
       setError(apiErrorMessage(err, "Không lưu được lựa chọn, thử lại sau"));
       setSubmitting(false);

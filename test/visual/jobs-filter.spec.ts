@@ -35,7 +35,10 @@ test("thanh lọc, phân trang và trạng thái trên URL", async ({ page }) =>
 
   await login(page);
   await page.goto("/dashboard/jobs");
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  const list = page.getByTestId("job-list-pane");
+  const count = list.getByText(/^\d+ tin/).first();
+  const firstJob = list.locator("li").first();
+  await expect(firstJob).toBeVisible({ timeout: 20_000 });
   await waitForImages(page);
   await page.screenshot({ path: `${SHOTS}/07-jobs-default.png`, fullPage: true });
 
@@ -51,9 +54,7 @@ test("thanh lọc, phân trang và trạng thái trên URL", async ({ page }) =>
   await expect(page).toHaveURL(/province=HN/);
 
   // Danh sách phải còn nguyên trong lúc tải trang mới, không chớp về khung xám.
-  await expect(
-    page.locator('a[href^="/dashboard/jobs/"]').first(),
-  ).toBeVisible();
+  await expect(firstJob).toBeVisible();
   await waitForImages(page);
   await page.screenshot({
     path: `${SHOTS}/09-jobs-filtered.png`,
@@ -62,22 +63,18 @@ test("thanh lọc, phân trang và trạng thái trên URL", async ({ page }) =>
 
   // Tải lại trang: kết quả phải y nguyên vì trạng thái nằm ở URL chứ không ở
   // bộ nhớ của component.
-  const subtitle = page.locator("p", { hasText: /tin khớp với bộ lọc/ }).first();
-  const countBeforeReload = await subtitle.innerText();
+  const countBeforeReload = await count.innerText();
   await page.reload();
-  await expect(
-    page.locator("p", { hasText: /tin khớp với bộ lọc/ }).first(),
-  ).toHaveText(countBeforeReload);
+  await expect(count).toHaveText(countBeforeReload);
 
   // Lật trang: nội dung phải ĐỔI và `offset` phải nằm trên URL. Trước đây trang
   // chỉ tải 50 tin đầu rồi lọc trong bộ nhớ, nên không có trang thứ hai để lật.
-  const firstJob = () =>
-    page.locator('a[href^="/dashboard/jobs/"]').first().getAttribute("href");
-  const before = await firstJob();
+  const firstTitle = () => firstJob.innerText();
+  const before = await firstTitle();
 
-  await page.getByRole("button", { name: "Sau" }).click();
+  await list.getByRole("button", { name: "Sau" }).click();
   await expect(page).toHaveURL(/offset=20/);
-  await expect.poll(firstJob).not.toBe(before);
+  await expect.poll(firstTitle).not.toBe(before);
   await waitForImages(page);
   await page.screenshot({ path: `${SHOTS}/10-jobs-page-2.png`, fullPage: true });
 

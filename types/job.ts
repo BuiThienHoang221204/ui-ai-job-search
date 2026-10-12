@@ -79,6 +79,11 @@ export interface JobMatchWithJob {
   };
 }
 
+export type JobMatchCard = Pick<
+  JobMatchWithJob,
+  "jobId" | "status" | "overallScore" | "strengths" | "job"
+>;
+
 export interface AiMatchDetail {
   overall: number;
   criteria: {

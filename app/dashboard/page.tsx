@@ -20,14 +20,14 @@ import { useDashboard } from "@/hooks/use-dashboard";
 /** Trang tổng quan của dashboard. */
 export default function DashboardPage() {
   const { user, loading: loadingUser } = useSession();
-  const { data, error, reload } = useDashboard();
+  const { data, error } = useDashboard();
 
   if (error) return <PageError title="Không tải được dữ liệu" message={error} />;
   if (!data || loadingUser) return <DashboardSkeleton />;
 
   if (!data.occupationCode || data.occupationCode === "OTHER") {
     const firstName = user?.name.split(" ").slice(-2).join(" ") ?? "bạn";
-    return <QuickStartOnboarding firstName={firstName} onDone={reload} />;
+    return <QuickStartOnboarding firstName={firstName} />;
   }
 
   const adSkills = data.suggestions.flatMap((suggestion) => suggestionSkill(suggestion) ?? []);

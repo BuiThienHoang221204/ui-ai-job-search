@@ -4,7 +4,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import type { JobMatchDetail, JobRecord } from "@/services";
 import { jobsService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
-import { keys } from "@/lib/query-keys";
+import { invalidateAfter, keys } from "@/lib/query-keys";
 
 export interface JobDetailData {
   job: JobRecord;
@@ -32,4 +32,17 @@ export function updateJobDetail(
   client.setQueryData<JobDetailData>(keys.job(jobId), (current) =>
     current ? update(current) : current,
   );
+}
+
+/** Sau khi lưu/bỏ lưu: sửa cờ `saved` trong cache chi tiết tin, chỉ tải lại danh sách và dashboard. */
+export function afterSaveJob(
+  client: QueryClient,
+  jobId: string,
+  saved: boolean,
+): void {
+  updateJobDetail(client, jobId, (data) => ({
+    ...data,
+    job: { ...data.job, saved },
+  }));
+  invalidateAfter(client, "saveJob");
 }

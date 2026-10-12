@@ -8,7 +8,8 @@ import { jobsService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useDebounce } from "@/hooks/use-debounce";
 import { readFilter, writeFilter } from "./job-filter-url";
-import { invalidateAfter, keys } from "@/lib/query-keys";
+import { keys } from "@/lib/query-keys";
+import { afterSaveJob } from "@/hooks/use-job-detail";
 import { toJobCardFromRecord } from "@/lib/adapters";
 import { squeezeSidebar } from "@/lib/sidebar";
 import {
@@ -141,7 +142,7 @@ export function JobsView() {
 
       apply(saved);
       void (saved ? jobsService.save(jobId) : jobsService.unsave(jobId))
-        .then(() => invalidateAfter(queryClient, "saveJob"))
+        .then(() => afterSaveJob(queryClient, jobId, saved))
         .catch(() => apply(!saved));
     },
     [queryClient],

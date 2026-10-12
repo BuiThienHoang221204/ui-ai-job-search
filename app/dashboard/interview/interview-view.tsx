@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Microphone, Sparkle } from "@phosphor-icons/react/ssr";
 import { useApiQuery } from "@/hooks/use-api-query";
+import { keys } from "@/lib/query-keys";
 import { useDebounce } from "@/hooks/use-debounce";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 
@@ -44,7 +45,7 @@ export function InterviewView() {
   const [retrying, setRetrying] = useState(false);
 
   const page = useApiQuery(
-    ["interview", "list", offset],
+    keys.interviewList(offset),
     () => interviewService.list({ limit: PAGE_SIZE, offset }),
     {
       errorMessage: "Không tải được bộ câu hỏi phỏng vấn",

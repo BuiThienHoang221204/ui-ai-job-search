@@ -42,9 +42,4 @@ export const interviewService = {
     api
       .post<QueuedResult>("/interview/prep", { jobId, force })
       .then((r) => r.data),
-
-  prepSync: (jobId: string, force = false) =>
-    api
-      .post<InterviewPrepRecord>("/interview/prep-sync", { jobId, force })
-      .then((r) => r.data),
 };

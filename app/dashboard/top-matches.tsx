@@ -6,7 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Bookmark, Target } from "@phosphor-icons/react/ssr";
 import type { Job } from "@/types";
 import { jobsService } from "@/services";
-import { invalidateAfter } from "@/lib/query-keys";
+import { afterSaveJob } from "@/hooks/use-job-detail";
 import { CompanyLogo } from "@/components/dashboard/company-logo";
 import { toJobCard } from "@/lib/adapters";
 import { Card } from "@/components/ui/card";
@@ -25,7 +25,7 @@ function SaveButton({ jobId, initial }: { jobId: string; initial: boolean }) {
     setSaved(next);
     try {
       await (next ? jobsService.save(jobId) : jobsService.unsave(jobId));
-      invalidateAfter(queryClient, "saveJob");
+      afterSaveJob(queryClient, jobId, next);
     } catch {
       setSaved(!next);
     }

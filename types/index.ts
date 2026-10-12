@@ -17,6 +17,7 @@ export type {
 export type {
   AiMatchDetail,
   Job,
+  JobMatchCard,
   JobMatchWithJob,
   JobTimestamp,
   SalaryCurrency,

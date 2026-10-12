@@ -20,11 +20,8 @@ export const applicationsService = {
       })
       .then((r) => r.data),
 
-  get: (id: string) =>
-    api.get<Application>(`/applications/${id}`).then((r) => r.data),
-
-  /** Tạo đơn ứng tuyển cho một việc làm, tuỳ chọn bỏ qua sinh tài liệu hoặc chọn CV. */
-  create: (jobId: string, options?: { skipDocuments?: boolean; cvDocumentId?: string }) =>
+  /** Tạo đơn ứng tuyển cho một việc làm, tuỳ chọn bỏ qua sinh tài liệu. */
+  create: (jobId: string, options?: { skipDocuments?: boolean }) =>
     api
       .post<Application>("/applications", { jobId, ...options })
       .then((r) => r.data),

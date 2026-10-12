@@ -50,13 +50,15 @@ test("bốn màn vừa chuyển vẫn vẽ đúng", async ({ page }) => {
   // một test xanh trên màn chưa tải xong thì không khẳng định được gì.
   const screens: [string, string][] = [
     ["/dashboard/applications", "Lịch sử ứng tuyển"],
-    ["/dashboard/profile", "Hồ sơ của tôi"],
+    ["/dashboard/profile", "Kỹ năng"],
     ["/dashboard/upskill", "Lộ trình học"],
   ];
 
   for (const [path, heading] of screens) {
     await page.goto(path);
-    await expect(page.getByRole("heading", { name: heading })).toBeVisible({
+    await expect(
+      page.getByRole("heading", { name: heading, exact: true }),
+    ).toBeVisible({
       timeout: 20_000,
     });
     // Tiêu đề nằm NGOÀI nhánh chờ dữ liệu, nên nó hiện cả khi màn còn là khung
@@ -65,8 +67,9 @@ test("bốn màn vừa chuyển vẫn vẽ đúng", async ({ page }) => {
   }
 
   // Trang chi tiết cần một id thật, nên đi qua danh sách thay vì đoán đường dẫn.
-  await page.goto("/dashboard/jobs");
-  await page.locator('a[href^="/dashboard/jobs/"]').first().click();
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto("/dashboard/jobs/all");
+  await page.locator("main ul > li").first().locator("button").first().click();
   await expect(page.getByText("Mô tả công việc").first()).toBeVisible({
     timeout: 20_000,
   });
@@ -83,7 +86,9 @@ test("quay lại màn đã xem thì không gọi API nữa", async ({ page }) =>
   const nav = page.getByRole("navigation");
 
   await nav.getByRole("link", { name: "Tổng quan" }).click();
-  await expect(page.getByText(/Xin chào/)).toBeVisible({ timeout: 20_000 });
+  await expect(
+    page.getByRole("heading", { level: 1, name: /^Chào / }),
+  ).toBeVisible({ timeout: 20_000 });
 
   await nav.getByRole("link", { name: "Lịch sử ứng tuyển" }).click();
   await expect(page.getByRole("table")).toBeVisible();
@@ -113,7 +118,10 @@ test("xem trước CV dùng lại bản đã dựng", async ({ page }) => {
   await page.goto("/dashboard/cv-optimizer");
 
   const documents = page.locator("a[href*='?doc=']");
-  await documents.first().waitFor({ timeout: 20_000 }).catch(() => {});
+  await documents
+    .first()
+    .waitFor({ timeout: 20_000 })
+    .catch(() => {});
   test.skip(
     (await documents.count()) === 0,
     "Database dev chưa có CV nào để mở studio",
@@ -123,7 +131,9 @@ test("xem trước CV dùng lại bản đã dựng", async ({ page }) => {
   const frame = page.locator('iframe[title="Xem trước CV"]');
   await frame.waitFor({ timeout: 20_000 });
   // Bản vẽ phải có nội dung thật, không phải một trang trắng.
-  expect((await frame.getAttribute("srcdoc"))?.length ?? 0).toBeGreaterThan(1000);
+  expect((await frame.getAttribute("srcdoc"))?.length ?? 0).toBeGreaterThan(
+    1000,
+  );
 
   const cards = page.locator("button[aria-pressed][title]");
   await cards.nth(1).waitFor({ timeout: 10_000 });
@@ -159,9 +169,17 @@ const isSaved = (label: string | null) => (label ?? "").trim() === "Đã lưu";
 
 test("trạng thái đã lưu khớp giữa danh sách và chi tiết", async ({ page }) => {
   await login(page);
+  // Từ 1280px trở lên bấm vào tin chỉ mở khung xem bên cạnh; hẹp hơn mới sang trang chi tiết.
+  await page.setViewportSize({ width: 1024, height: 900 });
   await page.goto("/dashboard/jobs/all");
 
-  const inList = page.locator("button", { hasText: /^Lưu$|^Đã lưu$/ }).first();
+  const inList = page
+    .locator(
+      'button[aria-label="Lưu việc làm"], button[aria-label="Bỏ lưu việc làm"]',
+    )
+    .first();
+  const listSaved = async () =>
+    (await inList.getAttribute("aria-label")) === "Bỏ lưu việc làm";
   const inDetail = page
     .locator("button", { hasText: /^Đã lưu$|^Lưu việc làm$/ })
     .first();
@@ -171,11 +189,11 @@ test("trạng thái đã lưu khớp giữa danh sách và chi tiết", async ({
   // Chiều 1: bấm ở danh sách, mở chi tiết ra xem.
   await inList.click();
   await page.waitForTimeout(2_000);
-  const afterListClick = await inList.textContent();
+  const afterListClick = await listSaved();
 
-  await page.locator('a[href^="/dashboard/jobs/"]').first().click();
+  await page.locator("main ul > li").first().locator("button").first().click();
   await inDetail.waitFor({ timeout: 20_000 });
-  expect(isSaved(await inDetail.textContent())).toBe(isSaved(afterListClick));
+  expect(isSaved(await inDetail.textContent())).toBe(afterListClick);
 
   // Chiều 2: bấm ở chi tiết, quay lại danh sách xem.
   await inDetail.click();
@@ -185,5 +203,5 @@ test("trạng thái đã lưu khớp giữa danh sách và chi tiết", async ({
   await page.goBack();
   await inList.waitFor({ timeout: 20_000 });
   await page.waitForTimeout(2_500);
-  expect(isSaved(await inList.textContent())).toBe(isSaved(afterDetailClick));
+  expect(await listSaved()).toBe(isSaved(afterDetailClick));
 });

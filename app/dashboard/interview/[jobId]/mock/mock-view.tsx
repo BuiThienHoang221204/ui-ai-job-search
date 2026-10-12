@@ -61,7 +61,7 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
     <div className="space-y-6">
       <PageHeader
         title="Phỏng vấn thử"
-        subtitle={`${job.data.title} · ${job.data.company}`}
+        subtitle={`${job.data.job.title} · ${job.data.job.company}`}
         actions={
           <Link href="/dashboard/interview">
             <Button variant="outline" size="sm">

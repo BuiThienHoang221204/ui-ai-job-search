@@ -8,7 +8,6 @@ import { Funnel, FileText } from "@phosphor-icons/react/ssr";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import type { Application, ApplicationStatus } from "@/types";
 import { useApiQuery } from "@/hooks/use-api-query";
-import { useLatestCv } from "@/hooks/use-latest-cv";
 import { invalidateAfter, keys } from "@/lib/query-keys";
 import {
   applicationsService,
@@ -30,7 +29,6 @@ import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
 import { SelectMenu } from "@/components/ui/select-menu";
-import { CvPicker, type CvOption } from "@/components/dashboard/cv-picker";
 import {
   Table,
   TableBody,
@@ -62,20 +60,8 @@ export default function ApplicationsPage() {
     null,
   );
   const [pdfLoadingId, setPdfLoadingId] = useState<string | null>(null);
-  const [cvPickerOpen, setCvPickerOpen] = useState(false);
-  const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
+  const [creatingCvFor, setCreatingCvFor] = useState<string | null>(null);
   const toast = useToast();
-
-  const latestCv = useLatestCv().data;
-  const uploadedCv: CvOption | null =
-    latestCv?.status === "DONE"
-      ? {
-          id: latestCv.id,
-          label: latestCv.filename || "CV đã upload",
-          type: "uploaded",
-          filename: latestCv.filename || undefined,
-        }
-      : null;
 
   const { data, error } = useApiQuery(
     keys.applicationList(status, offset),
@@ -100,6 +86,9 @@ export default function ApplicationsPage() {
     try {
       await applicationsService.updateStatus(application.id, next);
       invalidateAfter(queryClient, "applicationStatus");
+      void queryClient.invalidateQueries({
+        queryKey: keys.job(application.jobId),
+      });
     } catch (err) {
       setRowError({
         id: application.id,
@@ -128,33 +117,22 @@ export default function ApplicationsPage() {
     }
   };
 
-  const handleCvSelected = async (option: CvOption) => {
-    if (!selectedAppId) return;
+  const createCvFor = async (jobId: string) => {
+    setCreatingCvFor(jobId);
     try {
-      await applicationsService.create(selectedAppId, {
-        skipDocuments: option.type === "uploaded",
-        cvDocumentId: option.type === "uploaded" ? option.id : undefined,
-      });
+      await documentsService.createCv({ jobId });
+      invalidateAfter(queryClient, "createDocument");
       invalidateAfter(queryClient, "applicationStatus");
-      toast.success("Đã cập nhật CV thành công");
+      toast.success("Đang viết CV cho tin này — CV sẽ hiện ở đây khi xong");
     } catch (err) {
-      toast.danger(apiErrorMessage(err, "Không cập nhật được CV"));
+      toast.danger(apiErrorMessage(err, "Không tạo được CV"));
+    } finally {
+      setCreatingCvFor(null);
     }
-    setCvPickerOpen(false);
-    setSelectedAppId(null);
   };
 
   return (
     <div className="space-y-6">
-      <CvPicker
-        open={cvPickerOpen}
-        onClose={() => {
-          setCvPickerOpen(false);
-          setSelectedAppId(null);
-        }}
-        onSelect={handleCvSelected}
-        uploadedCv={uploadedCv}
-      />
       <PageHeader
         title="Lịch sử ứng tuyển"
         subtitle="Theo dõi trạng thái từng đơn ứng tuyển của bạn"
@@ -216,21 +194,31 @@ export default function ApplicationsPage() {
                   </TableCell>
                   <TableCell className="hidden whitespace-nowrap text-slate-500 md:table-cell">
                     {(() => {
-                      const cvs = application.documents?.filter(
-                        (d) => d.kind === "CV" && d.status === "DONE",
-                      );
-                      if (!cvs?.length) {
+                      const jobCvs = application.documents?.filter(
+                        (d) => d.kind === "CV",
+                      ) ?? [];
+                      const cvs = jobCvs.filter((d) => d.status === "DONE");
+                      if (!cvs.length) {
+                        if (
+                          jobCvs.some(
+                            (d) => d.status === "PENDING" || d.status === "RUNNING",
+                          )
+                        ) {
+                          return (
+                            <span className="text-xs text-slate-400">
+                              Đang viết CV…
+                            </span>
+                          );
+                        }
                         return (
                           <button
                             type="button"
-                            onClick={() => {
-                              setSelectedAppId(application.id);
-                              setCvPickerOpen(true);
-                            }}
-                            className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-primary-600 hover:underline"
+                            disabled={creatingCvFor === application.jobId}
+                            onClick={() => void createCvFor(application.jobId)}
+                            className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-primary-600 hover:underline disabled:opacity-50"
                           >
                             <FileText className="size-3.5 shrink-0" />
-                            Chưa chọn CV
+                            Tạo CV cho tin này
                           </button>
                         );
                       }

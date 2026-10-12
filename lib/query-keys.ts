@@ -1,17 +1,13 @@
 import type { QueryClient } from "@tanstack/react-query";
 
 export const keys = {
-  authMe: () => ["auth", "me"] as const,
-
   dashboard: () => ["dashboard", "overview"] as const,
   skillGaps: () => ["skill-gaps"] as const,
 
-  jobs: () => ["jobs"] as const,
   jobList: (filter: unknown) => ["jobs", "list", filter] as const,
   jobLists: () => ["jobs", "list"] as const,
   jobFilters: () => ["jobs", "filters"] as const,
   job: (jobId: string) => ["job", jobId] as const,
-  jobRecord: (jobId: string) => ["job", jobId, "record"] as const,
   companyBrief: (jobId: string) => ["company-brief", jobId] as const,
 
   matches: () => ["matches"] as const,
@@ -28,6 +24,8 @@ export const keys = {
 
   documents: () => ["documents"] as const,
   document: (documentId: string) => ["document", documentId] as const,
+  recentDocuments: (kind: string) => ["documents", kind, "recent"] as const,
+  jobCv: (jobId: string) => ["documents", "CV", "job", jobId] as const,
   documentList: (kind: string, jobId: string | null, offset: number) =>
     ["documents", kind, jobId, offset] as const,
   cvTemplates: () => ["cv-templates"] as const,
@@ -38,15 +36,26 @@ export const keys = {
 
   upskill: () => ["upskill", "latest"] as const,
 
+  questionPage: (filters: unknown, offset: number) =>
+    ["question-bank", "page", filters, offset] as const,
+  questionFacets: (filters: unknown) =>
+    ["question-bank", "facets", filters] as const,
+
   mockInterviews: () => ["mock-interviews"] as const,
   mockInterviewList: (scope: unknown) =>
     ["mock-interviews", "list", scope] as const,
 } as const;
 
 const AFFECTED: Record<string, readonly (readonly string[])[]> = {
-  saveJob: [keys.jobLists(), ["job"]],
-  applicationStatus: [keys.applications(), keys.dashboard()],
+  saveJob: [keys.jobLists(), keys.dashboard()],
+  applicationStatus: [keys.applications(), keys.dashboard(), keys.jobLists()],
   saveProfile: [keys.dashboard(), keys.skillGaps(), keys.jobLists()],
+  quickStart: [
+    keys.profile(),
+    keys.dashboard(),
+    keys.skillGaps(),
+    keys.jobLists(),
+  ],
   applyCvDraft: [
     keys.profile(),
     keys.profileCv(),
@@ -54,7 +63,7 @@ const AFFECTED: Record<string, readonly (readonly string[])[]> = {
     keys.skillGaps(),
     keys.jobLists(),
   ],
-  createDocument: [keys.documents()],
+  createDocument: [keys.documents(), keys.dashboard()],
   scoreJob: [keys.matches(), keys.jobLists(), keys.dashboard()],
   mockInterview: [keys.mockInterviews()],
 };

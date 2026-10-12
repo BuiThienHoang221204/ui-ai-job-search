@@ -3,7 +3,7 @@
 import { BriefLiveProgress, type PartialBrief } from "./brief-live-progress";
 import { streamModel } from "@/lib/model-stream";
 import { BriefBody, Signals } from "./company-brief-body";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowsClockwise, Buildings } from "@phosphor-icons/react/ssr";
 import { companiesService } from "@/services";
 
@@ -17,6 +17,7 @@ import { SectionCard } from "@/components/ui/section-card";
 import { useToast } from "@/components/ui/toast";
 
 const POLL_MS = 2_500;
+const MAX_WAIT_MS = 5 * 60_000;
 
 interface CompanyBriefPanelProps {
   jobId: string;
@@ -37,11 +38,24 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
     {
       errorMessage: "Không tải được thông tin công ty",
       refetchInterval: (current) =>
-        queued && isBriefPending(pendingSince, current?.brief?.updatedAt ?? null)
+        queued &&
+        isBriefPending(pendingSince, current?.brief?.updatedAt ?? null)
           ? POLL_MS
           : false,
     },
   );
+
+  useEffect(() => {
+    if (!queued) return;
+    const timer = setTimeout(() => {
+      setQueued(false);
+      setPendingSince(undefined);
+      toast.danger(
+        "Chưa có kết quả tìm hiểu công ty sau 5 phút. Bấm tìm hiểu lại để thử lần nữa.",
+      );
+    }, MAX_WAIT_MS);
+    return () => clearTimeout(timer);
+  }, [queued, toast]);
 
   if (error || !data || !data.researchable) return null;
 
@@ -82,7 +96,6 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
       compact
       actions={brief ? <Signals brief={brief} /> : null}
     >
-
       {!brief && waiting && <BriefLiveProgress partial={partial} />}
 
       {!brief && !waiting && (

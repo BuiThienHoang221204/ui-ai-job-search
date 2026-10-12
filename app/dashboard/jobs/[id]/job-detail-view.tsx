@@ -19,7 +19,11 @@ import { MatchInsights } from "./match/match-insights";
 import { MatchPanel } from "./match/match-panel";
 import { SystemMatchCard } from "./match/system-match-card";
 import { JobSectionNav } from "./job-section-nav";
-import { updateJobDetail, useJobDetail } from "@/hooks/use-job-detail";
+import {
+  afterSaveJob,
+  updateJobDetail,
+  useJobDetail,
+} from "@/hooks/use-job-detail";
 import { SalaryGuidePanel } from "./salary-guide-panel";
 import { JobActionCards } from "@/components/dashboard/job-action-cards";
 import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
@@ -47,7 +51,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
     setSavePending(next);
     void (next ? jobsService.save(jobId) : jobsService.unsave(jobId))
       .then(() => {
-        invalidateAfter(queryClient, "saveJob");
+        afterSaveJob(queryClient, jobId, next);
         setSavePending(null);
       })
       .catch(() => setSavePending(!next));
@@ -121,14 +125,8 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
   const card = toJobCard({
     jobId: job.id,
     status: match?.status ?? "PENDING",
-    eligibility: match?.eligibility ?? null,
-    eligibilityNote: match?.eligibilityNote ?? null,
     overallScore: match?.overallScore ?? null,
-    verdict: match?.verdict ?? null,
-    technicalScore: match?.technicalScore ?? null,
-    experienceScore: match?.experienceScore ?? null,
     strengths: match?.strengths ?? [],
-    gaps: match?.gaps ?? [],
     job,
   });
 
