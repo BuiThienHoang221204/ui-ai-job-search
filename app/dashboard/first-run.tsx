@@ -14,7 +14,7 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/utils";
 import { MarketCard } from "./market-card";
 import { JobRow } from "./top-matches";
-import { useDashboard } from "./use-dashboard";
+import { useDashboard } from "@/hooks/use-dashboard";
 
 type Step = { title: string; detail: string; done: boolean; action?: { label: string; href: string } };
 

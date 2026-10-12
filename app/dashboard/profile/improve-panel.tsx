@@ -10,14 +10,15 @@ import {
   Target,
   UploadSimple,
 } from "@phosphor-icons/react/ssr";
-import { useApiQuery } from "@/hooks/use-api-query";
+import { useLatestCv } from "@/hooks/use-latest-cv";
 import { profileDraftService } from "@/services";
 import { DashSection } from "@/components/dashboard/dash-section";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn, formatDate } from "@/utils";
-import { improvements, type Improvement } from "./profile-config";
-import { useProfile, useProfileUi } from "./use-profile";
+import { improvements } from "./profile-config";
+import type { Improvement } from "@/types";
+import { useProfile, useProfileUi } from "@/hooks/use-profile";
 
 /** Chuyển sang đúng tab rồi cuộn tới phần cần sửa. */
 function useGoTo() {
@@ -36,13 +37,7 @@ function useGoTo() {
 export function ImprovePanel() {
   const { data: profile } = useProfile();
   const goTo = useGoTo();
-  const cv = useApiQuery(
-    ["profile", "cv"],
-    () => profileDraftService.latest().catch(() => null),
-    {
-      errorMessage: "Không tải được CV gần nhất",
-    },
-  );
+  const cv = useLatestCv();
   if (!profile) return null;
 
   const items = improvements(profile);

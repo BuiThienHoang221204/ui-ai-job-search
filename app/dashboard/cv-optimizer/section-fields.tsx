@@ -24,9 +24,28 @@ export function SectionFields({
   content,
   onChange,
 }: FieldsProps & { sectionKey: CvSectionKey }) {
-  if (sectionKey === "profile") return <ProfileFields {...{ content, onChange }} />;
-  if (sectionKey === "competencies")
-    return <CompetencyFields {...{ content, onChange }} />;
+  if (sectionKey === "profile") {
+    return (
+      <Textarea
+        rows={8}
+        value={content.profileStatement}
+        placeholder="Vài câu giới thiệu bản thân"
+        onChange={(event) =>
+          onChange({ ...content, profileStatement: event.target.value })
+        }
+      />
+    );
+  }
+  if (sectionKey === "competencies") {
+    return (
+      <LinesField
+        label="Năng lực"
+        rows={5}
+        value={content.coreCompetencies}
+        onChange={(coreCompetencies) => onChange({ ...content, coreCompetencies })}
+      />
+    );
+  }
   if (sectionKey === "experience")
     return <ExperienceFields {...{ content, onChange }} />;
   if (sectionKey === "projects") return <ProjectFields {...{ content, onChange }} />;
@@ -34,32 +53,6 @@ export function SectionFields({
     return <EducationFields {...{ content, onChange }} />;
   if (sectionKey === "skills") return <SkillFields {...{ content, onChange }} />;
   return null;
-}
-
-/** Các ô nhập phần thông tin cá nhân. */
-function ProfileFields({ content, onChange }: FieldsProps) {
-  return (
-    <Textarea
-      rows={8}
-      value={content.profileStatement}
-      placeholder="Vài câu giới thiệu bản thân"
-      onChange={(event) =>
-        onChange({ ...content, profileStatement: event.target.value })
-      }
-    />
-  );
-}
-
-/** Các ô nhập phần năng lực cốt lõi. */
-function CompetencyFields({ content, onChange }: FieldsProps) {
-  return (
-    <LinesField
-      label="Năng lực"
-      rows={5}
-      value={content.coreCompetencies}
-      onChange={(coreCompetencies) => onChange({ ...content, coreCompetencies })}
-    />
-  );
 }
 
 /** Giữ chỉ số mục con đang mở, mặc định mở mục đầu nếu có. */
@@ -191,6 +184,7 @@ function ProjectFields({ content, onChange }: FieldsProps) {
           />
           <Paragraph
             label="Dự án là gì"
+            rows={5}
             value={project.description}
             onChange={(description) =>
               update(replaceAt(list, index, { ...project, description }))
@@ -198,7 +192,7 @@ function ProjectFields({ content, onChange }: FieldsProps) {
           />
           <LinesField
             label="Đã làm gì"
-            rows={3}
+            rows={8}
             value={project.bullets}
             onChange={(bullets) =>
               update(replaceAt(list, index, { ...project, bullets }))

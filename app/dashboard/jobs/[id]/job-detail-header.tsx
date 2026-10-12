@@ -4,6 +4,7 @@ import {
   Bookmark,
   Buildings,
   MapPin,
+  CheckCircle,
   Sparkle,
   Wallet,
 } from "@phosphor-icons/react/ssr";
@@ -23,8 +24,6 @@ interface JobDetailHeaderProps {
   saved: boolean;
   onToggleSave: () => void;
   onApply: () => void;
-  applying?: boolean;
-  applied?: boolean;
 }
 
 /** Phần đầu trang chi tiết tin: tiêu đề, công ty và các thao tác chính. */
@@ -35,10 +34,9 @@ export function JobDetailHeader({
   saved,
   onToggleSave,
   onApply,
-  applying,
-  applied,
 }: JobDetailHeaderProps) {
   const verdict = match?.verdict ? VERDICT_META[match.verdict] : null;
+  const submitted = job.application?.status === "APPLIED";
 
   return (
     <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm">
@@ -93,14 +91,16 @@ export function JobDetailHeader({
 
       <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
         <Button
-          variant="outline"
           className="flex-1 sm:flex-none"
           onClick={onApply}
-          loading={applying}
-          disabled={applied}
+          variant={submitted ? "outline" : "primary"}
         >
-          <Sparkle className="size-4.5" />
-          {applied ? "Đã tạo đơn" : "Ứng tuyển ngay"}
+          {submitted ? (
+            <CheckCircle className="size-4.5 text-emerald-600" />
+          ) : (
+            <Sparkle className="size-4.5" />
+          )}
+          {submitted ? "Đã nộp đơn · Mở tin gốc" : "Ứng tuyển ngay"}
         </Button>
         <Button
           variant="outline"

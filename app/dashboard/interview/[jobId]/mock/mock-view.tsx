@@ -1,6 +1,6 @@
 "use client";
 
-import { isClosed, useMockInterview } from "./use-mock-interview";
+import { isClosed, useMockInterview } from "@/hooks/use-mock-interview";
 
 import Link from "next/link";
 import {

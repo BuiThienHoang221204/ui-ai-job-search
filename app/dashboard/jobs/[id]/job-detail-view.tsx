@@ -1,18 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import type { JobMatchDetail, JobRecord, ProfileRecord } from "@/services";
 import { apiErrorStatus } from "@/lib/axios";
-import { useApiQuery } from "@/hooks/use-api-query";
-import { invalidateAfter, keys } from "@/lib/query-keys";
-import {
-  jobsService,
-  matchesService,
-  profileService,
-  applicationsService,
-} from "@/services";
+import { invalidateAfter } from "@/lib/query-keys";
+import { applicationsService, jobsService } from "@/services";
+import type { Application } from "@/types";
 import { toJobCard } from "@/lib/adapters";
 import { Alert } from "@/components/ui/alert";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
@@ -20,65 +15,32 @@ import { useToast } from "@/components/ui/toast";
 import { CompanyBriefPanel } from "./company-brief/company-brief-panel";
 import { JobDescriptionCard } from "./job-description-card";
 import { JobDetailHeader } from "./job-detail-header";
-import { InsightList } from "./match/match-insights";
+import { MatchInsights } from "./match/match-insights";
 import { MatchPanel } from "./match/match-panel";
+import { SystemMatchCard } from "./match/system-match-card";
+import { JobSectionNav } from "./job-section-nav";
+import { updateJobDetail, useJobDetail } from "@/hooks/use-job-detail";
 import { SalaryGuidePanel } from "./salary-guide-panel";
-import {
-  MatchServerError,
-  MatchStreamError,
-  streamMatchEvaluation,
-  type PartialEvaluation,
-} from "@/lib/match-stream";
+import { JobActionCards } from "@/components/dashboard/job-action-cards";
 import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
 import { SkillResources } from "@/components/ads/affiliate-inline";
 import { missingSkillsOf } from "@/lib/affiliate";
 
-const SCORE_POLL_MS = 2_500;
 const APPLY_TOAST_DURATION = 60_000;
-const SCORE_TIMEOUT_MS = 180_000;
 
 interface JobDetailViewProps {
   jobId: string;
   embedded?: boolean;
 }
-interface JobDetailData {
-  job: JobRecord;
-  match: JobMatchDetail | null;
-  profile: ProfileRecord | null;
-}
-
 export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [scoring, setScoring] = useState(false);
-  const [partial, setPartial] = useState<PartialEvaluation | null>(null);
   const [savePending, setSavePending] = useState<boolean | null>(null);
   const toast = useToast();
-
-  const key = keys.job(jobId);
-  const { data, error } = useApiQuery(
-    key,
-    async () => {
-      const [record, current, appList] = await Promise.all([
-        jobsService.get(jobId),
-        profileService.get().catch(() => null),
-        applicationsService.list({ limit: 100, offset: 0 }).catch(() => null),
-      ]);
-      const existingApp = appList?.items.find((a: { jobId: string }) => a.jobId === jobId);
-      return {
-        job: record,
-        match: record.match,
-        profile: current,
-        existingApplication: existingApp ?? null,
-      };
-    },
-    { errorMessage: "Không tải được thông tin công việc" },
-  );
+  const { data, error } = useJobDetail(jobId);
 
   const job = data?.job ?? null;
   const match = data?.match ?? null;
-  const profile = data?.profile ?? null;
-  const existingApplication = data?.existingApplication ?? null;
   const saved = savePending ?? job?.saved ?? false;
   const toggleSave = () => {
     const next = !saved;
@@ -90,84 +52,51 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
       })
       .catch(() => setSavePending(!next));
   };
-  const applyMatch = (next: JobMatchDetail) =>
-    queryClient.setQueryData(key, (current: JobDetailData | undefined) =>
-      current ? { ...current, match: next } : current,
-    );
-
-  const scoreByQueue = async (force: boolean) => {
-    await matchesService.evaluate(jobId, force);
-    const started = Date.now();
-    while (Date.now() - started < SCORE_TIMEOUT_MS) {
-      await new Promise((done) => setTimeout(done, SCORE_POLL_MS));
-      const next = await matchesService.get(jobId).catch(() => null);
-      if (next && next.status !== "PENDING" && next.status !== "RUNNING") {
-        applyMatch(next as JobMatchDetail);
-        return;
-      }
-    }
+  const setApplication = (application: Application) => {
+    updateJobDetail(queryClient, jobId, (data) => ({
+      ...data,
+      job: {
+        ...data.job,
+        application: { id: application.id, status: application.status },
+      },
+    }));
+    invalidateAfter(queryClient, "applicationStatus");
   };
-
-  const handleScore = (force: boolean) => {
-    setScoring(true);
-    setPartial(null);
-    void (async () => {
-      try {
-        const match = await streamMatchEvaluation({
-          jobId,
-          force,
-          onPartial: setPartial,
-        });
-        applyMatch(match as unknown as JobMatchDetail);
-      } catch (err) {
-        if (apiErrorStatus(err) === 401) {
-          router.replace(`/login?next=/dashboard/jobs/${jobId}`);
-          return;
-        }
-        try {
-          // Server đã báo lỗi AI thì bản ghi đã là FAILED: chỉ đọc lại, xếp hàng nữa là chạy lại nguyên chuỗi model.
-          if (err instanceof MatchServerError) {
-            const next = await matchesService.get(jobId);
-            if (next) applyMatch(next as JobMatchDetail);
-          } else {
-            await scoreByQueue(force);
-          }
-        } catch (fallbackError) {
-          if (apiErrorStatus(fallbackError) === 401)
-            router.replace(`/login?next=/dashboard/jobs/${jobId}`);
-        }
-        if (!(err instanceof MatchStreamError)) throw err;
-      } finally {
-        setScoring(false);
-        setPartial(null);
-      }
-    })();
-  };
-
-  const hasApplied = existingApplication !== null;
 
   const handleApply = async () => {
-    if (hasApplied) {
+    if (job?.application) {
       if (job?.url) window.open(job.url, "_blank", "noopener");
       return;
     }
     try {
-      const result = await applicationsService.create(jobId, { skipDocuments: true });
-      invalidateAfter(queryClient, "applicationStatus");
+      const result = await applicationsService.create(jobId, {
+        skipDocuments: true,
+      });
+      setApplication(result);
       if (job?.url) window.open(job.url, "_blank", "noopener");
-      toast.success((dismiss) => (
-        <span>
-          Việc làm này đã được chuyển sang trạng thái Đang tiến hành trong{" "}
-          <button
-            type="button"
-            onClick={() => void markApplied(result.id, dismiss)}
-            className="font-medium text-primary-600 underline hover:text-primary-700"
-          >
-            Đã nhấp vào ứng tuyển
-          </button>
-          .
-        </span>
-      ), { position: "bottom-right", duration: APPLY_TOAST_DURATION });
+      toast.success(
+        (dismiss) => (
+          <span>
+            Đã lưu tin này vào{" "}
+            <Link
+              href="/dashboard/applications"
+              className="font-semibold text-slate-900 underline"
+            >
+              Lịch sử ứng tuyển
+            </Link>{" "}
+            (Đã xem). Nộp xong trên trang tuyển dụng thì bấm{" "}
+            <button
+              type="button"
+              onClick={() => void markApplied(result.id, dismiss)}
+              className="font-medium text-primary-600 underline hover:text-primary-700"
+            >
+              Tôi đã nộp đơn
+            </button>
+            .
+          </span>
+        ),
+        { position: "bottom-right", duration: APPLY_TOAST_DURATION },
+      );
     } catch (err) {
       if (apiErrorStatus(err) === 401) {
         router.replace(`/login?next=/dashboard/jobs/${jobId}`);
@@ -179,8 +108,9 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
 
   const markApplied = async (applicationId: string, dismiss: () => void) => {
     try {
-      await applicationsService.updateStatus(applicationId, "APPLIED");
-      invalidateAfter(queryClient, "applicationStatus");
+      setApplication(
+        await applicationsService.updateStatus(applicationId, "APPLIED"),
+      );
       dismiss();
     } catch {}
   };
@@ -204,7 +134,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
 
   return (
     <div className="space-y-6">
-      <ResponsiveBannerAd align="start"/>
+      <ResponsiveBannerAd align="start" />
 
       <JobDetailHeader
         card={card}
@@ -215,51 +145,43 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
         onApply={handleApply}
       />
 
-      <MatchPanel
+      <JobSectionNav jobId={jobId} />
+
+      <MatchPanel jobId={jobId} />
+
+      <MatchInsights jobId={jobId} />
+
+      <SystemMatchCard jobId={jobId} />
+
+      <JobActionCards
+        id="chuan-bi"
         jobId={jobId}
-        match={match}
-        partial={partial}
-        profile={profile}
-        system={job.systemMatch}
-        onScore={handleScore}
-        scoring={scoring}
+        actions={["cv", "letter", "interview"]}
       />
 
       <div className={embedded ? "space-y-6" : "grid gap-6 lg:grid-cols-3"}>
         <div className={embedded ? "space-y-6" : "space-y-6 lg:col-span-2"}>
-          {match && match.strengths.length > 0 && (
-            <InsightList
-              tone="positive"
-              title="Điểm mạnh của bạn"
-              description="Những điểm khiến AI đánh giá bạn nổi bật so với JD"
-              items={match.strengths}
-            />
-          )}
-
-          {match && match.gaps.length > 0 && (
-            <InsightList
-              tone="caution"
-              title="Khoảng cách so với yêu cầu"
-              description="Gợi ý để tăng điểm phù hợp cho lần ứng tuyển sau"
-              items={match.gaps}
-            />
-          )}
-
           <SkillResources
             jobId={job.id}
             occupation={job.occupationCode}
             skills={missingSkillsOf(job.systemMatch)}
           />
 
-          <JobDescriptionCard
-            description={job.description}
-            defaultOpen={!match || match.strengths.length + match.gaps.length === 0}
-          />
+          <div id="mo-ta" className="scroll-mt-20">
+            <JobDescriptionCard
+              description={job.description}
+              defaultOpen={
+                !match || match.strengths.length + match.gaps.length === 0
+              }
+            />
+          </div>
         </div>
 
         <div className="space-y-6">
           <SalaryGuidePanel guide={job.salaryGuide} />
-          <CompanyBriefPanel jobId={jobId} />
+          <div id="cong-ty" className="scroll-mt-20">
+            <CompanyBriefPanel jobId={jobId} />
+          </div>
         </div>
       </div>
     </div>

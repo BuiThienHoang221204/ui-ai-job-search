@@ -28,6 +28,22 @@ function withSelected(
 const difficultyOptionsOf = (facets: QuestionFacets): QuestionFilterOption[] =>
   facets.difficulties.map((d) => ({ code: d.name, name: d.name, count: d.count }));
 
+/** Bộ lọc gửi lên API; `null` nghĩa là chưa lọc gì, tức đúng bộ lọc server đã dùng để tải sẵn trang đầu. */
+export function questionFilters(
+  term: string,
+  industry: string | null,
+  type: string | null,
+  difficulty: string | null,
+) {
+  const filters = {
+    industry: industry ?? undefined,
+    type: type ?? undefined,
+    difficulty: difficulty ?? undefined,
+    q: term.trim() || undefined,
+  };
+  return Object.values(filters).some(Boolean) ? filters : null;
+}
+
 /** Trạng thái bộ lọc, phân trang và dữ liệu của ngân hàng câu hỏi; đổi bộ lọc nào cũng quay về trang đầu. */
 export function useQuestionBank(initialFacets: QuestionFacets, initial: QuestionPage) {
   const [term, setTerm] = useState("");
@@ -35,29 +51,41 @@ export function useQuestionBank(initialFacets: QuestionFacets, initial: Question
   const [type, setType] = useState<string | null>(null);
   const [difficulty, setDifficulty] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
-  const [page, setPage] = useState<QuestionPage>(initial);
-  const [facets, setFacets] = useState<QuestionFacets>(initialFacets);
+  const [fetchedPage, setPage] = useState<QuestionPage | null>(null);
+  const [fetchedFacets, setFacets] = useState<QuestionFacets | null>(null);
   const [pending, startTransition] = useTransition();
 
+  const filters = questionFilters(term, industry, type, difficulty);
+  const page = !filters && offset === 0 ? initial : (fetchedPage ?? initial);
+  const facets = filters ? (fetchedFacets ?? initialFacets) : initialFacets;
+
   useEffect(() => {
+    const filters = questionFilters(term, industry, type, difficulty);
+    if (!filters && offset === 0) return;
     const timer = setTimeout(() => {
       startTransition(async () => {
-        const filters = {
-          industry: industry ?? undefined,
-          type: type ?? undefined,
-          difficulty: difficulty ?? undefined,
-          q: term.trim() || undefined,
-        };
-        const [nextPage, nextFacets] = await Promise.all([
-          questionBankService.browse({ ...filters, limit: QUESTION_PAGE_SIZE, offset }),
-          questionBankService.browseFacets(filters),
-        ]);
-        setPage(nextPage);
-        setFacets(nextFacets);
+        setPage(
+          await questionBankService.browse({
+            ...filters,
+            limit: QUESTION_PAGE_SIZE,
+            offset,
+          }),
+        );
       });
     }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [term, industry, type, difficulty, offset]);
+
+  useEffect(() => {
+    const filters = questionFilters(term, industry, type, difficulty);
+    if (!filters) return;
+    const timer = setTimeout(() => {
+      startTransition(async () => {
+        setFacets(await questionBankService.browseFacets(filters));
+      });
+    }, SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [term, industry, type, difficulty]);
 
   /** Bọc một setter để mỗi lần đổi bộ lọc thì quay về trang đầu. */
   function resetting<T>(setter: (next: T) => void) {

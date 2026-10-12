@@ -1,26 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { LinkSimple, MagicWand, Sparkle } from "@phosphor-icons/react/ssr";
+import { LinkSimple, Sparkle } from "@phosphor-icons/react/ssr";
 import { apiErrorMessage } from "@/lib/axios";
 import { useDraftState } from "@/hooks/use-draft-state";
-import type { JobMatchWithJob } from "@/types";
 import {
   documentsService,
   type CvLanguage,
-  type CvSourceInput,
 } from "@/services";
 import {
   JobSelect,
   PastedJobFields,
-  usePastedJob,
 } from "@/components/dashboard/document-job";
+import { usePastedJob } from "@/hooks/use-pasted-job";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
-import { SectionCard } from "@/components/ui/section-card";
 import { Tabs } from "@/components/ui/tabs";
 import { cn } from "@/utils";
+import type { CvGenerate } from "@/types";
 
 const NO_JOB = "";
 
@@ -39,21 +37,14 @@ const LANGUAGES = [
 
 /** Chọn nguồn tin cho CV: dán JD, tin đã có hoặc CV tổng quát không nhắm tin nào. */
 export function CvSourceCard({
-  matches,
   fixedJobId,
-  language,
-  onLanguageChange,
-  disabled,
   onSubmit,
 }: {
-  matches: JobMatchWithJob[];
   fixedJobId: string | null;
-  language: CvLanguage;
-  onLanguageChange: (next: CvLanguage) => void;
-  disabled: boolean;
-  onSubmit: (input: CvSourceInput) => void;
+  onSubmit: CvGenerate;
 }) {
   const [source, setSource] = useState<Source>("pick");
+  const [language, setLanguage] = useState<CvLanguage>("vi");
   const [jobId, setJobId] = useState(fixedJobId ?? NO_JOB);
   const pasted = usePastedJob("cv");
 
@@ -86,50 +77,46 @@ export function CvSourceCard({
   };
 
   const handleSubmit = () => {
-    if (disabled || !ready) return;
+    if (!ready) return;
     onSubmit(
       source === "pick"
         ? { jobId: jobId === NO_JOB ? undefined : jobId }
         : pasted.value,
+      language,
     );
   };
 
   return (
-    <SectionCard
-      compact
-      icon={MagicWand}
-      iconClassName="size-4"
-      title="Chọn vị trí muốn nhắm tới"
-      description="Chọn một tin đã có, hoặc dán mô tả công việc bạn copy được từ bất kỳ đâu. Không chọn gì thì hệ thống sinh CV tổng quát từ hồ sơ của bạn."
-      className="border-slate-200/90"
-    >
-      {!fixedJobId && (
-        <Tabs
-          tabs={SOURCES}
-          value={source}
-          onChange={(value) => setSource(value as Source)}
-        />
-      )}
+    <div className="space-y-4 rounded-2xl border border-primary-100 bg-primary-50/70 p-4 sm:p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm font-semibold text-slate-900">
+          Bạn muốn ứng tuyển vị trí nào?
+        </p>
+        {!fixedJobId && (
+          <Tabs
+            tabs={SOURCES}
+            value={source}
+            onChange={(value) => setSource(value as Source)}
+            className="bg-white"
+          />
+        )}
+      </div>
 
       {source === "pick" ? (
         <JobSelect
           selectId="cv-job"
-          matches={matches}
+          fixedJobId={fixedJobId}
           value={jobId}
           onChange={setJobId}
-          disabled={disabled || Boolean(fixedJobId)}
+          disabled={Boolean(fixedJobId)}
           emptyOptionLabel="CV tổng quát (không nhắm vị trí nào)"
-          hint={
-            matches.length === 0
-              ? "Chưa có công việc nào được chấm điểm. Dán mô tả công việc ở tab bên cạnh thì không cần chờ."
-              : undefined
-          }
+          emptyHint="Chưa có công việc nào được chấm điểm. Dán mô tả công việc ở tab bên cạnh thì không cần chờ."
         />
       ) : source === "paste" ? (
         <PastedJobFields
           idPrefix="cv"
           state={pasted}
-          disabled={disabled}
+          disabled={false}
           readyHint="Mô tả này không được lưu thành tin tuyển dụng, chỉ dùng để viết CV."
         />
       ) : (
@@ -141,7 +128,7 @@ export function CvSourceCard({
                 id="cv-url"
                 className="min-w-64 flex-1"
                 value={url}
-                disabled={disabled || fetching}
+                disabled={fetching}
                 onChange={(event) => setUrl(event.target.value)}
                 placeholder="https://…"
               />
@@ -149,7 +136,7 @@ export function CvSourceCard({
                 variant="secondary"
                 onClick={handleExtract}
                 loading={fetching}
-                disabled={disabled || url.trim() === ""}
+                disabled={url.trim() === ""}
               >
                 <LinkSimple className="size-4.5" />
                 {fetching ? "Đang đọc…" : "Lấy nội dung"}
@@ -165,22 +152,20 @@ export function CvSourceCard({
         </div>
       )}
 
-      <div className="flex flex-wrap items-end justify-end gap-3">
-        <div role="group" aria-labelledby="cv-language-label">
-          <span
-            id="cv-language-label"
-            className="mb-1.5 block text-sm font-medium text-slate-700"
-          >
-            Ngôn ngữ CV
-          </span>
-          <div className="flex h-10 items-center rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        <div
+          role="group"
+          aria-label="Ngôn ngữ CV"
+          className="flex items-center gap-2"
+        >
+          <span className="text-sm text-slate-500">Ngôn ngữ</span>
+          <div className="flex h-10.5 items-center rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
             {LANGUAGES.map(([value, label]) => (
               <button
                 key={value}
                 type="button"
-                disabled={disabled}
                 aria-pressed={language === value}
-                onClick={() => onLanguageChange(value)}
+                onClick={() => setLanguage(value)}
                 className={cn(
                   "cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                   language === value
@@ -194,11 +179,11 @@ export function CvSourceCard({
           </div>
         </div>
 
-        <Button onClick={handleSubmit} loading={disabled} disabled={!ready}>
+        <Button size="lg" onClick={handleSubmit} disabled={!ready}>
           <Sparkle className="size-4.5" />
-          {disabled ? "Đang tạo…" : "Tạo CV bằng AI"}
+          Tạo CV bằng AI
         </Button>
       </div>
-    </SectionCard>
+    </div>
   );
 }

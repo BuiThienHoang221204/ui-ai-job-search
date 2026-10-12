@@ -52,7 +52,7 @@ export type {
   DocumentKind,
   DocumentRecord,
 } from "./documents";
-export type { InterviewPrepRecord } from "./interview";
+export type { InterviewPrepRecord, InterviewPrepSummary } from "./interview";
 export type { UpskillReportRecord } from "./upskill";
 export type { ProfileRecord, QuickStartInput } from "./profile";
 export type {

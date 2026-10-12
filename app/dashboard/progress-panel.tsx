@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ProgressCircle } from "@/components/ui/progress-circle";
 import { cn } from "@/utils";
-import { useDashboard } from "./use-dashboard";
+import { useDashboard } from "@/hooks/use-dashboard";
 
 const GOALS = [
   { key: "documents", label: "Tạo CV / thư xin việc", icon: FileText },

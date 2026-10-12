@@ -29,13 +29,17 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
     undefined,
   );
   const [partial, setPartial] = useState<PartialBrief | null>(null);
+  const [queued, setQueued] = useState(false);
 
   const { data, error, reload } = useApiQuery(
     keys.companyBrief(jobId),
     () => companiesService.briefForJob(jobId),
     {
       errorMessage: "Không tải được thông tin công ty",
-      refetchInterval: pendingSince !== undefined ? POLL_MS : false,
+      refetchInterval: (current) =>
+        queued && isBriefPending(pendingSince, current?.brief?.updatedAt ?? null)
+          ? POLL_MS
+          : false,
     },
   );
 
@@ -47,6 +51,7 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
   async function research(force: boolean) {
     setPendingSince(brief?.updatedAt ?? null);
     setPartial(null);
+    setQueued(false);
     try {
       await streamModel<unknown, PartialBrief>({
         path: `/companies/brief/by-job/${jobId}/stream`,
@@ -58,6 +63,7 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
     } catch (err: unknown) {
       try {
         await companiesService.refreshForJob(jobId, force);
+        setQueued(true);
         reload();
       } catch {
         setPendingSince(undefined);

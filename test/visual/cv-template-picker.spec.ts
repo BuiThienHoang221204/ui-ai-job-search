@@ -1,9 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Kho chọn mẫu nằm trong tab "Mẫu trình bày" của khối "Sửa CV", và khối đó chỉ
- * hiện SAU KHI mở một CV đã sinh xong. Vào thẳng trang thì chưa có gì để chọn
- * mẫu cho.
+ * Dải chọn mẫu nằm ở đầu khu sửa CV (`?doc=`), chỉ hiện SAU KHI mở một CV đã
+ * sinh xong. Vào thẳng trang thì chưa có gì để chọn mẫu cho.
  *
  * Spec này KHÔNG bấm Lưu: nó chạy trên database DEV, nên mọi thao tác ghi sẽ sửa
  * dữ liệu thật của người dùng.
@@ -16,16 +15,14 @@ test("kho chon mau CV hien sau khi mo mot CV da tao", async ({ page }) => {
   await page.waitForURL(/\/dashboard/);
 
   await page.goto("/dashboard/cv-optimizer");
-  await expect(page.getByRole("heading", { name: "CV đã tạo" })).toBeVisible({
+  await expect(page.getByRole("heading", { name: "CV của bạn" })).toBeVisible({
     timeout: 30_000,
   });
 
-  await page.locator("li button").filter({ hasText: /^CV/ }).first().click();
-  await expect(page.getByRole("heading", { name: /^Sửa CV/ })).toBeVisible({
+  await page.locator("a[href*='?doc=']").first().click();
+  await expect(page.locator('iframe[title="Xem trước CV"]')).toBeVisible({
     timeout: 30_000,
   });
-
-  await page.getByRole("tab", { name: "Mẫu trình bày" }).click();
 
   await expect(page.getByRole("button", { name: /Tiêu chuẩn/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /Trang trọng/ })).toBeVisible();

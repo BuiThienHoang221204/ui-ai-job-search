@@ -4,6 +4,7 @@ export const keys = {
   authMe: () => ["auth", "me"] as const,
 
   dashboard: () => ["dashboard", "overview"] as const,
+  skillGaps: () => ["skill-gaps"] as const,
 
   jobs: () => ["jobs"] as const,
   jobList: (filter: unknown) => ["jobs", "list", filter] as const,
@@ -23,8 +24,10 @@ export const keys = {
     ["applications", "list", status, offset] as const,
 
   profile: () => ["profile"] as const,
+  profileCv: () => ["profile-cv"] as const,
 
   documents: () => ["documents"] as const,
+  document: (documentId: string) => ["document", documentId] as const,
   documentList: (kind: string, jobId: string | null, offset: number) =>
     ["documents", kind, jobId, offset] as const,
   cvTemplates: () => ["cv-templates"] as const,
@@ -41,11 +44,18 @@ export const keys = {
 } as const;
 
 const AFFECTED: Record<string, readonly (readonly string[])[]> = {
-  saveJob: [keys.jobs(), ["job"]],
+  saveJob: [keys.jobLists(), ["job"]],
   applicationStatus: [keys.applications(), keys.dashboard()],
-  saveProfile: [keys.profile(), keys.dashboard(), keys.jobLists()],
+  saveProfile: [keys.dashboard(), keys.skillGaps(), keys.jobLists()],
+  applyCvDraft: [
+    keys.profile(),
+    keys.profileCv(),
+    keys.dashboard(),
+    keys.skillGaps(),
+    keys.jobLists(),
+  ],
   createDocument: [keys.documents()],
-  scoreJob: [keys.matches(), keys.jobs(), ["job"], keys.dashboard()],
+  scoreJob: [keys.matches(), keys.jobLists(), keys.dashboard()],
   mockInterview: [keys.mockInterviews()],
 };
 

@@ -8,7 +8,7 @@ import {
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { DocumentJob } from "./document-job.types";
+import type { DocumentJob } from "@/types";
 
 const RUNNING_LABELS = {
   RUNNING: "AI đang soạn nội dung…",

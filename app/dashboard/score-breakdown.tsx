@@ -5,7 +5,7 @@ import { ChartBar } from "@phosphor-icons/react/ssr";
 import type { DashboardOverview } from "@/types";
 import { cn } from "@/utils";
 import { DashSection } from "@/components/dashboard/dash-section";
-import { useDashboard } from "./use-dashboard";
+import { useDashboard } from "@/hooks/use-dashboard";
 
 const GOOD_SCORE = 70;
 

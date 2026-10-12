@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import type { JobMatchWithJob } from "@/types";
 import {
   documentsService,
   type ApplicationEmailInput,
@@ -10,9 +9,9 @@ import {
 import {
   DocumentHistory,
   DocumentJobStatus,
-  upsertDocument,
-  useDocumentJob,
 } from "@/components/dashboard/document-job";
+import { upsertDocument } from "@/lib/document-list";
+import { useDocumentJob } from "@/hooks/use-document-job";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 import { PageError } from "@/components/ui/alert";
@@ -24,11 +23,9 @@ const DOCUMENT_PAGE_SIZE = 10;
 
 /** Panel mail ứng tuyển: chọn nguồn tin, chờ AI viết, đọc kết quả và mở lại bản cũ. */
 export function ApplicationEmailPanel({
-  matches,
   fixedJobId,
   loginNext,
 }: {
-  matches: JobMatchWithJob[];
   fixedJobId: string | null;
   loginNext: string;
 }) {
@@ -66,7 +63,14 @@ export function ApplicationEmailPanel({
   if (page.error)
     return <PageError title="Không tải được dữ liệu" message={page.error} />;
 
-  if (!documents) return <EmailPanelSkeleton />;
+  if (!documents) {
+    return (
+      <SkeletonPage>
+        <Skeleton className="h-72" />
+        <Skeleton className="h-56" />
+      </SkeletonPage>
+    );
+  }
 
   const record = job.document;
   const isGenerating = job.phase === "generating";
@@ -74,7 +78,6 @@ export function ApplicationEmailPanel({
   return (
     <div className="space-y-6">
       <ApplicationEmailSourceCard
-        matches={matches}
         fixedJobId={fixedJobId}
         disabled={isGenerating}
         onSubmit={handleGenerate}
@@ -102,15 +105,5 @@ export function ApplicationEmailPanel({
         emptyLabel="Bạn chưa viết mail ứng tuyển nào. Dán mô tả công việc rồi bấm “Viết mail ứng tuyển”."
       />
     </div>
-  );
-}
-
-/** Khung xám giữ bố cục panel mail trong lúc tải. */
-function EmailPanelSkeleton() {
-  return (
-    <SkeletonPage>
-      <Skeleton className="h-72" />
-      <Skeleton className="h-56" />
-    </SkeletonPage>
   );
 }

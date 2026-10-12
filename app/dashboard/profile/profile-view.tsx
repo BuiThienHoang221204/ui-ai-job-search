@@ -5,14 +5,15 @@ import { Card } from "@/components/ui/card";
 import { Tabs } from "@/components/ui/tabs";
 import { EditModal } from "./edit-modal";
 import { ImprovePanel } from "./improve-panel";
-import { unansweredWishes, type ProfileTab } from "./profile-config";
+import { unansweredWishes } from "./profile-config";
+import type { ProfileTab } from "@/types";
 import { ProfileHeader, ProfileSkeleton } from "./profile-summary";
 import { CareerSection } from "./sections/career-section";
 import { ConditionsSection } from "./sections/conditions-section";
 import { IdentitySection } from "./sections/identity-section";
 import { RecordsSection } from "./sections/records-section";
 import { SkillsSection } from "./sections/skills-section";
-import { useProfile, useProfileUi } from "./use-profile";
+import { useProfile, useProfileUi } from "@/hooks/use-profile";
 
 /** Trang hồ sơ: đầu trang, hai tab (từ CV / mong muốn) và cột việc nên làm. */
 export function ProfileView() {

@@ -37,3 +37,26 @@ export type {
   OccupationMarket,
   TodayScore,
 } from "./dashboard";
+
+export type { CvDraft, CvGenerate, CvRailTab, CvTodo } from "./cv";
+
+export type { JobActionKey } from "./job-action";
+
+export type {
+  DocumentJob,
+  DocumentJobPhase,
+  JobOption,
+  PastedJob,
+  PastedJobState,
+} from "./document-job";
+
+export type {
+  Improvement,
+  Item,
+  ProfileEditing,
+  ProfileTab,
+  ProfileUpdate,
+  RecordField,
+  RecordType,
+  RecordView,
+} from "./profile-page";

@@ -11,8 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SelectMenu } from "@/components/ui/select-menu";
 
-const LIMIT = 100;
-
 /** Chọn một tin đã nộp rồi xếp hàng soạn bộ câu hỏi cho nó. */
 export function PrepLauncher({ onQueued }: { onQueued: () => void }) {
   const router = useRouter();
@@ -21,12 +19,12 @@ export function PrepLauncher({ onQueued }: { onQueued: () => void }) {
   const [error, setError] = useState<string | null>(null);
 
   const applied = useApiQuery(
-    ["applications", "prep-picker"],
-    () => applicationsService.list({ limit: LIMIT }, "APPLIED"),
+    ["applications", "jobs", "APPLIED"],
+    () => applicationsService.jobs("APPLIED"),
     { errorMessage: "Không tải được danh sách đơn đã nộp" },
   );
 
-  const options = applied.data?.items ?? [];
+  const options = applied.data ?? [];
 
   const launch = async () => {
     if (!jobId) return;
@@ -70,10 +68,10 @@ export function PrepLauncher({ onQueued }: { onQueued: () => void }) {
             id="prep-job"
             variant="field"
             value={jobId}
-            options={options.map((application) => ({
-              value: application.jobId,
-              label: application.job.title,
-              hint: application.job.company,
+            options={options.map((option) => ({
+              value: option.jobId,
+              label: option.title,
+              hint: option.company,
             }))}
             onChange={setJobId}
             label="Chọn một tin để soạn bộ câu hỏi…"

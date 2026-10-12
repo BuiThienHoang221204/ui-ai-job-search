@@ -6,7 +6,7 @@ import type { DashboardOverview } from "@/types";
 import { useSession } from "@/components/dashboard/session";
 import { Card } from "@/components/ui/card";
 import { Stepper, type Step } from "@/components/ui/stepper";
-import { useDashboard } from "./use-dashboard";
+import { useDashboard } from "@/hooks/use-dashboard";
 
 /** Năm chặng của hành trình tìm việc và chặng đang làm (chặng đầu tiên chưa xong). */
 function journeySteps(data: DashboardOverview): { steps: Step[]; current: number } {

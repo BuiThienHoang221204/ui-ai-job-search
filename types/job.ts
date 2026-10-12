@@ -51,8 +51,15 @@ export interface JobMatchWithJob {
   stale?: boolean;
   technicalScore: number | null;
   experienceScore: number | null;
+  behavioralScore?: number | null;
+  careerScore?: number | null;
+  technicalNote?: string | null;
+  experienceNote?: string | null;
+  behavioralNote?: string | null;
+  careerNote?: string | null;
   strengths: string[];
   gaps: string[];
+  recommendation?: string | null;
   evaluatedAt?: string | null;
   job: {
     id: string;

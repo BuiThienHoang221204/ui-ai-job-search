@@ -8,12 +8,18 @@ import {
   ShieldWarning,
 } from "@phosphor-icons/react/ssr";
 import { failureMessage, isWorthRetrying } from "@/lib/failure-message";
-import { type InterviewPrepRecord } from "@/services";
+import {
+  interviewService,
+  type InterviewPrepRecord,
+  type InterviewPrepSummary,
+} from "@/services";
+import { useApiQuery } from "@/hooks/use-api-query";
 import { isInterviewPrepEmpty, parseStarAnswers, parseToughQuestions } from "@/lib/interview-content";
 import { cn } from "@/utils";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SectionCard } from "@/components/ui/section-card";
 
 export const STATUS_LABEL: Record<InterviewPrepRecord["status"], string> = {
@@ -60,18 +66,24 @@ function BulletList({ items }: { items: string[] }) {
   );
 }
 
-/** Chi tiết một bộ câu hỏi phỏng vấn theo trạng thái soạn. */
+/** Chi tiết một bộ câu hỏi theo trạng thái soạn; nội dung chỉ tải khi đã soạn xong, và tải lại khi bản soạn đổi. */
 export function PrepDetail({
   prep,
   retrying,
   onRetry,
 }: {
-  prep: InterviewPrepRecord;
+  prep: InterviewPrepSummary;
   retrying: boolean;
   onRetry: () => Promise<void>;
 }) {
-  const starAnswers = parseStarAnswers(prep.starAnswers);
-  const toughQuestions = parseToughQuestions(prep.toughQuestions);
+  const content = useApiQuery(
+    ["interview", "prep", prep.jobId, prep.updatedAt],
+    () => interviewService.get(prep.jobId),
+    {
+      errorMessage: "Không tải được bộ câu hỏi",
+      enabled: prep.status === "DONE",
+    },
+  );
 
   if (prep.status === "FAILED") {
     return (
@@ -102,6 +114,16 @@ export function PrepDetail({
       </Alert>
     );
   }
+
+  if (content.error) return <Alert tone="danger">{content.error}</Alert>;
+  if (!content.data) return <Skeleton className="h-64" />;
+  return <PrepContent prep={content.data} />;
+}
+
+/** Nội dung bộ câu hỏi đã soạn xong. */
+function PrepContent({ prep }: { prep: InterviewPrepRecord }) {
+  const starAnswers = parseStarAnswers(prep.starAnswers);
+  const toughQuestions = parseToughQuestions(prep.toughQuestions);
 
   if (isInterviewPrepEmpty(prep)) {
     return (

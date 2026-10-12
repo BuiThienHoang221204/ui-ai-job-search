@@ -46,10 +46,18 @@ export interface DashboardOverview {
   skillGaps: { skill: string; jobCount: number }[];
   totalScored: number;
   journey: { cvs: number; applied: number; interviews: number };
-  weekly: Record<"documents" | "applied" | "interviews", { done: number; goal: number }>;
+  weekly: Record<
+    "documents" | "applied" | "interviews",
+    { done: number; goal: number }
+  >;
   streak: { days: number; week: boolean[] };
   /** Tin đã chấm gần nhất chưa có CV và chưa nộp đơn. */
-  resume: { jobId: string; title: string; company: string; score: number | null } | null;
+  resume: {
+    jobId: string;
+    title: string;
+    company: string;
+    score: number | null;
+  } | null;
   suggestions: AiSuggestion[];
   applications: { total: number; active: number };
   todayScore: TodayScore;

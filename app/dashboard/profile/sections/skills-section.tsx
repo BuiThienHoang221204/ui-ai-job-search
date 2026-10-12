@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Sparkle, X } from "@phosphor-icons/react/ssr";
 import { DashSection } from "@/components/dashboard/dash-section";
 import { cn } from "@/utils";
-import { useDashboard } from "../../use-dashboard";
-import { useProfile, useSaveProfile } from "../use-profile";
+import { useSkillGaps } from "@/hooks/use-dashboard";
+import { useProfile, useSaveProfile } from "@/hooks/use-profile";
 
 const TONES = {
   main: "border-primary-200 bg-primary-50 text-primary-700",
@@ -100,7 +100,7 @@ const GROUPS = [
 /** Kỹ năng và lĩnh vực; mỗi lần thêm/bỏ là lưu ngay. */
 export function SkillsSection() {
   const { data: profile } = useProfile();
-  const { data: dashboard } = useDashboard();
+  const { data: skillGaps } = useSkillGaps();
   const { save } = useSaveProfile();
   if (!profile) return null;
 
@@ -111,7 +111,7 @@ export function SkillsSection() {
       ...profile.lackingSkills,
     ].map((skill) => skill.toLowerCase()),
   );
-  const suggestions = (dashboard?.skillGaps ?? [])
+  const suggestions = (skillGaps ?? [])
     .filter((gap) => !known.has(gap.skill.toLowerCase()))
     .slice(0, 4);
 

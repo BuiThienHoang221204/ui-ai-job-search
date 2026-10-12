@@ -15,7 +15,7 @@ import { QuickStartOnboarding } from "./quick-start-onboarding";
 import { QuickStrip } from "./quick-strip";
 import { ScoreBreakdown } from "./score-breakdown";
 import { TopMatches } from "./top-matches";
-import { useDashboard } from "./use-dashboard";
+import { useDashboard } from "@/hooks/use-dashboard";
 
 /** Trang tổng quan của dashboard. */
 export default function DashboardPage() {

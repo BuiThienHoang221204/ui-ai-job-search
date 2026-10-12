@@ -8,7 +8,7 @@ import { useApiQuery } from "@/hooks/use-api-query";
 import { useDebounce } from "@/hooks/use-debounce";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 
-import { interviewService, type InterviewPrepRecord } from "@/services";
+import { interviewService, type InterviewPrepSummary } from "@/services";
 
 import { cn, companyColor, companyInitials, relativeDay } from "@/utils";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -54,7 +54,7 @@ export function InterviewView() {
     },
   );
 
-  const preps: InterviewPrepRecord[] | null = page.data?.items ?? null;
+  const preps: InterviewPrepSummary[] | null = page.data?.items ?? null;
   const runToken =
     preps
       ?.filter((prep) => isBusy(prep.status))

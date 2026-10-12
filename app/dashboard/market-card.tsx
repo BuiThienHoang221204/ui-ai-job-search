@@ -5,7 +5,7 @@ import { useState } from "react";
 import { MapPin } from "@phosphor-icons/react/ssr";
 import { cn } from "@/utils";
 import { DashSection } from "@/components/dashboard/dash-section";
-import { useDashboard } from "./use-dashboard";
+import { useDashboard } from "@/hooks/use-dashboard";
 
 type View = "province" | "sub";
 

@@ -112,7 +112,7 @@ test("xem trước CV dùng lại bản đã dựng", async ({ page }) => {
   await login(page, STUDIO_EMAIL);
   await page.goto("/dashboard/cv-optimizer");
 
-  const documents = page.locator("li button, table button");
+  const documents = page.locator("a[href*='?doc=']");
   await documents.first().waitFor({ timeout: 20_000 }).catch(() => {});
   test.skip(
     (await documents.count()) === 0,
@@ -125,8 +125,7 @@ test("xem trước CV dùng lại bản đã dựng", async ({ page }) => {
   // Bản vẽ phải có nội dung thật, không phải một trang trắng.
   expect((await frame.getAttribute("srcdoc"))?.length ?? 0).toBeGreaterThan(1000);
 
-  await page.getByRole("tab", { name: "Mẫu trình bày" }).click();
-  const cards = page.locator("ul.grid li button");
+  const cards = page.locator("button[aria-pressed][title]");
   await cards.nth(1).waitFor({ timeout: 10_000 });
 
   await cards.nth(1).click();

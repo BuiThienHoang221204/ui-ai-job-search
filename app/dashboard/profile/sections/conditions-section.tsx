@@ -3,12 +3,8 @@
 import { Input, Label } from "@/components/ui/form";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { cn, parseMonthlySalary } from "@/utils";
-import {
-  COMMUTE_OPTIONS,
-  REMOTE_OPTIONS,
-  WORK_PERMIT_OPTIONS,
-} from "../profile-config";
-import { useProfile, useSaveProfile } from "../use-profile";
+import { COMMUTE_OPTIONS, REMOTE_OPTIONS, WORK_PERMIT_OPTIONS } from "../profile-config";
+import { useProfile, useSaveProfile } from "@/hooks/use-profile";
 import { Question } from "./career-section";
 
 const money = (value: number | null) =>

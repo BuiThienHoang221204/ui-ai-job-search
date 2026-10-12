@@ -9,14 +9,15 @@ async function moCv(page: import("@playwright/test").Page) {
   await page.waitForURL(/\/dashboard/);
 
   await page.goto("/dashboard/cv-optimizer");
-  await page.locator("li button").filter({ hasText: /^CV/ }).first().click();
-  await expect(page.getByRole("heading", { name: /^Sửa CV/ })).toBeVisible({
+  await page.locator("a[href*='?doc=']").first().click();
+  await expect(page.locator('iframe[title="Xem trước CV"]')).toBeVisible({
     timeout: 30_000,
   });
 }
 
 test("sua chu thi ban xem truoc doi theo", async ({ page }) => {
   await moCv(page);
+  await page.getByRole("tab", { name: "Sửa nội dung" }).click();
 
   const gioiThieu = page.getByPlaceholder("Vài câu giới thiệu bản thân");
   await gioiThieu.fill("CHU-VUA-SUA-TRONG-TEST");
@@ -55,7 +56,9 @@ test("doi thu tu muc bang nut mui ten", async ({ page }) => {
   const tieuDe = page.locator("div:has(> button[aria-label^='Ẩn']) > span");
   await expect(tieuDe.first()).toHaveText("Giới thiệu");
 
-  await page.getByRole("button", { name: "Đưa Năng lực chính lên trên" }).click();
+  await page
+    .getByRole("button", { name: "Đưa Năng lực chính lên trên" })
+    .click();
 
   await expect(tieuDe.first()).toHaveText("Năng lực chính");
   await expect(tieuDe.nth(1)).toHaveText("Giới thiệu");
@@ -69,24 +72,22 @@ test("bam vao mot muc tren ban xem truoc thi o sua mo dung muc do", async ({
   const frame = page.frameLocator("iframe");
   await expect(frame.getByText("HỌC VẤN")).toBeVisible({ timeout: 15_000 });
 
+  await page.getByRole("tab", { name: "Sửa nội dung" }).click();
   const hocVan = page.getByRole("button", { name: /^Học vấn/ });
   await expect(hocVan).toHaveAttribute("aria-expanded", "false");
 
   await frame.locator("[data-section='education']").click();
 
   await expect(hocVan).toHaveAttribute("aria-expanded", "true");
-  await expect(page.getByRole("button", { name: /^Giới thiệu/ })).toHaveAttribute(
-    "aria-expanded",
-    "false",
-  );
+  await expect(
+    page.getByRole("button", { name: /^Giới thiệu/ }),
+  ).toHaveAttribute("aria-expanded", "false");
 });
 
-test("chuyen sang tab Mau van dung chung mot khung xem truoc", async ({
+test("dai chon mau nam cung trang voi mot khung xem truoc", async ({
   page,
 }) => {
   await moCv(page);
-
-  await page.getByRole("tab", { name: "Mẫu trình bày" }).click();
 
   await expect(page.getByRole("button", { name: /Trang trọng/ })).toBeVisible();
   await expect(page.locator("iframe")).toHaveCount(1);

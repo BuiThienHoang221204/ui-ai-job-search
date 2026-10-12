@@ -6,16 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea } from "@/components/ui/form";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { Modal } from "@/components/ui/modal";
-import {
-  EMPLOYMENT_OPTIONS,
-  RECORDS,
-  asItems,
-  fromFormValues,
-  toFormValues,
-  type Item,
-  type RecordType,
-} from "./profile-config";
-import { useProfile, useProfileUi, useSaveProfile } from "./use-profile";
+import { EMPLOYMENT_OPTIONS, RECORDS, asItems, fromFormValues, toFormValues } from "./profile-config";
+import type { Item, RecordType } from "@/types";
+import { useProfile, useProfileUi, useSaveProfile } from "@/hooks/use-profile";
 
 const splitList = (value: string) =>
   value

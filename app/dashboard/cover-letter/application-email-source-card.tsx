@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { Clipboard, Sparkle } from "@phosphor-icons/react/ssr";
-import type { JobMatchWithJob } from "@/types";
 import type { ApplicationEmailInput } from "@/services";
 import {
   JobSelect,
   PastedJobFields,
-  usePastedJob,
 } from "@/components/dashboard/document-job";
+import { usePastedJob } from "@/hooks/use-pasted-job";
 import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/ui/section-card";
 import { Tabs } from "@/components/ui/tabs";
@@ -22,12 +21,10 @@ const SOURCES = [
 
 /** Chọn nguồn tin cho mail ứng tuyển: dán JD hoặc lấy một tin đã chấm điểm. */
 export function ApplicationEmailSourceCard({
-  matches,
   fixedJobId,
   disabled,
   onSubmit,
 }: {
-  matches: JobMatchWithJob[];
   fixedJobId: string | null;
   disabled: boolean;
   onSubmit: (input: ApplicationEmailInput) => void;
@@ -78,16 +75,12 @@ export function ApplicationEmailSourceCard({
       ) : (
         <JobSelect
           selectId="email-job"
-          matches={matches}
+          fixedJobId={fixedJobId}
           value={jobId}
           onChange={setJobId}
           disabled={disabled || Boolean(fixedJobId)}
           emptyOptionLabel="— Chọn một công việc —"
-          hint={
-            matches.length === 0
-              ? "Chưa có công việc nào được chấm điểm. Dán JD ở tab bên cạnh thì không cần chờ."
-              : undefined
-          }
+          emptyHint="Chưa có công việc nào được chấm điểm. Dán JD ở tab bên cạnh thì không cần chờ."
         />
       )}
 

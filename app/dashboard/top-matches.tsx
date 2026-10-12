@@ -13,7 +13,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/utils";
 import { DashSection } from "@/components/dashboard/dash-section";
-import { useDashboard } from "./use-dashboard";
+import { useDashboard } from "@/hooks/use-dashboard";
 
 /** Nút lưu tin, tự gọi API lưu hoặc bỏ lưu. */
 function SaveButton({ jobId, initial }: { jobId: string; initial: boolean }) {

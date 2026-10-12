@@ -29,6 +29,15 @@ export const applicationsService = {
       .post<Application>("/applications", { jobId, ...options })
       .then((r) => r.data),
 
+  /** Tên tin và công ty của mọi đơn ở một trạng thái, để đổ vào ô chọn. */
+  jobs: (status: ApplicationStatus) =>
+    api
+      .get<{ jobId: string; title: string; company: string }[]>(
+        "/applications/jobs",
+        { params: { status } },
+      )
+      .then((r) => r.data),
+
   /** Cập nhật trạng thái đơn ứng tuyển kèm ghi chú tuỳ chọn. */
   updateStatus: (id: string, status: ApplicationStatus, note?: string) =>
     api

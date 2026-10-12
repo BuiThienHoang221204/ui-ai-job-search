@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,11 +8,11 @@ import { Funnel, FileText } from "@phosphor-icons/react/ssr";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import type { Application, ApplicationStatus } from "@/types";
 import { useApiQuery } from "@/hooks/use-api-query";
+import { useLatestCv } from "@/hooks/use-latest-cv";
 import { invalidateAfter, keys } from "@/lib/query-keys";
 import {
   applicationsService,
   documentsService,
-  profileDraftService,
 } from "@/services";
 import {
   APPLICATION_STATUS_LABELS,
@@ -64,24 +64,18 @@ export default function ApplicationsPage() {
   const [pdfLoadingId, setPdfLoadingId] = useState<string | null>(null);
   const [cvPickerOpen, setCvPickerOpen] = useState(false);
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
-  const [uploadedCv, setUploadedCv] = useState<CvOption | null>(null);
   const toast = useToast();
 
-  useEffect(() => {
-    profileDraftService
-      .latest()
-      .then((draft) => {
-        if (draft && draft.status === "DONE") {
-          setUploadedCv({
-            id: draft.id,
-            label: draft.filename || "CV đã upload",
-            type: "uploaded",
-            filename: draft.filename || undefined,
-          });
+  const latestCv = useLatestCv().data;
+  const uploadedCv: CvOption | null =
+    latestCv?.status === "DONE"
+      ? {
+          id: latestCv.id,
+          label: latestCv.filename || "CV đã upload",
+          type: "uploaded",
+          filename: latestCv.filename || undefined,
         }
-      })
-      .catch(() => {});
-  }, []);
+      : null;
 
   const { data, error } = useApiQuery(
     keys.applicationList(status, offset),

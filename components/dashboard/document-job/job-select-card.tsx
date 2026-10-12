@@ -2,19 +2,19 @@
 
 import type { ReactNode } from "react";
 import { MagicWand } from "@phosphor-icons/react/ssr";
-import type { JobMatchWithJob } from "@/types";
 import { Label } from "@/components/ui/form";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { SectionCard } from "@/components/ui/section-card";
+import { useJobOptions } from "@/hooks/use-job-options";
 
 interface JobSelectProps {
   selectId: string;
-  matches: JobMatchWithJob[];
+  fixedJobId: string | null;
   value: string;
   onChange: (jobId: string) => void;
   disabled?: boolean;
   emptyOptionLabel: string;
-  hint?: ReactNode;
+  emptyHint: string;
 }
 
 interface JobSelectCardProps extends JobSelectProps {
@@ -23,16 +23,19 @@ interface JobSelectCardProps extends JobSelectProps {
   action: ReactNode;
 }
 
-/** Riêng ô chọn công việc, không kèm thẻ bao quanh. */
+/** Riêng ô chọn công việc, không kèm thẻ bao quanh; tự lấy danh sách tin qua `useJobOptions`. */
 export function JobSelect({
   selectId,
-  matches,
+  fixedJobId,
   value,
   onChange,
   disabled,
   emptyOptionLabel,
-  hint,
+  emptyHint,
 }: JobSelectProps) {
+  const { options, error } = useJobOptions(fixedJobId);
+  const hint = error ?? (options?.length === 0 ? emptyHint : null);
+
   return (
     <div className="min-w-64 flex-1">
       <Label htmlFor={selectId}>Công việc</Label>
@@ -46,10 +49,10 @@ export function JobSelect({
         searchPlaceholder="Tìm vị trí hoặc công ty…"
         options={[
           { value: "", label: emptyOptionLabel },
-          ...matches.map((match) => ({
-            value: match.jobId,
-            label: match.job.title,
-            hint: match.job.company,
+          ...(options ?? []).map((option) => ({
+            value: option.jobId,
+            label: option.title,
+            hint: option.company,
           })),
         ]}
       />
@@ -63,12 +66,12 @@ export function JobSelectCard({
   title,
   description,
   selectId,
-  matches,
+  fixedJobId,
   value,
   onChange,
   disabled,
   emptyOptionLabel,
-  hint,
+  emptyHint,
   action,
 }: JobSelectCardProps) {
   return (
@@ -83,12 +86,12 @@ export function JobSelectCard({
     >
       <JobSelect
         selectId={selectId}
-        matches={matches}
+        fixedJobId={fixedJobId}
         value={value}
         onChange={onChange}
         disabled={disabled}
         emptyOptionLabel={emptyOptionLabel}
-        hint={hint}
+        emptyHint={emptyHint}
       />
       {action}
     </SectionCard>

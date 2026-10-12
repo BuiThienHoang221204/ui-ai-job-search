@@ -1,4 +1,4 @@
-import type { JobMatchWithJob } from "@/types";
+import type { ApplicationStatus, JobMatchWithJob } from "@/types";
 import { api } from "@/lib/axios";
 import type { Paginated, QueuedResult, WorkStatus } from "./types";
 
@@ -60,6 +60,8 @@ export type JobRecord = Omit<JobListItem, "match"> & {
   occupationCode: string | null;
   match: JobMatchDetail | null;
   salaryGuide: SalaryGuide | null;
+  application: { id: string; status: ApplicationStatus } | null;
+  profileLocation: string | null;
 };
 export type JobSort = "newest" | "salary" | "match";
 export interface JobListParams {

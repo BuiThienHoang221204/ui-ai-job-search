@@ -11,7 +11,6 @@ import {
   MapPin,
   Money,
   PaperPlaneRight,
-  SortDescending,
 } from "@phosphor-icons/react/ssr";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import type {
@@ -51,11 +50,6 @@ export const EMPTY_FILTER: JobFilterValue = {
   subOccupation: [],
 };
 
-const SORT_OPTIONS: { value: JobSort; label: string }[] = [
-  { value: "newest", label: "Mới nhất" },
-  { value: "salary", label: "Lương cao nhất" },
-  { value: "match", label: "Điểm AI Match" },
-];
 const SALARY_STEPS = [10, 15, 20, 30, 50];
 
 const POSTED_STEPS = [
@@ -323,25 +317,6 @@ function Toggle({
       />
       {label}
     </button>
-  );
-}
-/** Ô chọn cách sắp xếp danh sách việc làm. */
-export function SortSelect({
-  value,
-  onChange,
-}: {
-  value: JobSort;
-  onChange: (next: JobSort) => void;
-}) {
-  return (
-    <SelectMenu
-      label="Sắp xếp"
-      icon={SortDescending}
-      align="right"
-      value={value}
-      options={SORT_OPTIONS}
-      onChange={onChange}
-    />
   );
 }
 /** Tìm tên hiển thị của một mã trong danh sách lựa chọn. */

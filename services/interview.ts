@@ -24,10 +24,15 @@ export interface InterviewPrepRecord {
   updatedAt: string;
 }
 
+export type InterviewPrepSummary = Pick<
+  InterviewPrepRecord,
+  "id" | "jobId" | "job" | "status" | "generatedAt" | "failureKind" | "updatedAt"
+>;
+
 export const interviewService = {
   list: (page?: { limit?: number; offset?: number }) =>
     api
-      .get<Paginated<InterviewPrepRecord>>("/interview", { params: page })
+      .get<Paginated<InterviewPrepSummary>>("/interview", { params: page })
       .then((r) => r.data),
 
   get: (jobId: string) =>

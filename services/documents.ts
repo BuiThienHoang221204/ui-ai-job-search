@@ -4,10 +4,7 @@ import type { Paginated, QueuedDocument, WorkStatus } from "./types";
 import type { AiFailureKind } from "@/lib/failure-message";
 
 export type DocumentKind =
-  | "CV"
-  | "COVER_LETTER"
-  | "APPLICATION_EMAIL"
-  | "FORM_ANSWER";
+  "CV" | "COVER_LETTER" | "APPLICATION_EMAIL" | "FORM_ANSWER";
 
 export type ApplicationEmailInput =
   | { jobId: string }
@@ -93,6 +90,7 @@ export interface DocumentRecord {
   failureKind: AiFailureKind | null;
   createdAt: string;
   updatedAt: string;
+  job?: { id: string; title: string; company: string } | null;
 }
 
 export const documentsService = {
@@ -172,7 +170,9 @@ export const documentsService = {
     jobId?: string;
     characterLimit?: number;
   }) =>
-    api.post<QueuedDocument>("/documents/form-answer", input).then((r) => r.data),
+    api
+      .post<QueuedDocument>("/documents/form-answer", input)
+      .then((r) => r.data),
 
   /** Lấy danh mục mẫu CV từ backend. */
   cvTemplates: () =>
@@ -219,7 +219,10 @@ export const documentsService = {
   },
 
   /** Lưu bản CV người dùng đã sửa, không tốn lượt gọi model. */
-  updateCv: (id: string, input: { content?: CvContentInput; layout?: CvLayout }) =>
+  updateCv: (
+    id: string,
+    input: { content?: CvContentInput; layout?: CvLayout },
+  ) =>
     api.put<DocumentRecord>(`/documents/${id}/cv`, input).then((r) => r.data),
 
   /** Lưu mẫu CV và màu nhấn đã chọn. */

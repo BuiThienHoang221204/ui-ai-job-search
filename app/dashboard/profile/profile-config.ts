@@ -1,13 +1,11 @@
+import type {
+  Improvement,
+  Item,
+  RecordField,
+  RecordType,
+  RecordView,
+} from "@/types";
 import type { ProfileRecord } from "@/services";
-
-export type ProfileUpdate = Partial<
-  Omit<
-    ProfileRecord,
-    "id" | "userId" | "completion" | "createdAt" | "updatedAt"
-  >
->;
-
-export type Item = Record<string, unknown>;
 
 export const EXPERIENCE_LEVELS = [
   { value: "INTERN", label: "Thực tập sinh" },
@@ -103,25 +101,6 @@ export const asItems = (value: unknown): Item[] =>
   Array.isArray(value) ? value.filter(isItem) : [];
 
 export const asObject = (value: unknown): Item => (isItem(value) ? value : {});
-
-export type RecordType =
-  "experiences" | "projects" | "educations" | "certificates";
-
-/** Ô nhập: `lines` là mảng chuỗi gõ mỗi dòng một ý, `tags` là mảng chuỗi ngăn bằng dấu phẩy. */
-export interface RecordField {
-  name: string;
-  label: string;
-  placeholder: string;
-  kind?: "lines" | "tags" | "area";
-}
-
-export interface RecordView {
-  title: string;
-  sub: string;
-  when: string;
-  lines: string[];
-  tags: string[];
-}
 
 export const RECORDS: Record<
   RecordType,
@@ -265,17 +244,6 @@ export function fromFormValues(
     else item[field.name] = value;
   }
   return item;
-}
-
-export type ProfileTab = "cv" | "wish";
-
-export interface Improvement {
-  key: string;
-  done: boolean;
-  title: string;
-  detail: string;
-  tab: ProfileTab;
-  anchor: string;
 }
 
 /** Việc nên làm để AI hiểu hồ sơ đúng hơn, suy hoàn toàn từ dữ liệu hồ sơ. */

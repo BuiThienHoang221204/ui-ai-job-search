@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import type { JobListItem } from "@/services";
+import type { JobListItem, JobSort } from "@/services";
 import { jobsService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -13,10 +13,11 @@ import { toJobCardFromRecord } from "@/lib/adapters";
 import { squeezeSidebar } from "@/lib/sidebar";
 import {
   JobFilterBar,
-  SortSelect,
   type JobFilterValue,
 } from "@/components/dashboard/job-filter-bar";
 import { cn } from "@/utils";
+import { SortDescending } from "@phosphor-icons/react/ssr";
+import { SelectMenu } from "@/components/ui/select-menu";
 import { Alert } from "@/components/ui/alert";
 import Link from "next/link";
 import { EmptyHint, EmptyState } from "@/components/ui/empty-state";
@@ -24,6 +25,12 @@ import { Pagination } from "@/components/ui/pagination";
 import { Skeleton, SkeletonGrid, SkeletonPage } from "@/components/ui/skeleton";
 import { JobDetailView } from "./[id]/job-detail-view";
 import { JobList } from "./job-list";
+
+const SORT_OPTIONS: { value: JobSort; label: string }[] = [
+  { value: "newest", label: "Mới nhất" },
+  { value: "salary", label: "Lương cao nhất" },
+  { value: "match", label: "Điểm AI Match" },
+];
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 500;
 
@@ -194,8 +201,12 @@ export function JobsView() {
             {scored ? (
               <span className="text-xs text-slate-500">Mới đăng trước</span>
             ) : (
-              <SortSelect
+              <SelectMenu
+                label="Sắp xếp"
+                icon={SortDescending}
+                align="right"
                 value={filter.sort}
+                options={SORT_OPTIONS}
                 onChange={(next) => push({ ...filter, sort: next }, 0, selected)}
               />
             )}

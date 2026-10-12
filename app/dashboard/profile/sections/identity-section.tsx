@@ -2,7 +2,7 @@
 
 import { PencilSimple, User } from "@phosphor-icons/react/ssr";
 import { DashSection } from "@/components/dashboard/dash-section";
-import { useProfile, useProfileUi } from "../use-profile";
+import { useProfile, useProfileUi } from "@/hooks/use-profile";
 
 const EDIT_BUTTON =
   "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-600 hover:border-primary-300 hover:text-primary-600";

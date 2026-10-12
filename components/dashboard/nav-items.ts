@@ -21,7 +21,7 @@ export const navItems = [
   { label: "Tất cả việc làm", href: "/dashboard/jobs", icon: Stack },
   { label: "Đã chấm bằng AI", href: "/dashboard/matches", icon: Sparkle },
   { label: "Tra cứu lương", href: "/dashboard/salary", icon: CurrencyCircleDollar },
-  { label: "CV đã tạo", href: "/dashboard/cv-optimizer", icon: FileText },
+  { label: "Tối ưu CV", href: "/dashboard/cv-optimizer", icon: FileText },
   { label: "Thư đã viết", href: "/dashboard/cover-letter", icon: Envelope },
   { label: "Lịch sử ứng tuyển", href: "/dashboard/applications", icon: ClockCounterClockwise },
   { label: "Chuẩn bị phỏng vấn", href: "/dashboard/interview", icon: ChatText },

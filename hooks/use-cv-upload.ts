@@ -6,7 +6,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { PartialProposal } from "@/lib/profile-partial";
 import { ModelStreamError, streamModel } from "@/lib/model-stream";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
-import { invalidateAfter } from "@/lib/query-keys";
+import { invalidateAfter, keys } from "@/lib/query-keys";
+import { fetchLatestCv } from "@/hooks/use-latest-cv";
 import { useToast } from "@/components/ui/toast";
 import {
   profileDraftService,
@@ -45,10 +46,12 @@ export function useCvUpload() {
   useEffect(() => {
     mounted.current = true;
     void Promise.all([
-      profileService.get().catch(() => null),
-      profileDraftService.latest().catch((err: unknown) => {
-        if (apiErrorStatus(err) === 404) return null;
-        throw err;
+      queryClient
+        .fetchQuery({ queryKey: keys.profile(), queryFn: profileService.get })
+        .catch(() => null),
+      queryClient.fetchQuery({
+        queryKey: keys.profileCv(),
+        queryFn: fetchLatestCv,
       }),
     ])
       .then(([current, latest]) => {
@@ -95,6 +98,7 @@ export function useCvUpload() {
         onPartial: (value) => mounted.current && setPartial(value),
       });
       if (mounted.current) setDraft(done);
+      void queryClient.invalidateQueries({ queryKey: keys.profileCv() });
     } catch (err) {
       if (err instanceof ModelStreamError) setError(err.message);
       else fail(err, "Không đọc được CV");
@@ -128,7 +132,7 @@ export function useCvUpload() {
     setSaving(true);
     try {
       await profileDraftService.apply(draft.id, values);
-      invalidateAfter(queryClient, "saveProfile");
+      invalidateAfter(queryClient, "applyCvDraft");
       toast.success("Đã cập nhật hồ sơ từ CV");
       router.push("/dashboard/profile");
     } catch (err) {

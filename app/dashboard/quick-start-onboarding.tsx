@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check } from "@phosphor-icons/react/ssr";
 import { useApiQuery } from "@/hooks/use-api-query";
+import { keys } from "@/lib/query-keys";
 import { apiErrorMessage } from "@/lib/axios";
 import { jobsService, profileService } from "@/services";
 import { Button } from "@/components/ui/button";
@@ -37,9 +38,9 @@ function OccupationStep({
   onNext: () => void;
 }) {
   const { data: filters, loading } = useApiQuery(
-    ["jobs", "filters"],
+    keys.jobFilters(),
     () => jobsService.filters(),
-    { errorMessage: "Không tải được danh mục ngành nghề" },
+    { errorMessage: "Không tải được danh mục ngành nghề", staleTime: Infinity },
   );
 
   const groups = filters?.occupations ?? [];

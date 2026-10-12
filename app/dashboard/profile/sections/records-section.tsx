@@ -11,8 +11,9 @@ import {
 } from "@phosphor-icons/react/ssr";
 import { DashSection } from "@/components/dashboard/dash-section";
 import { companyInitials } from "@/utils";
-import { RECORDS, asItems, type RecordType } from "../profile-config";
-import { useProfile, useProfileUi } from "../use-profile";
+import { RECORDS, asItems } from "../profile-config";
+import type { RecordType } from "@/types";
+import { useProfile, useProfileUi } from "@/hooks/use-profile";
 
 const LISTS: { type: RecordType; icon: Icon }[] = [
   { type: "experiences", icon: Briefcase },

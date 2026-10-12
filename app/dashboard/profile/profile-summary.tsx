@@ -11,7 +11,7 @@ import { SelectMenu } from "@/components/ui/select-menu";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { cn, personInitials } from "@/utils";
 import { EXPERIENCE_LEVELS } from "./profile-config";
-import { useProfile, useProfileUi, useSaveProfile } from "./use-profile";
+import { useProfile, useProfileUi, useSaveProfile } from "@/hooks/use-profile";
 
 /** Đầu trang hồ sơ: tên, chức danh và hai ô Ngành / Cấp bậc quyết định "Việc làm phù hợp". */
 export function ProfileHeader() {
@@ -19,13 +19,10 @@ export function ProfileHeader() {
   const { data: profile } = useProfile();
   const edit = useProfileUi((state) => state.edit);
   const { saveSearch, saving } = useSaveProfile();
-  const filters = useApiQuery(
-    ["jobs", "filters"],
-    () => jobsService.filters(),
-    {
-      errorMessage: "Không tải được danh mục ngành nghề",
-    },
-  );
+  const filters = useApiQuery(keys.jobFilters(), () => jobsService.filters(), {
+    errorMessage: "Không tải được danh mục ngành nghề",
+    staleTime: Infinity,
+  });
   const matching = useApiQuery(
     keys.jobList({ scored: true, limit: 1 }),
     () => jobsService.list({ scored: true, limit: 1 }),

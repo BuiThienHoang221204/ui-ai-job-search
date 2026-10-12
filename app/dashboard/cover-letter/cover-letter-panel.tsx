@@ -3,15 +3,15 @@
 import { LetterLiveProgress, type PartialLetter } from "./letter-live-progress";
 import { useMemo, useState } from "react";
 import { Sparkle } from "@phosphor-icons/react/ssr";
-import type { JobMatchWithJob } from "@/types";
 import { documentsService, type DocumentRecord } from "@/services";
 import {
   DocumentHistory,
   DocumentJobStatus,
   JobSelectCard,
-  upsertDocument,
-  useDocumentJob,
 } from "@/components/dashboard/document-job";
+import { upsertDocument } from "@/lib/document-list";
+import { useJobOptions } from "@/hooks/use-job-options";
+import { useDocumentJob } from "@/hooks/use-document-job";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 import { PageError } from "@/components/ui/alert";
@@ -23,16 +23,15 @@ const DOCUMENT_PAGE_SIZE = 10;
 
 /** Panel thư xin việc gắn với một tin đã có, kết quả có bản `.tex` và PDF. */
 export function CoverLetterPanel({
-  matches,
   fixedJobId,
   loginNext,
 }: {
-  matches: JobMatchWithJob[];
   fixedJobId: string | null;
   loginNext: string;
 }) {
   const [jobId, setJobId] = useState<string>(fixedJobId ?? "");
   const job = useDocumentJob(loginNext);
+  const { options } = useJobOptions(fixedJobId);
   const [documentOffset, setDocumentOffset] = useState(0);
 
   const page = useApiQuery(
@@ -61,11 +60,18 @@ export function CoverLetterPanel({
   if (page.error)
     return <PageError title="Không tải được dữ liệu" message={page.error} />;
 
-  if (!documents) return <CoverLetterSkeleton />;
+  if (!documents) {
+    return (
+      <SkeletonPage>
+        <Skeleton className="h-36" />
+        <Skeleton className="h-64" />
+      </SkeletonPage>
+    );
+  }
 
   const record = job.document;
   const isGenerating = job.phase === "generating";
-  const selected = matches.find((match) => match.jobId === jobId) ?? null;
+  const selected = options?.find((option) => option.jobId === jobId) ?? null;
 
   return (
     <div className="space-y-6">
@@ -73,16 +79,12 @@ export function CoverLetterPanel({
         title="Chọn tin tuyển dụng"
         description="Thư xin việc luôn viết cho một vị trí cụ thể, nên bước này là bắt buộc"
         selectId="letter-job"
-        matches={matches}
+        fixedJobId={fixedJobId}
         value={jobId}
         onChange={setJobId}
         disabled={isGenerating || Boolean(fixedJobId)}
         emptyOptionLabel="— Chọn một công việc —"
-        hint={
-          matches.length === 0
-            ? "Chưa có công việc nào được chấm điểm. Hãy quét tin tuyển dụng trước."
-            : undefined
-        }
+        emptyHint="Chưa có công việc nào được chấm điểm. Hãy quét tin tuyển dụng trước."
         action={
           <Button
             onClick={handleGenerate}
@@ -99,11 +101,11 @@ export function CoverLetterPanel({
         <p className="text-xs text-slate-500">
           Thư sẽ được viết cho vị trí{" "}
           <span className="font-semibold text-slate-700">
-            {selected.job.title}
+            {selected.title}
           </span>{" "}
           tại{" "}
           <span className="font-semibold text-slate-700">
-            {selected.job.company}
+            {selected.company}
           </span>
           .
         </p>
@@ -132,15 +134,5 @@ export function CoverLetterPanel({
         emptyLabel="Bạn chưa tạo thư xin việc nào. Chọn một công việc rồi bấm “Tạo thư xin việc”."
       />
     </div>
-  );
-}
-
-/** Khung xám giữ đúng bố cục trang thật, để nội dung không nhảy khi tải xong. */
-function CoverLetterSkeleton() {
-  return (
-    <SkeletonPage>
-      <Skeleton className="h-36" />
-      <Skeleton className="h-64" />
-    </SkeletonPage>
   );
 }
