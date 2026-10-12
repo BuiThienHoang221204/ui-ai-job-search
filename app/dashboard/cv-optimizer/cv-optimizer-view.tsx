@@ -10,7 +10,9 @@ import {
 import { DocumentJobStatus } from "@/components/dashboard/document-job";
 import { useDocumentJob } from "@/hooks/use-document-job";
 import { CvGenerating } from "./cv-generating";
-import { CvHome } from "./home/cv-home";
+import { CvHero } from "./home/cv-hero";
+import { CvList } from "./home/cv-list";
+import { SuggestedJobs } from "./home/suggested-jobs";
 import { CvWorkspace } from "./workspace/cv-workspace";
 
 const LOGIN_NEXT = "/dashboard/cv-optimizer";
@@ -43,12 +45,16 @@ export function CvOptimizerView() {
   if (job.phase === "generating") return <CvGenerating partial={job.partial} />;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <DocumentJobStatus
         job={job}
         onRegenerate={() => lastInput.current && generate(...lastInput.current)}
       />
-      <CvHome fixedJobId={fixedJobId} onGenerate={generate} />
+      <CvHero fixedJobId={fixedJobId} onGenerate={generate} />
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <CvList />
+        <SuggestedJobs onGenerate={generate} />
+      </div>
     </div>
   );
 }

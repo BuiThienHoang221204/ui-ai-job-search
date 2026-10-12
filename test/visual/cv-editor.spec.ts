@@ -18,6 +18,8 @@ async function moCv(page: import("@playwright/test").Page) {
 test("sua chu thi ban xem truoc doi theo", async ({ page }) => {
   await moCv(page);
   await page.getByRole("tab", { name: "Sửa nội dung" }).click();
+  // Các mục trong ô sửa đóng sẵn, bấm tiêu đề mới mở.
+  await page.getByRole("button", { name: "Giới thiệu", exact: true }).click();
 
   const gioiThieu = page.getByPlaceholder("Vài câu giới thiệu bản thân");
   await gioiThieu.fill("CHU-VUA-SUA-TRONG-TEST");
