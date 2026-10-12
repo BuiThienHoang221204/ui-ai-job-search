@@ -8,6 +8,7 @@ import { keys } from "@/lib/query-keys";
 export function useDashboard() {
   return useApiQuery(keys.dashboard(), () => dashboardService.overview(), {
     errorMessage: "Không tải được dữ liệu tổng quan",
+    staleTime: 0,
   });
 }
 

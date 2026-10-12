@@ -15,7 +15,12 @@ import {
   type QuickStartInput,
 } from "@/services";
 import { useToast } from "@/components/ui/toast";
-import type { ProfileEditing, ProfileTab, ProfileUpdate } from "@/types";
+import type {
+  DashboardOverview,
+  ProfileEditing,
+  ProfileTab,
+  ProfileUpdate,
+} from "@/types";
 
 interface ProfileUi {
   tab: ProfileTab;
@@ -49,6 +54,15 @@ export function useSaveProfile() {
 
   const onSuccess = (profile: ProfileRecord) => {
     queryClient.setQueryData(keys.profile(), profile);
+    queryClient.setQueryData<DashboardOverview>(keys.dashboard(), (old) =>
+      old
+        ? {
+            ...old,
+            profileCompletion: profile.completion,
+            occupationCode: profile.occupationCode,
+          }
+        : old,
+    );
     invalidateAfter(queryClient, "saveProfile");
     toast.success("Đã lưu");
   };
