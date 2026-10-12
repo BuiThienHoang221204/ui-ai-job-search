@@ -61,3 +61,10 @@ export type {
   RecordType,
   RecordView,
 } from "./profile-page";
+
+export type {
+  LetterCheck,
+  LetterGenerate,
+  LetterKind,
+  PartialLetter,
+} from "./letter";

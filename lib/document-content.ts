@@ -225,3 +225,25 @@ export function applicationEmailPlainText(
     .filter((part): part is string => part !== null)
     .join("\n\n");
 }
+
+/** Văn bản thuần, tiêu đề (chỉ mail) và cờ rỗng của một thư xin việc hoặc mail ứng tuyển. */
+export function readLetter(record: { kind: string; content: unknown }): {
+  text: string;
+  subject: string | null;
+  empty: boolean;
+} {
+  if (record.kind === "APPLICATION_EMAIL") {
+    const email = parseApplicationEmailContent(record.content);
+    return {
+      text: applicationEmailPlainText(email),
+      subject: email.subject,
+      empty: isApplicationEmailEmpty(email),
+    };
+  }
+  const letter = parseCoverLetterContent(record.content);
+  return {
+    text: coverLetterPlainText(letter),
+    subject: null,
+    empty: isCoverLetterEmpty(letter),
+  };
+}

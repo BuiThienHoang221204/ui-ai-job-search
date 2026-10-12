@@ -22,7 +22,7 @@ export const navItems = [
   { label: "Đã chấm bằng AI", href: "/dashboard/matches", icon: Sparkle },
   { label: "Tra cứu lương", href: "/dashboard/salary", icon: CurrencyCircleDollar },
   { label: "Tối ưu CV", href: "/dashboard/cv-optimizer", icon: FileText },
-  { label: "Thư đã viết", href: "/dashboard/cover-letter", icon: Envelope },
+  { label: "Thư xin việc", href: "/dashboard/cover-letter", icon: Envelope },
   { label: "Lịch sử ứng tuyển", href: "/dashboard/applications", icon: ClockCounterClockwise },
   { label: "Chuẩn bị phỏng vấn", href: "/dashboard/interview", icon: ChatText },
   { label: "Ngân hàng câu hỏi", href: "/dashboard/interview/questions", icon: Question },
