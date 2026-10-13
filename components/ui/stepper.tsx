@@ -1,4 +1,4 @@
-import { Check } from "@phosphor-icons/react/ssr";
+import Image from "next/image";
 import { cn } from "@/utils";
 
 export interface Step {
@@ -28,15 +28,19 @@ export function Stepper({ steps, current, onStepClick, className }: StepperProps
                 onClick={() => onStepClick?.(index)}
                 aria-current={state === "active" ? "step" : undefined}
                 className={cn(
-                  "z-10 flex size-9 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors",
-                  state === "done" && "border-primary-600 bg-primary-600 text-white",
+                  "z-10 flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors",
+                  state !== "done" && "border-2",
                   state === "active" &&
                   "border-primary-600 bg-white text-primary-700 ring-4 ring-primary-100",
                   state === "todo" && "border-slate-300 bg-white text-slate-400",
                   onStepClick && index <= current && "cursor-pointer",
                 )}
               >
-                {state === "done" ? <Check className="size-4.5" /> : index + 1}
+                {state === "done" ? (
+                  <Image src="/icons/step-done.png" alt="Đã xong" width={36} height={36} className="size-9" />
+                ) : (
+                  index + 1
+                )}
               </button>
               <span
                 className={cn(
