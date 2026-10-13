@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Envelope, FileText, Sparkle } from "@phosphor-icons/react/ssr";
+import Image from "next/image";
+import { Sparkle } from "@phosphor-icons/react/ssr";
 import {
   JobSelect,
   PastedJobFields,
@@ -25,15 +26,13 @@ const KINDS = [
     kind: "APPLICATION_EMAIL",
     title: "Mail ứng tuyển",
     hint: "Gửi thẳng cho nhà tuyển dụng, kèm CV. Ngắn 150–250 chữ, đọc trên điện thoại. Dùng khi tin ghi “gửi CV qua email”.",
-    icon: Envelope,
-    iconClassName: "bg-cyan-50 text-cyan-700",
+    imageSrc: "/icons/application-email.png",
   },
   {
     kind: "COVER_LETTER",
     title: "Thư xin việc (PDF)",
     hint: "Một trang trang trọng để đính kèm cùng CV. Dùng khi tin yêu cầu cover letter hoặc nộp qua cổng tuyển dụng.",
-    icon: FileText,
-    iconClassName: "bg-primary-50 text-primary-600",
+    imageSrc: "/icons/cover-letter.png",
   },
 ] as const;
 
@@ -117,7 +116,6 @@ export function LetterBuilder({
       </p>
       <div className="grid gap-2.5 md:grid-cols-2">
         {KINDS.map((item) => {
-          const Icon = item.icon;
           const active = kind === item.kind;
           return (
             <button
@@ -126,31 +124,33 @@ export function LetterBuilder({
               aria-pressed={active}
               onClick={() => setKind(item.kind)}
               className={cn(
-                "grid cursor-pointer grid-cols-[2.5rem_minmax(0,1fr)_1.125rem] items-start gap-3 rounded-xl border bg-white p-3.5 text-left transition",
+                "grid cursor-pointer grid-cols-[4rem_minmax(0,1fr)_1.125rem] items-center gap-3.5 rounded-xl border bg-white p-3.5 sm:p-4 text-left transition",
                 active
                   ? "border-primary-600 ring-3 ring-primary-50"
                   : "border-slate-200 hover:border-slate-300",
               )}
             >
-              <span
-                className={cn(
-                  "flex size-10 items-center justify-center rounded-xl",
-                  item.iconClassName,
-                )}
-              >
-                <Icon className="size-5" />
+              <span className="flex size-16 shrink-0 items-center justify-center">
+                <Image
+                  src={item.imageSrc}
+                  alt={item.title}
+                  width={64}
+                  height={64}
+                  unoptimized
+                  className="size-16 object-contain"
+                />
               </span>
-              <span>
+              <div>
                 <span className="block text-sm font-semibold text-slate-900">
                   {item.title}
                 </span>
                 <span className="mt-0.5 block text-xs leading-relaxed text-slate-500">
                   {item.hint}
                 </span>
-              </span>
+              </div>
               <span
                 className={cn(
-                  "mt-0.5 size-4.5 rounded-full border-2",
+                  "size-4.5 rounded-full border-2",
                   active
                     ? "border-[5px] border-primary-600"
                     : "border-slate-300",
