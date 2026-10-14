@@ -24,13 +24,3 @@ export function objectList<T>(
   if (!Array.isArray(value)) return [];
   return value.map(parse).filter((item): item is T => item !== null);
 }
-
-/** Số nguyên trong khoảng cho trước, ngoài khoảng thì coi như thiếu. */
-export function boundedInt(
-  value: unknown,
-  min: number,
-  max: number,
-): number | null {
-  if (typeof value !== "number" || !Number.isInteger(value)) return null;
-  return value >= min && value <= max ? value : null;
-}
