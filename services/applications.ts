@@ -29,7 +29,14 @@ export const applicationsService = {
   /** Tên tin và công ty của mọi đơn ở một trạng thái, để đổ vào ô chọn. */
   jobs: (status: ApplicationStatus) =>
     api
-      .get<{ jobId: string; title: string; company: string }[]>(
+      .get<
+        {
+          jobId: string;
+          title: string;
+          company: string;
+          companyLogo: string | null;
+        }[]
+      >(
         "/applications/jobs",
         { params: { status } },
       )
