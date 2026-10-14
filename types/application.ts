@@ -16,6 +16,7 @@ export interface Application {
   status: ApplicationStatus;
   appliedAt: string | null;
   closedAt: string | null;
+  interviewAt: string | null;
   createdAt: string;
   updatedAt: string;
   job: {

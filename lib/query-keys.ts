@@ -32,7 +32,9 @@ export const keys = {
   cvPreview: (draftKey: string) => ["cv-preview", draftKey] as const,
 
   interview: () => ["interview"] as const,
+  interviewLists: () => ["interview", "list"] as const,
   interviewList: (offset: number) => ["interview", "list", offset] as const,
+  interviewPrep: (jobId: string) => ["interview", "prep", jobId] as const,
 
   upskill: () => ["upskill", "latest"] as const,
 

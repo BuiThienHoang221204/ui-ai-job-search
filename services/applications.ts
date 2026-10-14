@@ -40,4 +40,10 @@ export const applicationsService = {
     api
       .put<Application>(`/applications/${id}/status`, { status, note })
       .then((r) => r.data),
+
+  /** Ghi, đổi hoặc xoá (null) ngày phỏng vấn của đơn. */
+  setInterviewDate: (id: string, interviewAt: string | null) =>
+    api
+      .put<Application>(`/applications/${id}/interview-date`, { interviewAt })
+      .then((r) => r.data),
 };

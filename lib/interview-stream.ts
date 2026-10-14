@@ -13,11 +13,13 @@ const API =
 /** Mở buổi phỏng vấn thử và nhận câu hỏi đầu tiên theo kiểu chảy dần. */
 export async function streamInterviewOpen({
   jobId,
+  question,
   onText,
   signal,
   onRunId,
 }: {
   jobId: string;
+  question?: string;
   onText: (fullText: string) => void;
   signal?: AbortSignal;
   onRunId?: (runId: string) => void;
@@ -26,7 +28,7 @@ export async function streamInterviewOpen({
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ jobId }),
+    body: JSON.stringify(question ? { jobId, question } : { jobId }),
     signal,
   });
 

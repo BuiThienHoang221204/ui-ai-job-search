@@ -6,7 +6,7 @@ import Link from "next/link";
 import {
   ArrowCounterClockwise,
   ArrowLeft,
-  Microphone,
+  ChatsCircle,
   Sparkle,
 } from "@phosphor-icons/react/ssr";
 
@@ -25,7 +25,13 @@ import { InterviewTurnBlock } from "./interview-turns";
 import { failureMessage } from "@/lib/failure-message";
 
 /** Màn luyện phỏng vấn thử: biên bản các lượt, câu đang chảy về và ô trả lời. */
-export function MockInterviewView({ jobId }: { jobId: string }) {
+export function MockInterviewView({
+  jobId,
+  question,
+}: {
+  jobId: string;
+  question?: string;
+}) {
   const {
     job,
     history,
@@ -63,7 +69,7 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
         title="Phỏng vấn thử"
         subtitle={`${job.data.job.title} · ${job.data.job.company}`}
         actions={
-          <Link href="/dashboard/interview">
+          <Link href={`/dashboard/interview?job=${jobId}`}>
             <Button variant="outline" size="sm">
               <ArrowLeft className="size-4" />
               Bộ câu hỏi
@@ -73,6 +79,21 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
       />
 
       {error && <Alert tone="danger">{error}</Alert>}
+
+      {question && run && (
+        <Alert
+          tone="info"
+          title="Luyện câu bạn chọn"
+          actions={
+            <Button size="sm" onClick={() => start(question)} disabled={busy}>
+              <Sparkle className="size-4" />
+              Bắt đầu buổi mới từ câu này
+            </Button>
+          }
+        >
+          «{question}»
+        </Alert>
+      )}
 
       {run?.status === "FAILED" && (
         <Alert tone="danger" title="Buổi luyện dừng giữa chừng">
@@ -97,16 +118,20 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
 
       {!run ? (
         <SectionCard
-          icon={Microphone}
+          icon={ChatsCircle}
           title="Bắt đầu một buổi luyện"
           description="Một người phỏng vấn ảo sẽ hỏi bạn từng câu một, nghe bạn trả lời, rồi nhận xét ngay trước khi hỏi tiếp."
         >
           <EmptyState
-            icon={Microphone}
+            icon={ChatsCircle}
             title="Chưa có buổi luyện nào cho vị trí này"
-            description="Buổi luyện bám theo đúng tin tuyển dụng, hồ sơ và bộ đề chuẩn bị bạn đã có, nên câu hỏi sẽ đào vào những chỗ nhà tuyển dụng nhiều khả năng đào."
+            description={
+              question
+                ? `Người phỏng vấn ảo sẽ hỏi đúng câu bạn chọn trước: «${question}»`
+                : "Buổi luyện bám theo đúng tin tuyển dụng, hồ sơ và bộ đề chuẩn bị bạn đã có, nên câu hỏi sẽ đào vào những chỗ nhà tuyển dụng nhiều khả năng đào."
+            }
             action={
-              <Button onClick={start} disabled={busy}>
+              <Button onClick={() => start(question)} disabled={busy}>
                 <Sparkle className="size-4" />
                 {busy ? "Đang chuẩn bị" : "Bắt đầu phỏng vấn thử"}
               </Button>
@@ -115,7 +140,7 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
         </SectionCard>
       ) : (
         <SectionCard
-          icon={Microphone}
+          icon={ChatsCircle}
           title="Biên bản buổi luyện"
           description={
             transcript?.turns.length
@@ -171,7 +196,7 @@ export function MockInterviewView({ jobId }: { jobId: string }) {
           )}
 
           {isClosed(run.status) && (
-            <Button variant="outline" onClick={start} disabled={busy}>
+            <Button variant="outline" onClick={() => start()} disabled={busy}>
               <ArrowCounterClockwise className="size-4" />
               Luyện lại từ đầu
             </Button>

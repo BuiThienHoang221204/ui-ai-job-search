@@ -44,11 +44,13 @@ export function useMockInterview(jobId: string) {
     loginNext,
   );
 
-  const start = () => {
+  /** Mở buổi mới; có `question` thì người phỏng vấn ảo hỏi đúng câu đó trước. */
+  const start = (question?: string) => {
     setSending(true);
     setStreaming("");
     void streamInterviewOpen({
       jobId,
+      question,
       onText: setStreaming,
       onRunId: setStartedId,
     })

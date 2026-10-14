@@ -2,47 +2,58 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Microphone, Sparkle } from "@phosphor-icons/react/ssr";
+import { BookOpenText, Plus, Sparkle } from "@phosphor-icons/react/ssr";
 import { useApiQuery } from "@/hooks/use-api-query";
-import { keys } from "@/lib/query-keys";
 import { useDebounce } from "@/hooks/use-debounce";
-import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
-
+import { isPrepBusy, useSelectedJob } from "@/hooks/use-interview-prep";
+import { keys } from "@/lib/query-keys";
 import { interviewService, type InterviewPrepSummary } from "@/services";
-
-import { cn, companyColor, companyInitials, relativeDay } from "@/utils";
+import { cn, companyColor, companyInitials, formatDate } from "@/utils";
 import { PageHeader } from "@/components/dashboard/page-header";
-import { PrepDetail, STATUS_LABEL, STATUS_VARIANT } from "./prep-detail";
 import { CompanyLogo } from "@/components/dashboard/company-logo";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-
 import { Pagination } from "@/components/ui/pagination";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MockSessions } from "./mock-sessions";
-import { PrepLauncher } from "./prep-launcher";
-
-const LOGIN_NEXT = "/login?next=/dashboard/interview";
+import { AddPositionModal } from "./add-position-modal";
+import { PrepDetail, STATUS_LABEL, STATUS_VARIANT } from "./prep-detail";
 
 const PAGE_SIZE = 15;
-
 const POLL_MS = 2500;
 const SLOW_AFTER_MS = 3 * 60 * 1000;
 
-/** Bộ câu hỏi còn đang chờ hoặc đang soạn. */
-const isBusy = (status: string) => status === "PENDING" || status === "RUNNING";
+/** Chip trạng thái của một dòng: bộ đề chưa xong thì chỉ báo trạng thái, xong thì báo tiến độ luyện và lịch phỏng vấn. */
+function PositionChips({ prep }: { prep: InterviewPrepSummary }) {
+  if (prep.status !== "DONE") {
+    return (
+      <Badge variant={STATUS_VARIANT[prep.status]}>{STATUS_LABEL[prep.status]}</Badge>
+    );
+  }
+  return (
+    <>
+      {prep.practiced > 0 ? (
+        <Badge variant="primary">
+          Luyện {prep.practiced}/{prep.total}
+        </Badge>
+      ) : (
+        <Badge variant="neutral">Chưa luyện</Badge>
+      )}
+      {prep.application?.interviewAt && (
+        <Badge variant="outline">PV {formatDate(prep.application.interviewAt)}</Badge>
+      )}
+    </>
+  );
+}
 
-/** Màn chuẩn bị phỏng vấn: danh sách vị trí bên trái, bộ câu hỏi bên phải. */
+/** Màn chuẩn bị phỏng vấn: một danh sách vị trí bên trái, bộ câu hỏi bên phải. */
 export function InterviewView() {
-  const router = useRouter();
   const [offset, setOffset] = useState(0);
-  const [retryError, setRetryError] = useState<string | null>(null);
-  const [chosenId, setChosenId] = useState<string | null>(null);
-  const [retrying, setRetrying] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [chosen, select] = useSelectedJob();
 
   const page = useApiQuery(
     keys.interviewList(offset),
@@ -51,96 +62,93 @@ export function InterviewView() {
       errorMessage: "Không tải được bộ câu hỏi phỏng vấn",
       keepPrevious: true,
       refetchInterval: (data) =>
-        data?.items.some((prep) => isBusy(prep.status)) ? POLL_MS : false,
+        data?.items.some((prep) => isPrepBusy(prep.status)) ? POLL_MS : false,
     },
   );
 
-  const preps: InterviewPrepSummary[] | null = page.data?.items ?? null;
+  const preps = page.data?.items ?? null;
   const runToken =
     preps
-      ?.filter((prep) => isBusy(prep.status))
+      ?.filter((prep) => isPrepBusy(prep.status))
       .map((prep) => prep.id)
       .join() ?? "";
   const slow = useDebounce(runToken, SLOW_AFTER_MS) === runToken && runToken !== "";
-  const total = page.data?.total ?? 0;
-  const error = retryError ?? page.error;
 
-  const autoId =
-    (preps?.find((prep) => prep.status === "DONE") ?? preps?.[0])?.id ?? null;
-  const selectedId = chosenId ?? autoId;
-  const selected = preps?.find((prep) => prep.id === selectedId) ?? null;
-
-  /** Xếp lại bản hỏng vào hàng đợi với `force: true` rồi tải lại danh sách. */
-  const retry = async () => {
-    if (!selected) return;
-    setRetrying(true);
-    setRetryError(null);
-    try {
-      await interviewService.prep(selected.job.id, true);
-      page.reload();
-    } catch (err) {
-      if (apiErrorStatus(err) === 401) {
-        router.replace(LOGIN_NEXT);
-        return;
-      }
-      setRetryError(apiErrorMessage(err, "Không xếp lại được vào hàng đợi"));
-    } finally {
-      setRetrying(false);
-    }
-  };
+  const selectedJobId =
+    chosen ??
+    (preps?.find((prep) => prep.status === "DONE") ?? preps?.[0])?.jobId ??
+    null;
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Chuẩn bị phỏng vấn"
-        subtitle="Bộ câu hỏi và câu trả lời gợi ý, soạn riêng cho từng vị trí bạn đang phỏng vấn"
+        subtitle="Bộ câu hỏi soạn riêng cho từng vị trí, tự trả lời trước rồi mới xem gợi ý"
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Link href="/dashboard/interview/questions">
+              <Button variant="outline">
+                <BookOpenText className="size-4.5" />
+                Ngân hàng câu hỏi
+              </Button>
+            </Link>
+            <Button onClick={() => setAdding(true)}>
+              <Plus className="size-4.5" />
+              Thêm vị trí
+            </Button>
+          </div>
+        }
       />
 
-      <PrepLauncher onQueued={() => page.reload()} />
-
-      <MockSessions />
+      <AddPositionModal open={adding} onClose={() => setAdding(false)} />
 
       {slow && (
         <Alert tone="warning" title="Lâu hơn thường lệ">
           Một bộ câu hỏi đã chạy quá ba phút. Thường chỉ mất khoảng một phút — có
-          thể hàng đợi model đang bận. Bạn cứ để đó, hoặc mở bộ đề ra bấm soạn
-          lại nếu nó chuyển sang hỏng.
+          thể hàng đợi model đang bận. Bạn cứ để đó, hoặc soạn lại nếu nó chuyển
+          sang lỗi.
         </Alert>
       )}
 
-      {error ? (
-        <Alert tone="danger">{error}</Alert>
+      {page.error ? (
+        <Alert tone="danger">{page.error}</Alert>
       ) : !preps ? (
         <Skeleton className="h-64 animate-pulse" />
       ) : preps.length === 0 ? (
         <Card>
           <EmptyState
             icon={Sparkle}
-            title="Chưa có bộ câu hỏi nào"
-            description={
-              <>
-                Chọn một tin ở ô phía trên rồi bấm{" "}
-                <strong>Soạn bộ câu hỏi</strong>. Hệ thống không soạn sẵn cho mọi
-                tin vì mỗi lượt soạn đều tốn một lần gọi model, và phần lớn tin
-                thì bạn không đi tới vòng phỏng vấn.
-              </>
+            title="Chưa có vị trí nào để chuẩn bị"
+            description="Chọn một đơn đã nộp hoặc một tin đã lưu, hệ thống sẽ soạn bộ câu hỏi riêng cho vị trí đó. Mỗi lượt soạn tốn một lần gọi model nên hệ thống không soạn sẵn cho mọi tin."
+            action={
+              <Button onClick={() => setAdding(true)}>
+                <Plus className="size-4.5" />
+                Thêm vị trí
+              </Button>
             }
           />
         </Card>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-[18rem_1fr]">
+        <div className="grid gap-4 lg:grid-cols-[19rem_minmax(0,1fr)]">
           <Card className="h-fit overflow-hidden">
+            <div className="flex items-baseline justify-between border-b border-slate-100 px-4 py-3">
+              <p className="text-sm font-semibold text-slate-900">Vị trí đang chuẩn bị</p>
+              <p className="text-xs text-slate-400">{page.data?.total ?? 0} vị trí</p>
+            </div>
             <ul className="divide-y divide-slate-100">
               {preps.map((prep) => {
-                const active = prep.id === selectedId;
+                const active = prep.jobId === selectedJobId;
+                const percent = prep.total
+                  ? Math.round((prep.practiced / prep.total) * 100)
+                  : 0;
                 return (
                   <li key={prep.id}>
                     <button
                       type="button"
-                      onClick={() => setChosenId(prep.id)}
+                      onClick={() => select(prep.jobId)}
                       aria-current={active ? "true" : undefined}
                       className={cn(
-                        "flex w-full cursor-pointer items-center gap-3 px-3 py-3 text-left transition-colors",
+                        "flex w-full cursor-pointer items-start gap-3 px-4 py-3 text-left transition-colors",
                         active ? "bg-primary-50" : "hover:bg-slate-50",
                       )}
                     >
@@ -149,20 +157,22 @@ export function InterviewView() {
                         color={companyColor(prep.job.company)}
                         src={prep.job.companyLogo}
                         size="sm"
+                        className="size-10 text-xs"
                       />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-slate-900">
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium text-slate-900">
                           {prep.job.title}
-                        </p>
-                        <p className="truncate text-xs text-slate-400">
+                        </span>
+                        <span className="block truncate text-xs text-slate-500">
                           {prep.job.company}
-                        </p>
-                      </div>
-                      {prep.status !== "DONE" && (
-                        <Badge variant={STATUS_VARIANT[prep.status]}>
-                          {STATUS_LABEL[prep.status]}
-                        </Badge>
-                      )}
+                        </span>
+                        <span className="mt-1.5 flex flex-wrap gap-1">
+                          <PositionChips prep={prep} />
+                        </span>
+                        {prep.status === "DONE" && prep.total > 0 && (
+                          <Progress value={percent} className="mt-2 h-1" />
+                        )}
+                      </span>
                     </button>
                   </li>
                 );
@@ -172,40 +182,14 @@ export function InterviewView() {
             <Pagination
               offset={offset}
               limit={PAGE_SIZE}
-              total={total}
+              total={page.data?.total ?? 0}
               noun="vị trí"
               onOffsetChange={setOffset}
             />
           </Card>
 
           <div className="min-w-0">
-            {selected && (
-              <>
-                <div className="mb-3 flex flex-wrap items-center gap-2">
-                  <h2 className="text-base font-semibold text-slate-900">
-                    {selected.job.title}
-                  </h2>
-                  <Badge variant={STATUS_VARIANT[selected.status]}>
-                    {STATUS_LABEL[selected.status]}
-                  </Badge>
-                  {selected.generatedAt && (
-                    <span className="text-xs text-slate-400">
-                      soạn {relativeDay(selected.generatedAt)}
-                    </span>
-                  )}
-                  <Link
-                    href={`/dashboard/interview/${selected.job.id}/mock`}
-                    className="ml-auto"
-                  >
-                    <Button variant="outline" size="sm">
-                      <Microphone className="size-4" />
-                      Phỏng vấn thử
-                    </Button>
-                  </Link>
-                </div>
-                <PrepDetail prep={selected} retrying={retrying} onRetry={retry} />
-              </>
-            )}
+            {selectedJobId && <PrepDetail key={selectedJobId} jobId={selectedJobId} />}
           </div>
         </div>
       )}

@@ -1,6 +1,9 @@
 import { describe, expect, test } from "vitest";
 import type { InterviewPrepRecord } from "@/services";
 import {
+  answerOf,
+  indexedStarAnswers,
+  indexedToughQuestions,
   interviewQuestions,
   isInterviewPrepEmpty,
   parseStarAnswers,
@@ -29,6 +32,10 @@ const prep = (
   failureKind: null,
   createdAt: "2026-08-12T00:00:00.000Z",
   updatedAt: "2026-08-12T00:00:00.000Z",
+  practiced: 0,
+  total: 0,
+  answers: [],
+  application: null,
   ...overrides,
 });
 
@@ -186,5 +193,40 @@ describe("isInterviewPrepEmpty", () => {
     ["likelyProbes", { likelyProbes: ["Thiếu kinh nghiệm Docker."] }],
   ])("false khi chỉ có %s", (_label, overrides) => {
     expect(isInterviewPrepEmpty(prep(overrides))).toBe(false);
+  });
+});
+
+/// Backend định vị câu hỏi theo số thứ tự trong mảng GỐC; lọc phần tử hỏng rồi đánh số lại thì câu trả lời được ghi vào nhầm câu.
+describe("indexedStarAnswers / indexedToughQuestions", () => {
+  test("giữ số thứ tự gốc khi bỏ phần tử hỏng", () => {
+    const star = indexedStarAnswers([
+      null,
+      { competency: "Chỉ có năng lực, không có câu hỏi" },
+      { question: "Kể về một dự án?" },
+    ]);
+    const tough = indexedToughQuestions([{ question: "  " }, { question: "Vì sao nghỉ việc?" }]);
+
+    expect(star.map(({ index, question }) => [index, question])).toEqual([
+      [2, "Kể về một dự án?"],
+    ]);
+    expect(tough.map(({ index, question }) => [index, question])).toEqual([
+      [1, "Vì sao nghỉ việc?"],
+    ]);
+  });
+
+  test("answerOf tìm đúng câu theo loại và số thứ tự", () => {
+    const saved = {
+      text: "Trả lời",
+      feedback: null,
+      feedbackStale: false,
+      updatedAt: "2026-10-14T00:00:00.000Z",
+    };
+    const answers = [
+      { ...saved, kind: "STAR" as const, index: 0 },
+      { ...saved, kind: "TOUGH" as const, index: 0, text: "Câu khó" },
+    ];
+
+    expect(answerOf(answers, "TOUGH", 0)?.text).toBe("Câu khó");
+    expect(answerOf(answers, "STAR", 1)).toBeNull();
   });
 });

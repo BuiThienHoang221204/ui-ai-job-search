@@ -51,7 +51,15 @@ export type {
   DocumentKind,
   DocumentRecord,
 } from "./documents";
-export type { InterviewPrepRecord, InterviewPrepSummary } from "./interview";
+export type {
+  AnswerFeedback,
+  AnswerKind,
+  InterviewPrepRecord,
+  InterviewPrepSummary,
+  PrepAnswer,
+  PrepApplication,
+  SavedAnswer,
+} from "./interview";
 export type { UpskillReportRecord } from "./upskill";
 export type { ProfileRecord, QuickStartInput } from "./profile";
 export type {

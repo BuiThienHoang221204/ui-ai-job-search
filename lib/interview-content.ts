@@ -1,5 +1,9 @@
 import { isRecord, objectList, text } from "./parse-json";
-import type { InterviewPrepRecord } from "@/services";
+import type {
+  AnswerKind,
+  InterviewPrepRecord,
+  PrepAnswer,
+} from "@/services";
 
 export interface StarAnswer {
   competency: string | null;
@@ -72,5 +76,40 @@ export function isInterviewPrepEmpty(prep: InterviewPrepRecord): boolean {
     prep.questionsToAsk.length === 0 &&
     prep.talkingPoints.length === 0 &&
     prep.likelyProbes.length === 0
+  );
+}
+
+export type IndexedStar = StarAnswer & { index: number; question: string };
+export type IndexedTough = ToughQuestion & { index: number };
+
+/** Câu STAR tự trả lời được, giữ số thứ tự GỐC trong mảng vì backend định vị câu theo đúng số đó. */
+export function indexedStarAnswers(value: unknown): IndexedStar[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item, index) => {
+    const answer = parseStarAnswer(item);
+    return answer?.question
+      ? [{ ...answer, question: answer.question, index }]
+      : [];
+  });
+}
+
+/** Câu hỏi khó, giữ số thứ tự GỐC trong mảng. */
+export function indexedToughQuestions(value: unknown): IndexedTough[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item, index) => {
+    const question = parseToughQuestion(item);
+    return question ? [{ ...question, index }] : [];
+  });
+}
+
+/** Câu trả lời đã lưu của một câu hỏi, chưa có thì null. */
+export function answerOf(
+  answers: PrepAnswer[],
+  kind: AnswerKind,
+  index: number,
+): PrepAnswer | null {
+  return (
+    answers.find((answer) => answer.kind === kind && answer.index === index) ??
+    null
   );
 }
