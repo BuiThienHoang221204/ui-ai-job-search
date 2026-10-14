@@ -37,6 +37,7 @@ export const keys = {
   interviewPrep: (jobId: string) => ["interview", "prep", jobId] as const,
 
   upskill: () => ["upskill", "latest"] as const,
+  learning: () => ["learning"] as const,
 
   questionPage: (filters: unknown, offset: number) =>
     ["question-bank", "page", filters, offset] as const,
@@ -51,12 +52,13 @@ export const keys = {
 const AFFECTED: Record<string, readonly (readonly string[])[]> = {
   saveJob: [keys.jobLists(), keys.dashboard()],
   applicationStatus: [keys.applications(), keys.dashboard(), keys.jobLists()],
-  saveProfile: [keys.dashboard(), keys.skillGaps(), keys.jobLists()],
+  saveProfile: [keys.dashboard(), keys.skillGaps(), keys.jobLists(), keys.learning()],
   quickStart: [
     keys.profile(),
     keys.dashboard(),
     keys.skillGaps(),
     keys.jobLists(),
+    keys.learning(),
   ],
   applyCvDraft: [
     keys.profile(),
@@ -64,10 +66,12 @@ const AFFECTED: Record<string, readonly (readonly string[])[]> = {
     keys.dashboard(),
     keys.skillGaps(),
     keys.jobLists(),
+    keys.learning(),
   ],
   createDocument: [keys.documents(), keys.dashboard()],
   scoreJob: [keys.matches(), keys.jobLists(), keys.dashboard()],
   mockInterview: [keys.mockInterviews()],
+  learning: [keys.learning(), keys.dashboard(), keys.skillGaps(), keys.profile()],
 };
 
 export type WriteAction = keyof typeof AFFECTED;

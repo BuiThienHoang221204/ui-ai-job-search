@@ -1,21 +1,6 @@
 export type { AuthUser } from "./auth";
 
 export type {
-  ActivityItem,
-  CertificateItem,
-  ConnectionSource,
-  ConnectionSourceType,
-  ConnectionStatus,
-  EducationItem,
-  ExperienceItem,
-  ProjectItem,
-  Skill,
-  SkillLevel,
-  UserProfile,
-} from "./profile";
-
-export type {
-  AiMatchDetail,
   Job,
   JobMatchCard,
   JobMatchWithJob,
@@ -68,3 +53,12 @@ export type {
   LetterKind,
   PartialLetter,
 } from "./letter";
+
+export type {
+  LearningItem,
+  LearningOverview,
+  LearningStatus,
+  SaveLearningInput,
+  SkillGapItem,
+  WeekDay,
+} from "./learning";

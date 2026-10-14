@@ -55,4 +55,8 @@ export const profileService = {
   /** Bước "Chọn nhanh" lúc đăng ký - ghi tường minh, không qua suy luận như `update`. */
   quickStart: (input: QuickStartInput) =>
     api.post<ProfileRecord>("/profile/quick-start", input).then((r) => r.data),
+
+  /** Thêm MỘT kỹ năng vào hồ sơ; đã có thì backend giữ nguyên. */
+  addSkill: (skill: string) =>
+    api.post<ProfileRecord>("/profile/skills", { skill }).then((r) => r.data),
 };

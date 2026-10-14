@@ -6,6 +6,7 @@ import { BookOpenText, Plus, Sparkle } from "@phosphor-icons/react/ssr";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useDebounce } from "@/hooks/use-debounce";
 import { isPrepBusy, useSelectedJob } from "@/hooks/use-interview-prep";
+import { useSyncedSticky } from "@/hooks/use-synced-sticky";
 import { keys } from "@/lib/query-keys";
 import { interviewService, type InterviewPrepSummary } from "@/services";
 import { cn, companyColor, companyInitials, formatDate } from "@/utils";
@@ -30,7 +31,9 @@ const SLOW_AFTER_MS = 3 * 60 * 1000;
 function PositionChips({ prep }: { prep: InterviewPrepSummary }) {
   if (prep.status !== "DONE") {
     return (
-      <Badge variant={STATUS_VARIANT[prep.status]}>{STATUS_LABEL[prep.status]}</Badge>
+      <Badge variant={STATUS_VARIANT[prep.status]}>
+        {STATUS_LABEL[prep.status]}
+      </Badge>
     );
   }
   return (
@@ -43,7 +46,9 @@ function PositionChips({ prep }: { prep: InterviewPrepSummary }) {
         <Badge variant="neutral">Chưa luyện</Badge>
       )}
       {prep.application?.interviewAt && (
-        <Badge variant="outline">PV {formatDate(prep.application.interviewAt)}</Badge>
+        <Badge variant="outline">
+          PV {formatDate(prep.application.interviewAt)}
+        </Badge>
       )}
       {prep.mockCount > 0 && (
         <Badge variant="outline">Thử {prep.mockCount} buổi</Badge>
@@ -57,6 +62,7 @@ export function InterviewView() {
   const [offset, setOffset] = useState(0);
   const [adding, setAdding] = useState(false);
   const [chosen, select] = useSelectedJob();
+  const [attachPanel, attachContainer] = useSyncedSticky();
 
   const page = useApiQuery(
     keys.interviewList(offset),
@@ -75,7 +81,8 @@ export function InterviewView() {
       ?.filter((prep) => isPrepBusy(prep.status))
       .map((prep) => prep.id)
       .join() ?? "";
-  const slow = useDebounce(runToken, SLOW_AFTER_MS) === runToken && runToken !== "";
+  const slow =
+    useDebounce(runToken, SLOW_AFTER_MS) === runToken && runToken !== "";
 
   const selectedJobId =
     chosen ??
@@ -107,9 +114,9 @@ export function InterviewView() {
 
       {slow && (
         <Alert tone="warning" title="Lâu hơn thường lệ">
-          Một bộ câu hỏi đã chạy quá ba phút. Thường chỉ mất khoảng một phút — có
-          thể hàng đợi model đang bận. Bạn cứ để đó, hoặc soạn lại nếu nó chuyển
-          sang lỗi.
+          Một bộ câu hỏi đã chạy quá ba phút. Thường chỉ mất khoảng một phút —
+          có thể hàng đợi model đang bận. Bạn cứ để đó, hoặc soạn lại nếu nó
+          chuyển sang lỗi.
         </Alert>
       )}
 
@@ -132,67 +139,78 @@ export function InterviewView() {
           />
         </Card>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-[19rem_minmax(0,1fr)]">
-          <Card className="h-fit overflow-hidden lg:sticky lg:top-6 lg:flex lg:max-h-[calc(100vh-3rem)] lg:flex-col">
-            <div className="flex items-baseline justify-between border-b border-slate-100 px-4 py-3">
-              <p className="text-sm font-semibold text-slate-900">Vị trí đang chuẩn bị</p>
-              <p className="text-xs text-slate-400">{page.data?.total ?? 0} vị trí</p>
-            </div>
-            <ul className="divide-y divide-slate-100 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
-              {preps.map((prep) => {
-                const active = prep.jobId === selectedJobId;
-                const percent = prep.total
-                  ? Math.round((prep.practiced / prep.total) * 100)
-                  : 0;
-                return (
-                  <li key={prep.id}>
-                    <button
-                      type="button"
-                      onClick={() => select(prep.jobId)}
-                      aria-current={active ? "true" : undefined}
-                      className={cn(
-                        "flex w-full cursor-pointer items-start gap-3 px-4 py-3 text-left transition-colors",
-                        active ? "bg-primary-50" : "hover:bg-slate-50",
-                      )}
-                    >
-                      <CompanyLogo
-                        initials={companyInitials(prep.job.company)}
-                        color={companyColor(prep.job.company)}
-                        src={prep.job.companyLogo}
-                        size="sm"
-                        className="size-10 text-xs"
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-medium text-slate-900">
-                          {prep.job.title}
-                        </span>
-                        <span className="block truncate text-xs text-slate-500">
-                          {prep.job.company}
-                        </span>
-                        <span className="mt-1.5 flex flex-wrap gap-1">
-                          <PositionChips prep={prep} />
-                        </span>
-                        {prep.status === "DONE" && prep.total > 0 && (
-                          <Progress value={percent} className="mt-2 h-1" />
+        <div
+          ref={attachContainer}
+          className="grid gap-4 lg:grid-cols-[19rem_minmax(0,1fr)]"
+        >
+          <div ref={attachPanel} className="h-fit lg:sticky">
+            <Card className="overflow-hidden">
+              <div className="flex items-baseline justify-between border-b border-slate-100 px-4 py-3">
+                <p className="text-sm font-semibold text-slate-900">
+                  Vị trí đang chuẩn bị
+                </p>
+                <p className="text-xs text-slate-400">
+                  {page.data?.total ?? 0} vị trí
+                </p>
+              </div>
+              <ul className="divide-y divide-slate-100">
+                {preps.map((prep) => {
+                  const active = prep.jobId === selectedJobId;
+                  const percent = prep.total
+                    ? Math.round((prep.practiced / prep.total) * 100)
+                    : 0;
+                  return (
+                    <li key={prep.id}>
+                      <button
+                        type="button"
+                        onClick={() => select(prep.jobId)}
+                        aria-current={active ? "true" : undefined}
+                        className={cn(
+                          "flex w-full cursor-pointer items-start gap-3 px-4 py-3 text-left transition-colors",
+                          active ? "bg-primary-50" : "hover:bg-slate-50",
                         )}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+                      >
+                        <CompanyLogo
+                          initials={companyInitials(prep.job.company)}
+                          color={companyColor(prep.job.company)}
+                          src={prep.job.companyLogo}
+                          size="sm"
+                          className="size-10 text-xs"
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-medium text-slate-900">
+                            {prep.job.title}
+                          </span>
+                          <span className="block truncate text-xs text-slate-500">
+                            {prep.job.company}
+                          </span>
+                          <span className="mt-1.5 flex flex-wrap gap-1">
+                            <PositionChips prep={prep} />
+                          </span>
+                          {prep.status === "DONE" && prep.total > 0 && (
+                            <Progress value={percent} className="mt-2 h-1" />
+                          )}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
 
-            <Pagination
-              offset={offset}
-              limit={PAGE_SIZE}
-              total={page.data?.total ?? 0}
-              noun="vị trí"
-              onOffsetChange={setOffset}
-            />
-          </Card>
+              <Pagination
+                offset={offset}
+                limit={PAGE_SIZE}
+                total={page.data?.total ?? 0}
+                noun="vị trí"
+                onOffsetChange={setOffset}
+              />
+            </Card>
+          </div>
 
           <div className="min-w-0">
-            {selectedJobId && <PrepDetail key={selectedJobId} jobId={selectedJobId} />}
+            {selectedJobId && (
+              <PrepDetail key={selectedJobId} jobId={selectedJobId} />
+            )}
           </div>
         </div>
       )}

@@ -83,21 +83,3 @@ export type JobMatchCard = Pick<
   JobMatchWithJob,
   "jobId" | "status" | "overallScore" | "strengths" | "job"
 >;
-
-export interface AiMatchDetail {
-  overall: number;
-  criteria: {
-    skills: number;
-    experience: number;
-    projects: number;
-    level: number;
-    salaryLocation: number;
-  };
-  strengths: string[];
-  improvements: string[];
-  jdSummary: {
-    about: string;
-    responsibilities: string[];
-    requirements: string[];
-  };
-}
