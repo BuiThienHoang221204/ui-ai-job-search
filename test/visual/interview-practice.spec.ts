@@ -88,6 +88,7 @@ test("tu tra loi luu dung so thu tu goc cua cau hoi", async ({ page }) => {
 
   await page.getByRole("button", { name: "Tự trả lời" }).click();
   await page.getByRole("textbox").fill("Tôi đối chiếu từng chứng từ.");
+  await page.getByRole("textbox").blur();
 
   await expect(page.getByText("Đã lưu")).toBeVisible({ timeout: 8000 });
   expect(savedPath).toBe("/api/interview/job-1/answers/star/1");

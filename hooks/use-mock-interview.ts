@@ -21,8 +21,8 @@ const WORKFLOW = "interview";
 export const isClosed = (status: string) =>
   status === "DONE" || status === "FAILED";
 
-/** Hook buổi luyện phỏng vấn: tìm buổi đang dở, bắt đầu buổi mới và gửi câu trả lời. */
-export function useMockInterview(jobId: string) {
+/** Hook buổi luyện phỏng vấn: mở buổi được chọn (hoặc buổi gần nhất), bắt đầu buổi mới và gửi câu trả lời. */
+export function useMockInterview(jobId: string, chosenRunId?: string) {
   const toast = useToast();
   const [startedId, setStartedId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
@@ -38,7 +38,8 @@ export function useMockInterview(jobId: string) {
     { errorMessage: "Không tải được buổi luyện đã có" },
   );
 
-  const runId = startedId ?? history.data?.items[0]?.id ?? null;
+  const runId =
+    startedId ?? chosenRunId ?? history.data?.items[0]?.id ?? null;
   const { run, error, timedOut, refresh } = useMockInterviewRun(
     runId,
     loginNext,

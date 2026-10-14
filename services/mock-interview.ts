@@ -46,6 +46,7 @@ export interface MockInterviewSummary {
   jobId: string | null;
   job: { title: string; company: string } | null;
   _count: { steps: number };
+  closing: string | null;
 }
 
 export type MockInterviewListQuery = {

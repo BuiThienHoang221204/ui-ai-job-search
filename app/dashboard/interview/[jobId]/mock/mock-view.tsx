@@ -28,9 +28,11 @@ import { failureMessage } from "@/lib/failure-message";
 export function MockInterviewView({
   jobId,
   question,
+  runId,
 }: {
   jobId: string;
   question?: string;
+  runId?: string;
 }) {
   const {
     job,
@@ -43,7 +45,7 @@ export function MockInterviewView({
     streaming,
     start,
     answer,
-  } = useMockInterview(jobId);
+  } = useMockInterview(jobId, runId);
 
   if (job.error)
     return <PageError title="Không tải được dữ liệu" message={job.error} />;

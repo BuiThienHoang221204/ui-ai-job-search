@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
   ChatsCircle,
@@ -20,10 +20,9 @@ import { useToast } from "@/components/ui/toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-const AUTOSAVE_MS = 1200;
 const FEEDBACK_MIN = 20;
 
-/** Một câu luyện tập: tự trả lời trước (tự lưu), xin nhận xét, rồi mới mở gợi ý. */
+/** Một câu luyện tập: tự trả lời trước (lưu khi rời ô nhập), xin nhận xét, rồi mới mở gợi ý. */
 export function PracticeQuestion({
   jobId,
   kind,
@@ -52,34 +51,20 @@ export function PracticeQuestion({
   const [saving, setSaving] = useState(false);
   const [judging, setJudging] = useState(false);
 
-  const persist = useCallback(
-    (text: string) => {
-      setSaving(true);
-      interviewService
-        .saveAnswer(jobId, kind, index, text)
-        .then((result) => {
-          setSavedText(text);
-          putAnswer(kind, index, result.answer);
-        })
-        .catch((cause: unknown) =>
-          toast.danger(apiErrorMessage(cause, "Không lưu được câu trả lời")),
-        )
-        .finally(() => setSaving(false));
-    },
-    [jobId, kind, index, putAnswer, toast],
-  );
-
   const dirty = draft.trim() !== savedText.trim();
 
-  useEffect(() => {
-    if (!answering || judging || !dirty) return;
-    const timer = setTimeout(() => persist(draft), AUTOSAVE_MS);
-    return () => clearTimeout(timer);
-  }, [answering, judging, dirty, draft, persist]);
-
-  const toggleAnswer = () => {
-    if (answering && dirty && !judging) persist(draft);
-    setAnswering((open) => !open);
+  const save = async () => {
+    if (!dirty || saving || judging) return;
+    setSaving(true);
+    try {
+      const result = await interviewService.saveAnswer(jobId, kind, index, draft);
+      setSavedText(draft);
+      putAnswer(kind, index, result.answer);
+    } catch (cause) {
+      toast.danger(apiErrorMessage(cause, "Không lưu được câu trả lời"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const askFeedback = async () => {
@@ -100,7 +85,13 @@ export function PracticeQuestion({
     feedback !== null &&
     (answer?.feedbackStale === true || draft.trim() !== answer?.text);
   const tooShort = draft.trim().length < FEEDBACK_MIN;
-  const status = saving ? "Đang lưu…" : draft.trim() && !dirty ? "Đã lưu" : null;
+  let status =
+    kind === "STAR"
+      ? "Nhận xét theo khung STAR, so với hồ sơ và tin tuyển dụng"
+      : "Nhận xét cách bạn thừa nhận và bắc cầu sang kinh nghiệm thật";
+  if (saving) status = "Đang lưu…";
+  else if (dirty) status = "Chưa lưu — tự lưu khi bạn rời ô nhập";
+  else if (draft.trim()) status = "Đã lưu";
 
   return (
     <article className="rounded-xl border border-slate-200/80 p-4">
@@ -117,7 +108,7 @@ export function PracticeQuestion({
         <Button
           size="sm"
           variant={answering ? "outline" : "primary"}
-          onClick={toggleAnswer}
+          onClick={() => setAnswering((open) => !open)}
         >
           <PencilSimpleLine className="size-4" />
           {answering ? "Đóng" : answer ? "Sửa câu trả lời" : "Tự trả lời"}
@@ -145,6 +136,7 @@ export function PracticeQuestion({
           <textarea
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
+            onBlur={() => void save()}
             maxLength={4000}
             rows={5}
             placeholder="Trả lời như đang nói với người phỏng vấn…"
@@ -153,10 +145,7 @@ export function PracticeQuestion({
           />
           <div className="flex flex-wrap items-center gap-2 border-t border-slate-200 px-3 py-2">
             <p className="flex-1 text-xs text-slate-500">
-              {status ??
-                (kind === "STAR"
-                  ? "Nhận xét theo khung STAR, so với hồ sơ và tin tuyển dụng"
-                  : "Nhận xét cách bạn thừa nhận và bắc cầu sang kinh nghiệm thật")}
+              {status}
             </p>
             <Button
               size="sm"

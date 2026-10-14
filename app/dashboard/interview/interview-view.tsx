@@ -45,6 +45,9 @@ function PositionChips({ prep }: { prep: InterviewPrepSummary }) {
       {prep.application?.interviewAt && (
         <Badge variant="outline">PV {formatDate(prep.application.interviewAt)}</Badge>
       )}
+      {prep.mockCount > 0 && (
+        <Badge variant="outline">Thử {prep.mockCount} buổi</Badge>
+      )}
     </>
   );
 }
@@ -130,12 +133,12 @@ export function InterviewView() {
         </Card>
       ) : (
         <div className="grid gap-4 lg:grid-cols-[19rem_minmax(0,1fr)]">
-          <Card className="h-fit overflow-hidden">
+          <Card className="h-fit overflow-hidden lg:sticky lg:top-6 lg:flex lg:max-h-[calc(100vh-3rem)] lg:flex-col">
             <div className="flex items-baseline justify-between border-b border-slate-100 px-4 py-3">
               <p className="text-sm font-semibold text-slate-900">Vị trí đang chuẩn bị</p>
               <p className="text-xs text-slate-400">{page.data?.total ?? 0} vị trí</p>
             </div>
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-slate-100 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
               {preps.map((prep) => {
                 const active = prep.jobId === selectedJobId;
                 const percent = prep.total

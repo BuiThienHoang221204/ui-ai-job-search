@@ -4,7 +4,12 @@ Frontend Next.js (App Router) + Tailwind v4 + TanStack Query + zustand + react-h
 
 ## Quy tắc bắt buộc khi viết component
 
-**1. Code đơn giản, dễ đọc.** Logic thẳng, ít tầng, không trừu tượng hoá trước khi cần. Ba dòng lặp lại tốt hơn một helper khó hiểu.
+**1. Code đơn giản, dễ đọc.** Logic thẳng, ít tầng, không trừu tượng hoá trước khi cần. Ba dòng lặp lại tốt hơn một helper khó hiểu. Cụ thể (chốt 2026-10-14 sau một đợt rà):
+
+- **Hành động gắn với sự kiện người dùng, không với `useEffect` + `setTimeout`.** Đã sửa: tự lưu câu trả lời bằng effect hẹn giờ + `useCallback` + cờ `dirty` + hàm `toggle` phải phối hợp với nhau, dễ sinh lưu lặp khi danh tính hàm đổi. Nay `practice-question.tsx` lưu ở `onBlur` của ô nhập — bấm nút nào khác cũng làm ô mất focus nên không mất chữ.
+- **Không ternary lồng**, kể cả trong biến hiển thị: gán bằng `if` trước `return`.
+- **Chỉ tách hàm/component khi có lý do** (dùng ≥ 2 nơi, hoặc là một khái niệm có tên rõ). Hàm không dùng state của component thì đưa ra `lib/`, đừng khai trong thân component.
+- **Không dùng mẹo để code ngắn hơn** (`flatMap` trả `[]`/`[x]`, ghép chuỗi rồi lọc theo hậu tố…): viết `filter` + `map` hoặc vòng lặp thường.
 
 **2. Truyền ÍT props nhất có thể — lý tưởng là chỉ một `id`.** Component tự lấy dữ liệu nó cần qua custom hook thay vì nhận cả object từ cha rồi chuyền tiếp xuống.
 

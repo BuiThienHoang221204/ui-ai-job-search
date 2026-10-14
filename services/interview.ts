@@ -66,7 +66,7 @@ export type InterviewPrepSummary = Pick<
   | "practiced"
   | "total"
   | "application"
->;
+> & { mockCount: number };
 
 export interface AnswerResult {
   kind: AnswerKind;

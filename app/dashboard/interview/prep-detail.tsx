@@ -29,6 +29,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/toast";
 import { InterviewDate } from "./interview-date";
+import { JobMockSessions } from "./job-mock-sessions";
 import { PracticeQuestion } from "./practice-question";
 
 export const STATUS_LABEL: Record<InterviewPrepRecord["status"], string> = {
@@ -356,6 +357,8 @@ export function PrepDetail({ jobId }: { jobId: string }) {
       ) : (
         <PrepContent key={record.updatedAt} prep={record} />
       )}
+
+      <JobMockSessions jobId={record.jobId} />
     </div>
   );
 }
