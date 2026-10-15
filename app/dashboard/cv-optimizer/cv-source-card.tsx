@@ -4,21 +4,15 @@ import { useState } from "react";
 import { LinkSimple, Sparkle } from "@phosphor-icons/react/ssr";
 import { apiErrorMessage } from "@/lib/axios";
 import { useDraftState } from "@/hooks/use-draft-state";
-import {
-  documentsService,
-  type CvLanguage,
-} from "@/services";
-import {
-  JobSelect,
-  PastedJobFields,
-} from "@/components/dashboard/document-job";
+import { documentsService } from "@/services";
+import { JobSelect, PastedJobFields } from "@/components/documents";
 import { usePastedJob } from "@/hooks/use-pasted-job";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
 import { Tabs } from "@/components/ui/tabs";
-import { cn } from "@/utils";
-import type { CvGenerate } from "@/types";
+import type { CvGenerate, CvLanguage } from "@/types";
+import { cn } from "@/lib/cn";
 
 const NO_JOB = "";
 

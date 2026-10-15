@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { MapPin } from "@phosphor-icons/react/ssr";
-import { cn } from "@/utils";
-import { DashSection } from "@/components/dashboard/dash-section";
+import { DashSection } from "@/components/ui/dash-section";
 import { useDashboard } from "@/hooks/use-dashboard";
+import { cn } from "@/lib/cn";
 
 type View = "province" | "sub";
 

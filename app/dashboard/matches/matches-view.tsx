@@ -4,17 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, SortDescending } from "@phosphor-icons/react/ssr";
 import { matchesService } from "@/services";
-import type { MatchSort } from "@/services/matches";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 import { toJobCard } from "@/lib/adapters";
-import { JobCard } from "@/components/dashboard/job-card";
-import { PageHeader } from "@/components/dashboard/page-header";
+import { JobCard } from "./job-card";
+import { PageHeader } from "@/components/ui/page-header";
 import { PageError } from "@/components/ui/alert";
 import { EmptyHint } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { SkeletonGrid } from "@/components/ui/skeleton";
+import type { MatchSort } from "@/types";
 
 const PAGE_SIZE = 12;
 

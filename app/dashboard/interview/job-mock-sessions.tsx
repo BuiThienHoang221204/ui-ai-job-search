@@ -5,10 +5,12 @@ import { ChatsCircle } from "@phosphor-icons/react/ssr";
 import { mockInterviewService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
-import { relativeDay } from "@/utils";
-import { InterviewStatusBadge } from "@/components/dashboard/interview-status-badge";
+import {
+  InterviewStatusBadge,
+} from "./interview-status-badge";
 import { SectionCard } from "@/components/ui/section-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { relativeDay } from "@/lib/date";
 
 const LIMIT = 20;
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { X } from "@phosphor-icons/react/ssr";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 interface ModalProps {
   open: boolean;

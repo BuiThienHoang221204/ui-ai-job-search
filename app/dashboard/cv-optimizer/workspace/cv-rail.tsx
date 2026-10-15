@@ -1,6 +1,6 @@
 "use client";
 
-import { DocumentSource } from "@/components/dashboard/document-job";
+import { DocumentSource } from "@/components/documents";
 import { Card } from "@/components/ui/card";
 import type { CvRailTab } from "@/types";
 import { CvDesignPanel } from "../cv-design-panel";

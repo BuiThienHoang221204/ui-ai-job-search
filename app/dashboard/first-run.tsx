@@ -7,14 +7,14 @@ import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 import { toJobCardFromRecord } from "@/lib/adapters";
 import { SkillResources } from "@/components/ads/affiliate-inline";
-import { DashSection } from "@/components/dashboard/dash-section";
-import { useSession } from "@/components/dashboard/session";
+import { DashSection } from "@/components/ui/dash-section";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/utils";
 import { MarketCard } from "./market-card";
-import { JobRow } from "./top-matches";
+import { TopMatchRow } from "./top-matches";
 import { useDashboard } from "@/hooks/use-dashboard";
+import { cn } from "@/lib/cn";
+import { useSession } from "@/hooks/use-session";
 
 type Step = { title: string; detail: string; done: boolean; action?: { label: string; href: string } };
 
@@ -111,7 +111,7 @@ export function FirstRun() {
               const job = toJobCardFromRecord(item);
               const fit = job.systemMatch && job.systemMatch.total > 0 ? job.systemMatch : null;
               return (
-                <JobRow
+                <TopMatchRow
                   key={job.id}
                   job={job}
                   score={null}

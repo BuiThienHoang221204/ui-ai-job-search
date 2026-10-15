@@ -12,14 +12,13 @@ import {
   TextT,
   UploadSimple,
 } from "@phosphor-icons/react/ssr";
-import type { PartialProposal } from "@/lib/profile-partial";
 import { failureMessage, isWorthRetrying } from "@/lib/failure-message";
-import type { ProfileDraftRecord } from "@/services";
-import { DashSection } from "@/components/dashboard/dash-section";
+import { DashSection } from "@/components/ui/dash-section";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
+import type { PartialProposal, ProfileDraftRecord } from "@/types";
 
 const LIVE_ROWS = [
   {

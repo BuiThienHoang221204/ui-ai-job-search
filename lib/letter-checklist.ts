@@ -1,5 +1,5 @@
 import type { LetterCheck, LetterKind } from "@/types";
-import { fold } from "@/utils";
+import { fold } from "@/lib/text";
 
 const PLACEHOLDER =
   /\[[^\]]{1,40}\]|không cung cấp|chưa cung cấp|<[^>]{1,40}>/i;

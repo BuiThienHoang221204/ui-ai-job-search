@@ -3,14 +3,7 @@
 import { useCallback, useState } from "react";
 import { create } from "zustand";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  documentsService,
-  type CvContentInput,
-  type CvLayout,
-  type CvSectionKey,
-  type CvTypography,
-  type DocumentRecord,
-} from "@/services";
+import { documentsService } from "@/services";
 import { apiErrorMessage } from "@/lib/axios";
 import { useApiQuery } from "@/hooks/use-api-query";
 import {
@@ -22,8 +15,16 @@ import {
 } from "@/lib/cv-fields";
 import { parseCvContent } from "@/lib/document-content";
 import { keys } from "@/lib/query-keys";
-import { openBlobInNewTab } from "@/utils";
-import type { CvDraft, CvRailTab } from "@/types";
+import type {
+  CvDraft,
+  CvRailTab,
+  CvContentInput,
+  CvLayout,
+  CvSectionKey,
+  CvTypography,
+  DocumentRecord,
+} from "@/types";
+import { openBlobInNewTab } from "@/lib/blob";
 
 const SECTION_KEYS: CvSectionKey[] = [
   "profile",

@@ -4,7 +4,7 @@ import {
   type LabelHTMLAttributes,
   type TextareaHTMLAttributes,
 } from "react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 /** Nhãn của ô nhập. */
 export function Label({ className, ...props }: LabelHTMLAttributes<HTMLLabelElement>) {

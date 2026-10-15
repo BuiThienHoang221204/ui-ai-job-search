@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { useJobCv, useLetterDocument } from "@/hooks/use-letters";
 import { letterChecklist } from "@/lib/letter-checklist";
 import type { LetterKind } from "@/types";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 /** Cột phải "Trước khi gửi": thanh độ dài và các mục soát bằng code, không gọi AI. */
 export function LetterChecklistCard({ documentId }: { documentId: string }) {

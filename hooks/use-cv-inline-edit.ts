@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, type RefObject } from "react";
-import type { CvSectionKey } from "@/services";
 import { useCvDraft } from "@/hooks/use-cv-draft";
 import {
   closestIn,
@@ -9,6 +8,7 @@ import {
   placeCaretAtEnd,
   renumberLines,
 } from "@/lib/cv-frame";
+import type { CvSectionKey } from "@/types";
 
 export interface ActiveSection {
   section: CvSectionKey;

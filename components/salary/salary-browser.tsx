@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { MagnifyingGlass } from "@phosphor-icons/react/ssr";
-import type { SalaryOccupation, SalaryPositionSummary } from "@/services/salary";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
@@ -16,8 +15,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fold, formatMonthlyVnd } from "@/utils";
 import { SalaryBar } from "./salary-bar";
+import { fold } from "@/lib/text";
+import { formatMonthlyVnd } from "@/lib/salary";
+import type { SalaryOccupation, SalaryPositionSummary } from "@/types";
 
 const PAGE_SIZE = 25;
 

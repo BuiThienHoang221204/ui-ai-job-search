@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { authService } from "@/services";
-import { safeNextPath } from "@/utils";
 
-import { BrandLogo } from "@/components/dashboard/brand-logo";
+import { BrandLogo } from "@/components/layout/brand-logo";
+import { safeNextPath } from "@/lib/redirect";
 
 const MIN_PASSWORD_LENGTH = 8;
 

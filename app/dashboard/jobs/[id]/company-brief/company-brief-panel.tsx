@@ -1,9 +1,11 @@
 "use client";
 
-import { BriefLiveProgress, type PartialBrief } from "./brief-live-progress";
+import { BriefLiveProgress } from "./brief-live-progress";
 import { streamModel } from "@/lib/model-stream";
 import { BriefBody, Signals } from "./company-brief-body";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { loginPathForJob } from "@/lib/public-job";
 import { ArrowsClockwise, Buildings } from "@phosphor-icons/react/ssr";
 import { companiesService } from "@/services";
 
@@ -14,7 +16,9 @@ import { apiErrorMessage } from "@/lib/axios";
 
 import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/ui/section-card";
-import { useToast } from "@/components/ui/toast";
+import { useSession } from "@/hooks/use-session";
+import { useToast } from "@/hooks/use-toast";
+import type { PartialBrief } from "@/types";
 
 const POLL_MS = 2_500;
 const MAX_WAIT_MS = 5 * 60_000;
@@ -26,6 +30,8 @@ interface CompanyBriefPanelProps {
 /** Thẻ "Về công ty này" trên trang chi tiết tin, có query riêng. */
 export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
   const toast = useToast();
+  const router = useRouter();
+  const { user } = useSession();
   const [pendingSince, setPendingSince] = useState<string | null | undefined>(
     undefined,
   );
@@ -63,6 +69,10 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
   const waiting = isBriefPending(pendingSince, brief?.updatedAt ?? null);
 
   async function research(force: boolean) {
+    if (!user) {
+      router.push(loginPathForJob(jobId));
+      return;
+    }
     setPendingSince(brief?.updatedAt ?? null);
     setPartial(null);
     setQueued(false);

@@ -6,7 +6,7 @@ import {
   WarningCircle,
 } from "@phosphor-icons/react/ssr";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 export type AlertTone = "danger" | "warning" | "info" | "success";
 

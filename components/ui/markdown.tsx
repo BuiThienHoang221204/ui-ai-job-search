@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { parseMarkdown, type InlineToken } from "@/lib/markdown-blocks";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 /** Vẽ Markdown do model sinh ra; mọi nơi hiện Markdown đều đi qua đây. */
 export function Markdown({

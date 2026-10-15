@@ -5,7 +5,7 @@ import {
   isReviewEmpty,
   reviewValues,
 } from "@/lib/profile-draft-content";
-import type { ProfileProposal, ProfileRecord } from "@/services";
+import type { ProfileProposal, ProfileRecord } from "@/types";
 
 const emptyProposal = (): ProfileProposal => ({
   languages: [],

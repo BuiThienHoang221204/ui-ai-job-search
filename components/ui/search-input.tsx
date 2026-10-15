@@ -1,7 +1,7 @@
 "use client";
 
 import { MagnifyingGlass, X } from "@phosphor-icons/react/ssr";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 interface SearchInputProps {
   value: string;

@@ -3,17 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import type { JobMatchDetail } from "@/services";
+import type { JobMatchDetail, PartialEvaluation } from "@/types";
 import { matchesService } from "@/services";
 import { apiErrorStatus } from "@/lib/axios";
 import {
   MatchServerError,
   MatchStreamError,
   streamMatchEvaluation,
-  type PartialEvaluation,
 } from "@/lib/match-stream";
-import { updateJobDetail } from "@/hooks/use-job-detail";
 import { invalidateAfter } from "@/lib/query-keys";
+import { updateJobDetail } from "@/lib/job-cache";
 
 const SCORE_POLL_MS = 2_500;
 const SCORE_TIMEOUT_MS = 180_000;

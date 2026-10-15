@@ -1,4 +1,4 @@
-import type { ApplicationEmailInput } from "@/services";
+import type { ApplicationEmailInput } from "./document";
 
 export type LetterKind = "COVER_LETTER" | "APPLICATION_EMAIL";
 

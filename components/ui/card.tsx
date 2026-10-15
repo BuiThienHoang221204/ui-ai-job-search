@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from "react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 /** Khung thẻ có viền và nền trắng. */
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {

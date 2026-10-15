@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs } from "@/components/ui/tabs";
 import { EditModal } from "./edit-modal";
 import { ImprovePanel } from "./improve-panel";
-import { unansweredWishes } from "./profile-config";
+import { unansweredWishes } from "@/lib/profile-form";
 import type { ProfileTab } from "@/types";
 import { ProfileHeader, ProfileSkeleton } from "./profile-summary";
 import { CareerSection } from "./sections/career-section";

@@ -6,14 +6,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Bookmark, Target } from "@phosphor-icons/react/ssr";
 import type { Job } from "@/types";
 import { jobsService } from "@/services";
-import { afterSaveJob } from "@/hooks/use-job-detail";
-import { CompanyLogo } from "@/components/dashboard/company-logo";
+import { CompanyLogo } from "@/components/jobs/company-logo";
 import { toJobCard } from "@/lib/adapters";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { cn } from "@/utils";
-import { DashSection } from "@/components/dashboard/dash-section";
+import { DashSection } from "@/components/ui/dash-section";
 import { useDashboard } from "@/hooks/use-dashboard";
+import { cn } from "@/lib/cn";
+import { afterSaveJob } from "@/lib/job-cache";
 
 /** Nút lưu tin, tự gọi API lưu hoặc bỏ lưu. */
 function SaveButton({ jobId, initial }: { jobId: string; initial: boolean }) {
@@ -44,7 +44,7 @@ function SaveButton({ jobId, initial }: { jobId: string; initial: boolean }) {
 }
 
 /** Một dòng tin: logo, tên tin, dòng phụ, thanh mức phù hợp (khi có điểm), nút lưu và nút hành động. */
-export function JobRow({
+export function TopMatchRow({
   job,
   score,
   meta,
@@ -122,7 +122,7 @@ export function TopMatches() {
             {data.pendingMatches.map((match) => {
               const job = toJobCard(match);
               return (
-                <JobRow
+                <TopMatchRow
                   key={match.jobId}
                   job={job}
                   score={match.overallScore}

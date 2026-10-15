@@ -1,4 +1,3 @@
-import type { MockInterviewRecord, InterviewStep } from "@/services";
 
 const ASK_USER = "ask_user";
 
@@ -71,3 +70,4 @@ export function pendingTurn(
   const last = transcript.turns.at(-1);
   return last && last.answer === null ? last : null;
 }
+import type { MockInterviewRecord, InterviewStep } from "@/types";

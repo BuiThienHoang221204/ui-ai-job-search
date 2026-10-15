@@ -2,10 +2,15 @@
 
 import { Input, Label } from "@/components/ui/form";
 import { SelectMenu } from "@/components/ui/select-menu";
-import { cn, parseMonthlySalary } from "@/utils";
-import { COMMUTE_OPTIONS, REMOTE_OPTIONS, WORK_PERMIT_OPTIONS } from "../profile-config";
+import {
+  COMMUTE_OPTIONS,
+  REMOTE_OPTIONS,
+  WORK_PERMIT_OPTIONS,
+} from "@/lib/profile-form";
 import { useProfile, useSaveProfile } from "@/hooks/use-profile";
 import { Question } from "./career-section";
+import { cn } from "@/lib/cn";
+import { parseMonthlySalary } from "@/lib/salary";
 
 const money = (value: number | null) =>
   value ? value.toLocaleString("vi-VN") : "";

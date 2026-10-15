@@ -2,8 +2,8 @@
 
 import { parseCoverLetterContent } from "@/lib/document-content";
 import { useLetterDocument } from "@/hooks/use-letters";
-import { UNREADABLE_CONTENT_MESSAGE } from "@/components/dashboard/document-job";
-import { JobActionCards } from "@/components/dashboard/job-action-cards";
+import { UNREADABLE_CONTENT_MESSAGE } from "@/components/documents";
+import { JobActionCards } from "@/components/jobs/job-action-cards";
 import { Alert, PageError } from "@/components/ui/alert";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { EmailPreview } from "./email-preview";

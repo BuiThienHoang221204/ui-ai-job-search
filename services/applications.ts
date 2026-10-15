@@ -1,9 +1,5 @@
-import type {
-  Application,
-  ApplicationList,
-  ApplicationStatus,
-} from "@/types";
 import { api } from "@/lib/axios";
+import type { Application, ApplicationList, ApplicationStatus } from "@/types";
 
 export const applicationsService = {
   /** Lấy danh sách đơn ứng tuyển, lọc theo trạng thái ở backend. */

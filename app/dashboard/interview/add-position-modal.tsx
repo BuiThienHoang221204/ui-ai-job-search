@@ -7,12 +7,13 @@ import { applicationsService, interviewService, jobsService } from "@/services";
 import { apiErrorMessage } from "@/lib/axios";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useInterviewRefresh, useSelectedJob } from "@/hooks/use-interview-prep";
-import { cn, companyColor, companyInitials } from "@/utils";
-import { CompanyLogo } from "@/components/dashboard/company-logo";
+import { CompanyLogo } from "@/components/jobs/company-logo";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs } from "@/components/ui/tabs";
+import { cn } from "@/lib/cn";
+import { companyColor, companyInitials } from "@/lib/company";
 
 type Source = "applied" | "saved";
 

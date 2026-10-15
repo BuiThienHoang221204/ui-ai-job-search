@@ -1,14 +1,9 @@
 import { Check, CircleNotch } from "@phosphor-icons/react/ssr";
 import { Alert } from "@/components/ui/alert";
-import { ModelElapsed } from "@/components/dashboard/model-elapsed";
-import type { UpskillReportRecord } from "@/services";
+import { ModelElapsed } from "@/components/ui/model-elapsed";
+import type { UpskillReportRecord } from "@/types";
 
 const EXPECTED_SECONDS = 254;
-
-export interface UpskillPartial {
-  step?: number;
-  value?: unknown;
-}
 
 /** Đếm số phần tử nếu là mảng, ngược lại trả 0. */
 const count = (value: unknown) => (Array.isArray(value) ? value.length : 0);

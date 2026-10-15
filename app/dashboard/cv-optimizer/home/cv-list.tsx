@@ -6,13 +6,13 @@ import { FileText } from "@phosphor-icons/react/ssr";
 import { documentsService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
-import { DocumentStatusBadge } from "@/components/dashboard/document-job";
+import { DocumentStatusBadge } from "@/components/documents";
 import { Alert } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { relativeTime } from "@/utils";
 import { PaperThumb } from "./paper-thumb";
+import { relativeTime } from "@/lib/date";
 
 export const CV_PAGE_SIZE = 8;
 

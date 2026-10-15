@@ -22,19 +22,19 @@ import {
   defaultChoices,
   isReviewEmpty,
   reviewValues,
-  type Item,
   type ItemField,
   type ReviewChoices,
   type TextChange,
 } from "@/lib/profile-draft-content";
-import type { ProfileDraftRecord, ProfileRecord } from "@/services";
-import { DashSection } from "@/components/dashboard/dash-section";
+import { DashSection } from "@/components/ui/dash-section";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
-import { cn, companyInitials } from "@/utils";
 import { RecordForm } from "../edit-modal";
-import { RECORDS } from "../profile-config";
+import { RECORDS } from "@/lib/profile-form";
+import { cn } from "@/lib/cn";
+import { companyInitials } from "@/lib/company";
+import type { Item, ProfileDraftRecord, ProfileRecord } from "@/types";
 
 const ITEM_ICONS: Record<ItemField, Icon> = {
   experiences: Briefcase,

@@ -1,9 +1,6 @@
 import { describe, expect, test } from "vitest";
-import {
-  failureMessage,
-  isWorthRetrying,
-  type AiFailureKind,
-} from "@/lib/failure-message";
+import { failureMessage, isWorthRetrying } from "@/lib/failure-message";
+import type { AiFailureKind } from "@/types";
 
 const ALL_KINDS: AiFailureKind[] = ["SCHEMA", "TIMEOUT", "UPSTREAM", "OTHER"];
 

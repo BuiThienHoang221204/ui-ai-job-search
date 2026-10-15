@@ -1,12 +1,12 @@
 "use client";
 
-import type { PartialCv } from "@/lib/cv-partial";
 import { parseCvContent } from "@/lib/document-content";
 import {
   DraftPlaceholder,
   GenerationProgress,
-} from "@/components/dashboard/generation-progress";
+} from "@/components/documents/generation-progress";
 import { CvContentView } from "./cv-content";
+import type { PartialCv } from "@/types";
 
 const STEPS = [
   { label: "Giới thiệu bản thân", of: (p: PartialCv) => p.profileStatement },

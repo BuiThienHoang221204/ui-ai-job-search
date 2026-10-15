@@ -1,6 +1,5 @@
-import type { AuthUser } from "@/types";
 import { api } from "@/lib/axios";
-import type { AuthResult } from "./types";
+import type { AuthResult, AuthUser } from "@/types";
 
 export const authService = {
   login: (email: string, password: string) =>

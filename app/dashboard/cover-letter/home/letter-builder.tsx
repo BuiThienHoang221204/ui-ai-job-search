@@ -3,16 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Sparkle } from "@phosphor-icons/react/ssr";
-import {
-  JobSelect,
-  PastedJobFields,
-} from "@/components/dashboard/document-job";
+import { JobSelect, PastedJobFields } from "@/components/documents";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import { useCvByJob } from "@/hooks/use-letters";
 import { usePastedJob } from "@/hooks/use-pasted-job";
 import type { LetterGenerate, LetterKind } from "@/types";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 type Source = "pick" | "paste";
 

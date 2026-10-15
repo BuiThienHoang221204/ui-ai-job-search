@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import type { CvContentInput } from "@/services";
 import {
   addCvEntry,
   insertCvLine,
@@ -8,6 +7,7 @@ import {
   swap,
   withoutEmptyLines,
 } from "@/lib/cv-fields";
+import type { CvContentInput } from "@/types";
 
 const cv = (): CvContentInput => ({
   profileStatement: "Kế toán tổng hợp",

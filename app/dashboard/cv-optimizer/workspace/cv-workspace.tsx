@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { documentsService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
-import { JobActionCards } from "@/components/dashboard/job-action-cards";
+import { JobActionCards } from "@/components/jobs/job-action-cards";
 import { PageError } from "@/components/ui/alert";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { useCvDraft } from "@/hooks/use-cv-draft";

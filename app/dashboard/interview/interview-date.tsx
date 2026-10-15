@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { CalendarBlank, X } from "@phosphor-icons/react/ssr";
 import { useQueryClient } from "@tanstack/react-query";
-import { applicationsService, type PrepApplication } from "@/services";
+import { applicationsService } from "@/services";
 import { apiErrorMessage } from "@/lib/axios";
 import { invalidateAfter } from "@/lib/query-keys";
 import { useInterviewRefresh } from "@/hooks/use-interview-prep";
-import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/utils";
+import { formatDate } from "@/lib/date";
+import { useToast } from "@/hooks/use-toast";
+import type { PrepApplication } from "@/types";
 
 /** Ngày dạng `yyyy-mm-dd` theo giờ máy, để đổ vào ô `<input type="date">`. */
 const toInputDate = (iso: string) => {

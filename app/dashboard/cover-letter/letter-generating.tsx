@@ -3,7 +3,7 @@
 import {
   DraftPlaceholder,
   GenerationProgress,
-} from "@/components/dashboard/generation-progress";
+} from "@/components/documents/generation-progress";
 import type { LetterKind, PartialLetter } from "@/types";
 import { LetterPaper } from "./workspace/letter-paper";
 

@@ -6,8 +6,8 @@ import { useApiQuery } from "@/hooks/use-api-query";
 import { apiErrorMessage } from "@/lib/axios";
 import { invalidateAfter, keys } from "@/lib/query-keys";
 import { learningService, profileService } from "@/services";
-import { useToast } from "@/components/ui/toast";
 import type { LearningItem, SaveLearningInput, SkillGapItem } from "@/types";
+import { useToast } from "@/hooks/use-toast";
 
 /** Kỹ năng còn thiếu + kế hoạch học; đếm bằng code ở backend nên mở trang là có ngay. */
 export function useLearning() {

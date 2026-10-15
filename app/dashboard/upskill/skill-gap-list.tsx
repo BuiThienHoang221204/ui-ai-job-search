@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useLearning, useLearningActions } from "@/hooks/use-learning";
-import { cn } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SkillGapCard } from "./skill-gap-card";
+import { cn } from "@/lib/cn";
 
 type Filter = "ALL" | "REQUIRED" | "NICE";
 

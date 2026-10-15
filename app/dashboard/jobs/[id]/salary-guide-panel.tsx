@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Coins } from "@phosphor-icons/react/ssr";
-import type { SalaryGuide } from "@/services";
+import type { SalaryGuide } from "@/types";
 import { SectionCard } from "@/components/ui/section-card";
-import { formatMonthlyVnd } from "@/utils";
+import { formatMonthlyVnd } from "@/lib/salary";
 
 /** Một ô số tiền theo tháng kèm chú thích. */
 function Amount({

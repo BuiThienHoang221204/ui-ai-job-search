@@ -1,4 +1,3 @@
-import type { ProfileProposal, ProfileRecord } from "@/services";
 
 const TEXT_FIELDS = [
   "headline",
@@ -25,8 +24,6 @@ const SKILL_FIELDS: readonly string[] = ["primarySkills", "secondarySkills"];
 export type TextField = (typeof TEXT_FIELDS)[number];
 export type ListField = (typeof LIST_FIELDS)[number];
 export type ItemField = (typeof ITEM_FIELDS)[number];
-export type Item = Record<string, unknown>;
-
 export const FIELD_LABELS: Record<TextField | ListField, string> = {
   headline: "Chức danh",
   location: "Nơi ở",
@@ -169,3 +166,4 @@ export function reviewValues(
 
   return values;
 }
+import type { Item, ProfileProposal, ProfileRecord } from "@/types";

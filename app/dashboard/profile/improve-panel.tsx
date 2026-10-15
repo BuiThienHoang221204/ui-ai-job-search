@@ -12,13 +12,14 @@ import {
 } from "@phosphor-icons/react/ssr";
 import { useLatestCv } from "@/hooks/use-latest-cv";
 import { profileDraftService } from "@/services";
-import { DashSection } from "@/components/dashboard/dash-section";
+import { DashSection } from "@/components/ui/dash-section";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { cn, formatDate } from "@/utils";
-import { improvements } from "./profile-config";
+import { improvements } from "@/lib/profile-form";
 import type { Improvement } from "@/types";
 import { useProfile, useProfileUi } from "@/hooks/use-profile";
+import { cn } from "@/lib/cn";
+import { formatDate } from "@/lib/date";
 
 /** Chuyển sang đúng tab rồi cuộn tới phần cần sửa. */
 function useGoTo() {

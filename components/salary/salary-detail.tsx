@@ -1,10 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  salaryService,
-  type SalaryBand,
-  type SalaryPositionDetail,
-} from "@/services/salary";
+import { salaryService } from "@/services/salary";
 import { Alert } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionCard } from "@/components/ui/section-card";
@@ -16,8 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatMonthlyVnd } from "@/utils";
 import { SalaryBar } from "./salary-bar";
+import { formatMonthlyVnd } from "@/lib/salary";
+import type { SalaryBand, SalaryPositionDetail } from "@/types";
 
 /** Tải dữ liệu lương của một vị trí theo slug, trả null khi không có. */
 export async function loadSalaryPosition(

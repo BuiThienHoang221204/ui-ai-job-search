@@ -5,14 +5,13 @@ import type {
   JobTimestamp,
   SalaryCurrency,
   SalaryRange,
+  JobListItem,
+  JobRecord,
+  PublicJob,
+  PublicJobDetail,
 } from "@/types";
-import type { JobListItem } from "@/services";
-import {
-  companyColor,
-  companyInitials,
-  relativeDay,
-  relativeTime,
-} from "@/utils";
+import { companyColor, companyInitials } from "@/lib/company";
+import { relativeDay, relativeTime } from "@/lib/date";
 
 type RawSalary = Pick<
   JobMatchWithJob["job"],
@@ -101,5 +100,43 @@ export function toJobCardFromRecord(job: JobListItem): Job {
         }
       : null,
     hasAiScore: job.match?.status === "DONE",
+  };
+}
+
+/** Chuyển một tin công khai (khách chưa đăng nhập: không lương, không điểm) thành thẻ công việc. */
+export function toJobCardFromPublic(job: PublicJob): Job {
+  return {
+    id: job.id,
+    company: job.company,
+    companyInitials: companyInitials(job.company),
+    companyColor: companyColor(job.company),
+    companyLogo: job.companyLogo,
+    title: job.title,
+    location: job.location ?? "Không rõ",
+    salary: null,
+    salaryRaw: null,
+    tags: [...new Set(job.tags)],
+    postedAt: toJobTimestamp(job),
+    saved: false,
+    aiMatch: null,
+    systemMatch: null,
+    strengths: [],
+    hasAiScore: false,
+  };
+}
+
+/** Tin công khai mang hình dạng của `JobRecord`, để trang chi tiết dùng chung một bộ component cho khách và người đã đăng nhập. */
+export function toGuestJobRecord(job: PublicJobDetail): JobRecord {
+  return {
+    ...job,
+    salaryRaw: null,
+    salaryMin: null,
+    salaryMax: null,
+    currency: null,
+    saved: false,
+    match: null,
+    salaryGuide: null,
+    application: null,
+    profileLocation: null,
   };
 }

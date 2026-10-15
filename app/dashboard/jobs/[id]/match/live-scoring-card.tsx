@@ -1,7 +1,7 @@
 import { Check, CircleNotch } from "@phosphor-icons/react/ssr";
-import { ModelElapsed } from "@/components/dashboard/model-elapsed";
+import { ModelElapsed } from "@/components/ui/model-elapsed";
 import { SectionCard } from "@/components/ui/section-card";
-import type { PartialEvaluation } from "@/lib/match-stream";
+import type { PartialEvaluation } from "@/types";
 
 const LIVE_ROWS = [
   { label: "Điều kiện dự tuyển", of: (p: PartialEvaluation) => p.eligibility?.verdict },

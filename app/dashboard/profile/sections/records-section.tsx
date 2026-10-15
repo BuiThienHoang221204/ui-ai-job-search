@@ -9,11 +9,11 @@ import {
   Plus,
   Stack,
 } from "@phosphor-icons/react/ssr";
-import { DashSection } from "@/components/dashboard/dash-section";
-import { companyInitials } from "@/utils";
-import { RECORDS, asItems } from "../profile-config";
+import { DashSection } from "@/components/ui/dash-section";
+import { RECORDS, asItems } from "@/lib/profile-form";
 import type { RecordType } from "@/types";
 import { useProfile, useProfileUi } from "@/hooks/use-profile";
+import { companyInitials } from "@/lib/company";
 
 const LISTS: { type: RecordType; icon: Icon }[] = [
   { type: "experiences", icon: Briefcase },

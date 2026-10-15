@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildTranscript, pendingTurn } from "@/lib/interview-transcript";
-import type { MockInterviewRecord, InterviewStep } from "@/services";
+import type { MockInterviewRecord, InterviewStep } from "@/types";
 
 let nextIndex = 0;
 

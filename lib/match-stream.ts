@@ -1,22 +1,11 @@
-import type { JobMatchDetail } from "@/services";
+import type { JobMatchDetail } from "@/types";
 import { streamModel } from "./model-stream";
+import type { PartialEvaluation } from "@/types";
 
 export {
   ModelStreamError as MatchStreamError,
   ModelServerError as MatchServerError,
 } from "./model-stream";
-
-export interface PartialEvaluation {
-  eligibility?: { verdict?: string; note?: string; quote?: string };
-  technical?: { score?: number; note?: string };
-  experience?: { score?: number; note?: string };
-  behavioral?: { score?: number; note?: string };
-  career?: { score?: number; note?: string };
-  location?: { pass?: boolean; note?: string };
-  strengths?: string[];
-  gaps?: string[];
-  recommendation?: string;
-}
 
 export interface StreamMatchOptions {
   jobId: string;

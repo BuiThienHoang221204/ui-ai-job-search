@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/dashboard/page-header";
+import { PageHeader } from "@/components/ui/page-header";
 import { SalaryList, salaryPositionCount } from "@/components/salary/salary-list";
 
 export const metadata: Metadata = {

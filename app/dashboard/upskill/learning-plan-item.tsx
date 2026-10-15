@@ -4,11 +4,11 @@ import { ArrowSquareOut, CalendarPlus, Check, X } from "@phosphor-icons/react/ss
 import { useLearningActions } from "@/hooks/use-learning";
 import { WEEK_DAYS, downloadIcs, googleCalendarUrl } from "@/lib/learning-calendar";
 import { hostOf, resourcesFor } from "@/lib/learning-resources";
-import { cn } from "@/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import type { LearningItem, WeekDay } from "@/types";
+import { cn } from "@/lib/cn";
 
 const milestones = (skill: string) => [
   `Học nền tảng ${skill} (~1 tuần)`,

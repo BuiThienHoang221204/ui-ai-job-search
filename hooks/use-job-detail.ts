@@ -1,48 +1,30 @@
 "use client";
 
-import type { QueryClient } from "@tanstack/react-query";
-import type { JobMatchDetail, JobRecord } from "@/services";
+import type { JobDetailData } from "@/types";
 import { jobsService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
-import { invalidateAfter, keys } from "@/lib/query-keys";
+import { keys } from "@/lib/query-keys";
+import { toGuestJobRecord } from "@/lib/adapters";
+import { useSession } from "@/hooks/use-session";
 
-export interface JobDetailData {
-  job: JobRecord;
-  match: JobMatchDetail | null;
+async function loadJobDetail(
+  jobId: string,
+  signedIn: boolean,
+): Promise<JobDetailData> {
+  if (signedIn) {
+    const job = await jobsService.get(jobId);
+    return { job, match: job.match };
+  }
+  const job = await jobsService.publicGet(jobId);
+  return { job: toGuestJobRecord(job), match: null };
 }
 
-/** Dữ liệu chi tiết một tin (tin, điểm, đơn đã nộp); mọi nơi cần một tin đọc chung query này nên chỉ tốn một request. */
+/** Dữ liệu chi tiết một tin (tin, điểm, đơn đã nộp); mọi nơi cần một tin đọc chung query này nên chỉ tốn một request. Khách chưa đăng nhập đọc bản công khai. */
 export function useJobDetail(jobId: string, enabled = true) {
+  const { user } = useSession();
   return useApiQuery<JobDetailData>(
-    keys.job(jobId),
-    async () => {
-      const job = await jobsService.get(jobId);
-      return { job, match: job.match };
-    },
+    user ? keys.job(jobId) : keys.publicJob(jobId),
+    () => loadJobDetail(jobId, Boolean(user)),
     { errorMessage: "Không tải được thông tin công việc", enabled },
   );
-}
-
-/** Sửa thẳng dữ liệu chi tiết tin trong cache, khỏi tải lại cả tin sau một thao tác nhỏ. */
-export function updateJobDetail(
-  client: QueryClient,
-  jobId: string,
-  update: (data: JobDetailData) => JobDetailData,
-): void {
-  client.setQueryData<JobDetailData>(keys.job(jobId), (current) =>
-    current ? update(current) : current,
-  );
-}
-
-/** Sau khi lưu/bỏ lưu: sửa cờ `saved` trong cache chi tiết tin, chỉ tải lại danh sách và dashboard. */
-export function afterSaveJob(
-  client: QueryClient,
-  jobId: string,
-  saved: boolean,
-): void {
-  updateJobDetail(client, jobId, (data) => ({
-    ...data,
-    job: { ...data.job, saved },
-  }));
-  invalidateAfter(client, "saveJob");
 }

@@ -13,7 +13,7 @@ import {
   suggestionSkill,
   type AffiliateOffer,
 } from "@/lib/affiliate";
-import type { SystemMatch } from "@/services";
+import type { SystemMatch } from "@/types";
 
 const offer = (patch: Partial<AffiliateOffer>): AffiliateOffer => ({
   id: "unica-excel",

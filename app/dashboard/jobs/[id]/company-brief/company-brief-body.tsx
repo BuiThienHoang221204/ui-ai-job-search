@@ -1,10 +1,10 @@
 "use client";
 
 import { ArrowSquareOut, Check, X } from "@phosphor-icons/react/ssr";
-import type { BriefSource, CompanyBriefRecord } from "@/services";
 import { VERDICT_LABELS } from "@/lib/company-brief";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import type { BriefSource, CompanyBriefRecord } from "@/types";
 
 /** Điểm đánh giá, số lượt đánh giá và kết luận về công ty. */
 export function Signals({ brief }: { brief: CompanyBriefRecord }) {

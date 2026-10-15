@@ -2,8 +2,8 @@
 
 import { useCvTemplates } from "@/hooks/use-cv-templates";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/utils";
 import { useCvDraft } from "@/hooks/use-cv-draft";
+import { cn } from "@/lib/cn";
 
 /** Dải chọn mẫu trình bày ngay dưới đầu khu làm việc; đổi mẫu chỉ đổi bản xem trước, không gọi AI. */
 export function CvTemplateStrip() {

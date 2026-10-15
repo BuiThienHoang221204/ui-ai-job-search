@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Sparkle, X } from "@phosphor-icons/react/ssr";
-import { DashSection } from "@/components/dashboard/dash-section";
-import { cn } from "@/utils";
+import { DashSection } from "@/components/ui/dash-section";
 import { useSkillGaps } from "@/hooks/use-dashboard";
 import { useProfile, useSaveProfile } from "@/hooks/use-profile";
+import { cn } from "@/lib/cn";
 
 const TONES = {
   main: "border-primary-200 bg-primary-50 text-primary-700",

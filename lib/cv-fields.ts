@@ -1,5 +1,3 @@
-import type { CvContentInput, CvSectionKey } from "@/services";
-
 export const SECTION_LABELS: Record<CvSectionKey, string> = {
   profile: "Giới thiệu",
   competencies: "Năng lực chính",
@@ -135,3 +133,4 @@ export function withoutEmptyLines(content: CvContentInput): CvContentInput {
     })),
   };
 }
+import type { CvContentInput, CvSectionKey } from "@/types";

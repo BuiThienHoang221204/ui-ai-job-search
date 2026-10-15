@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/dashboard/page-header";
-import { QuestionBankBrowser } from "@/components/question-bank/question-bank-browser";
+import { PageHeader } from "@/components/ui/page-header";
+import { QuestionBankBrowser } from "./question-bank-browser";
 import { questionBankService } from "@/services/question-bank";
 
 export const metadata: Metadata = {

@@ -9,18 +9,16 @@ import { create } from "zustand";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { apiErrorMessage } from "@/lib/axios";
 import { invalidateAfter, keys } from "@/lib/query-keys";
-import {
-  profileService,
-  type ProfileRecord,
-  type QuickStartInput,
-} from "@/services";
-import { useToast } from "@/components/ui/toast";
+import { profileService } from "@/services";
 import type {
   DashboardOverview,
   ProfileEditing,
   ProfileTab,
   ProfileUpdate,
+  ProfileRecord,
+  QuickStartInput,
 } from "@/types";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProfileUi {
   tab: ProfileTab;

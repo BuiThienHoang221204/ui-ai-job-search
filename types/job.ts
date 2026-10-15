@@ -1,4 +1,6 @@
-import type { AiFailureKind } from "@/lib/failure-message";
+import type { AiFailureKind } from "./ai";
+import type { WorkStatus } from "./api";
+import type { ApplicationStatus } from "./application";
 
 export type SalaryCurrency = "VND" | "USD";
 export type SalaryPeriod = "month" | "year";
@@ -83,3 +85,157 @@ export type JobMatchCard = Pick<
   JobMatchWithJob,
   "jobId" | "status" | "overallScore" | "strengths" | "job"
 >;
+
+export interface JobMatchState {
+  status: WorkStatus;
+  overallScore: number | null;
+  verdict: JobMatchWithJob["verdict"];
+}
+
+export interface RequirementCheck {
+  label: string;
+  kind: "SKILL" | "NICE" | "YEARS" | "ELIGIBILITY" | "LOCATION";
+  met: boolean | null;
+  note?: string;
+  via?: string;
+}
+export interface SystemMatch {
+  kind: "REQUIREMENTS" | "KEYWORDS";
+  met: number;
+  total: number;
+  skillMet?: number;
+  skillTotal?: number;
+  score: number;
+  eligibility: "PASS" | "FAIL" | "UNVERIFIED";
+  checks: RequirementCheck[];
+}
+export type JobListItem = JobMatchWithJob["job"] & {
+  source: string;
+  workMode: string | null;
+  match: JobMatchState | null;
+  systemMatch: Omit<SystemMatch, "checks"> | null;
+};
+export type JobMatchDetail = Omit<JobMatchWithJob, "job">;
+export type SalaryBasis = "POSITION" | "SUB_OCCUPATION";
+
+export interface SalaryGuide {
+  floor: number;
+  target: number;
+  ceiling: number;
+  currency: string;
+  basis: SalaryBasis;
+  label: string;
+  positionCount: number;
+  experienceLabel: string | null;
+  experienceSource: "PROFILE" | "POSTING" | null;
+  candidateYears: number | null;
+  requiredYears: number | null;
+  experienceGap: boolean;
+  anchoredOnCurrentSalary: boolean;
+  cappedByPosting: boolean;
+  expectedSalary: number | null;
+  expectedAboveCeiling: boolean;
+  expectedBelowFloor: boolean;
+  positionSlug: string | null;
+}
+
+export type JobRecord = Omit<JobListItem, "match" | "systemMatch"> & {
+  systemMatch: SystemMatch | null;
+  description: string;
+  occupationCode: string | null;
+  match: JobMatchDetail | null;
+  salaryGuide: SalaryGuide | null;
+  application: { id: string; status: ApplicationStatus } | null;
+  profileLocation: string | null;
+};
+export type JobSort = "newest" | "salary" | "match";
+export interface JobListParams {
+  limit?: number;
+  offset?: number;
+  q?: string;
+  province?: string[];
+  occupation?: string[];
+  workMode?: string[];
+  salaryMin?: number;
+  postedWithin?: number;
+  sort?: JobSort;
+  scored?: boolean;
+  saved?: boolean;
+  applied?: boolean;
+  subOccupation?: string[];
+}
+export interface FilterOption {
+  code: string;
+  name: string;
+  count: number;
+}
+
+export interface OccupationOption extends FilterOption {
+  subs?: FilterOption[];
+}
+
+export interface JobFilters {
+  provinces: FilterOption[];
+  occupations: OccupationOption[];
+  remote: FilterOption;
+}
+export interface PublicJob {
+  id: string;
+  source: string;
+  url: string;
+  title: string;
+  company: string;
+  companyLogo: string | null;
+  location: string | null;
+  workMode: string | null;
+  tags: string[];
+  postedAt: string | null;
+  scrapedAt: string;
+  provinceCode: string | null;
+  occupationCode: string | null;
+}
+
+export interface PublicJobDetail extends PublicJob {
+  description: string;
+  systemMatch: SystemMatch | null;
+}
+
+export type PublicJobListParams = Pick<
+  JobListParams,
+  | "limit"
+  | "offset"
+  | "q"
+  | "province"
+  | "occupation"
+  | "subOccupation"
+  | "postedWithin"
+>;
+
+export interface JobDetailData {
+  job: JobRecord;
+  match: JobMatchDetail | null;
+}
+
+export interface JobFilterValue {
+  q: string;
+  province: string[];
+  occupation: string[];
+  salaryMin: number;
+  postedWithin: number;
+  sort: JobSort;
+  saved: boolean;
+  applied: boolean;
+  subOccupation: string[];
+}
+
+export interface PartialEvaluation {
+  eligibility?: { verdict?: string; note?: string; quote?: string };
+  technical?: { score?: number; note?: string };
+  experience?: { score?: number; note?: string };
+  behavioral?: { score?: number; note?: string };
+  career?: { score?: number; note?: string };
+  location?: { pass?: boolean; note?: string };
+  strengths?: string[];
+  gaps?: string[];
+  recommendation?: string;
+}

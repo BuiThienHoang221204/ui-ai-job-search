@@ -1,18 +1,19 @@
 "use client";
 
-import type { PartialCv } from "@/lib/cv-partial";
 import { ModelStreamError, streamModel } from "@/lib/model-stream";
-import type { DocumentJob, DocumentJobPhase } from "@/types";
+import type {
+  DocumentJob,
+  DocumentJobPhase,
+  PartialCv,
+  DocumentRecord,
+  QueuedDocument,
+} from "@/types";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { invalidateAfter, keys } from "@/lib/query-keys";
-import {
-  documentsService,
-  type DocumentRecord,
-  type QueuedDocument,
-} from "@/services";
+import { documentsService } from "@/services";
 import { failureMessage } from "@/lib/failure-message";
 
 const POLL_INTERVAL_MS = 2000;

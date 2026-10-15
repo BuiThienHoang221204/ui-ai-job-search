@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowsClockwise, ChatsCircle } from "@phosphor-icons/react/ssr";
 import { failureMessage, isWorthRetrying } from "@/lib/failure-message";
 import { apiErrorMessage } from "@/lib/axios";
-import { interviewService, type InterviewPrepRecord } from "@/services";
+import { interviewService } from "@/services";
 import {
   answerOf,
   indexedStarAnswers,
@@ -13,12 +13,10 @@ import {
   isInterviewPrepEmpty,
 } from "@/lib/interview-content";
 import {
-  isPrepBusy,
   useInterviewPrep,
   useInterviewRefresh,
 } from "@/hooks/use-interview-prep";
-import { companyColor, companyInitials, relativeDay } from "@/utils";
-import { CompanyLogo } from "@/components/dashboard/company-logo";
+import { CompanyLogo } from "@/components/jobs/company-logo";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,10 +25,14 @@ import { Modal } from "@/components/ui/modal";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/toast";
 import { InterviewDate } from "./interview-date";
 import { JobMockSessions } from "./job-mock-sessions";
 import { PracticeQuestion } from "./practice-question";
+import { companyColor, companyInitials } from "@/lib/company";
+import { relativeDay } from "@/lib/date";
+import { useToast } from "@/hooks/use-toast";
+import { isPrepBusy } from "@/lib/interview-status";
+import type { InterviewPrepRecord } from "@/types";
 
 export const STATUS_LABEL: Record<InterviewPrepRecord["status"], string> = {
   PENDING: "Đang chờ",

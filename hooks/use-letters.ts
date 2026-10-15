@@ -1,9 +1,10 @@
 "use client";
 
-import { documentsService, type DocumentKind } from "@/services";
+import { documentsService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { readLetter } from "@/lib/document-content";
 import { keys } from "@/lib/query-keys";
+import type { DocumentKind } from "@/types";
 
 const EMPTY = { text: "", subject: null, empty: true } as const;
 

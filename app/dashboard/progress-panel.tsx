@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { ArrowRight, BookOpen, FileText, Fire, Microphone, PaperPlaneTilt } from "@phosphor-icons/react/ssr";
-import { DashSection } from "@/components/dashboard/dash-section";
+import { DashSection } from "@/components/ui/dash-section";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ProgressCircle } from "@/components/ui/progress-circle";
-import { cn } from "@/utils";
 import { useDashboard } from "@/hooks/use-dashboard";
+import { cn } from "@/lib/cn";
 
 const GOALS = [
   { key: "documents", label: "Tạo CV / thư xin việc", icon: FileText },

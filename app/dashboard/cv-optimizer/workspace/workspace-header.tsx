@@ -8,9 +8,9 @@ import { keys } from "@/lib/query-keys";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { relativeTime } from "@/utils";
 import { useCvActions, useCvDirty } from "@/hooks/use-cv-draft";
 import { CvTemplateStrip } from "./cv-template-strip";
+import { relativeTime } from "@/lib/date";
 
 /** Đầu khu làm việc: tên CV, tin nhắm tới, lưu, tải PDF và dải chọn mẫu. */
 export function WorkspaceHeader({ documentId }: { documentId: string }) {

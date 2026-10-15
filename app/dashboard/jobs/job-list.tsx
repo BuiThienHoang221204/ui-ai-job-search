@@ -1,7 +1,7 @@
 "use client";
 
 import type { Job } from "@/types";
-import { JobRow } from "@/components/dashboard/job-row";
+import { JobRow } from "./job-row";
 import { EmptyHint } from "@/components/ui/empty-state";
 /** Danh sách thẻ việc làm. */
 export function JobList({

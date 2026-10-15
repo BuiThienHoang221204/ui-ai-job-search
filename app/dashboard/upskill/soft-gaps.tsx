@@ -4,12 +4,12 @@ import { ArrowsClockwise, Sparkle } from "@phosphor-icons/react/ssr";
 import { useLearning } from "@/hooks/use-learning";
 import { useUpskillReport } from "@/hooks/use-upskill-report";
 import { GAP_CATEGORY_LABELS, parseSynthesisedGaps } from "@/lib/upskill-content";
-import { formatDate } from "@/utils";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { UpskillProgress } from "./upskill-progress";
+import { formatDate } from "@/lib/date";
 
 /** Khoảng trống không lộ ra qua danh sách kỹ năng — phần DUY NHẤT của trang còn do AI viết, chỉ chạy khi người dùng bấm. */
 export function SoftGaps() {

@@ -4,11 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { CaretDown, Check, Target } from "@phosphor-icons/react/ssr";
 import { useLearningActions } from "@/hooks/use-learning";
-import { cn } from "@/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import type { SkillGapItem } from "@/types";
+import { cn } from "@/lib/cn";
 
 /** Một kỹ năng còn thiếu: số tin cần nó, các tin gần đạt, và ba lựa chọn học / đã biết / không quan tâm. */
 export function SkillGapCard({

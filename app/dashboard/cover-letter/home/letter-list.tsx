@@ -3,15 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Envelope, FileText } from "@phosphor-icons/react/ssr";
-import type { DocumentRecord } from "@/services";
-import { CompanyLogo } from "@/components/dashboard/company-logo";
-import { DocumentStatusBadge } from "@/components/dashboard/document-job";
+import { CompanyLogo } from "@/components/jobs/company-logo";
+import { DocumentStatusBadge } from "@/components/documents";
 import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCvByJob, useRecentDocuments } from "@/hooks/use-letters";
-import type { LetterKind } from "@/types";
-import { companyColor, companyInitials, relativeTime } from "@/utils";
+import type { LetterKind, DocumentRecord } from "@/types";
+import { companyColor, companyInitials } from "@/lib/company";
+import { relativeTime } from "@/lib/date";
 
 const KIND_META = {
   APPLICATION_EMAIL: {

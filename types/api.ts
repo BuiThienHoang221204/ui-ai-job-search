@@ -1,0 +1,30 @@
+import type { AuthUser } from "./auth";
+
+export interface AuthResult {
+  accessToken: string;
+  refreshToken: string;
+  user: AuthUser;
+}
+
+export interface QueuedResult {
+  queued: true;
+  queueJobId?: string | null;
+}
+
+export interface QueuedDocument extends QueuedResult {
+  documentId: string;
+}
+
+export interface QueuedReport extends QueuedResult {
+  reportId: string;
+  mode: "AGGREGATE" | "TARGETED";
+}
+
+export type WorkStatus = "PENDING" | "RUNNING" | "DONE" | "FAILED";
+
+export interface Paginated<T> {
+  items: T[];
+  total: number;
+  limit: number;
+  offset: number;
+}

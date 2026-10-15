@@ -1,9 +1,5 @@
 import { isRecord, objectList, text } from "./parse-json";
-import type {
-  AnswerKind,
-  InterviewPrepRecord,
-  PrepAnswer,
-} from "@/services";
+import type { AnswerKind, InterviewPrepRecord, PrepAnswer } from "@/types";
 
 export interface StarAnswer {
   competency: string | null;

@@ -1,13 +1,11 @@
-import type { SystemMatch } from "@/services";
-import { fold } from "@/utils";
+import type { BannerSize, SystemMatch } from "@/types";
+import { fold } from "@/lib/text";
 
 export const AT_PUBLISHER_ID = "7084670734220117409";
 
 const AT_DEEP_LINK = "https://go.isclix.com/deep_link/v6";
 
 export type AffiliatePlacement = "job-detail" | "question-bank" | "dashboard";
-
-export type BannerSize = "300x250" | "728x90";
 
 /** AccessTrade: code tự dựng deep link từ mã chiến dịch và trang đích. Direct: link affiliate dán nguyên (vd. Shopee Affiliate), tham số theo dõi đã cố định lúc tạo. */
 export type AffiliateTarget =

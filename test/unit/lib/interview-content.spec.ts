@@ -1,5 +1,4 @@
 import { describe, expect, test } from "vitest";
-import type { InterviewPrepRecord } from "@/services";
 import {
   answerOf,
   indexedStarAnswers,
@@ -9,6 +8,7 @@ import {
   parseStarAnswers,
   parseToughQuestions,
 } from "@/lib/interview-content";
+import type { InterviewPrepRecord } from "@/types";
 
 const prep = (
   overrides: Partial<InterviewPrepRecord> = {},

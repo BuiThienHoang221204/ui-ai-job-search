@@ -1,5 +1,5 @@
-import type { PartialCv } from "@/lib/cv-partial";
-import type { DocumentRecord, QueuedDocument } from "@/services";
+import type { QueuedDocument } from "./api";
+import type { DocumentRecord, PartialCv } from "./document";
 
 export type DocumentJobPhase =
   "idle" | "generating" | "done" | "failed" | "timeout";

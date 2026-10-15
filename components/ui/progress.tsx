@@ -1,4 +1,3 @@
-import { cn } from "@/utils";
 
 interface ProgressProps {
   value: number;
@@ -24,3 +23,4 @@ export function Progress({ value, barClassName, className }: ProgressProps) {
     </div>
   );
 }
+import { cn } from "@/lib/cn";

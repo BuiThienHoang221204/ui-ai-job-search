@@ -1,4 +1,4 @@
-import type { ProfileRecord } from "@/services";
+import type { ProfileRecord } from "./profile";
 
 export type ProfileUpdate = Partial<
   Omit<

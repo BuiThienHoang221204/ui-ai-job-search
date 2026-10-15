@@ -1,14 +1,7 @@
 import { Check, CircleNotch } from "@phosphor-icons/react/ssr";
-import { ModelElapsed } from "@/components/dashboard/model-elapsed";
+import { ModelElapsed } from "@/components/ui/model-elapsed";
+import type { PartialBrief } from "@/types";
 
-
-export interface PartialBrief {
-  verdict?: string;
-  summary?: string;
-  pros?: string[];
-  cons?: string[];
-  usedSources?: unknown[];
-}
 
 const ROWS = [
   { label: "Kết luận chung", of: (p: PartialBrief) => p.verdict },

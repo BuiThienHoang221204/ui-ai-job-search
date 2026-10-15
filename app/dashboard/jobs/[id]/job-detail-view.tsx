@@ -11,7 +11,6 @@ import type { Application } from "@/types";
 import { toJobCard } from "@/lib/adapters";
 import { Alert } from "@/components/ui/alert";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
-import { useToast } from "@/components/ui/toast";
 import { CompanyBriefPanel } from "./company-brief/company-brief-panel";
 import { JobDescriptionCard } from "./job-description-card";
 import { JobDetailHeader } from "./job-detail-header";
@@ -19,16 +18,16 @@ import { MatchInsights } from "./match/match-insights";
 import { MatchPanel } from "./match/match-panel";
 import { SystemMatchCard } from "./match/system-match-card";
 import { JobSectionNav } from "./job-section-nav";
-import {
-  afterSaveJob,
-  updateJobDetail,
-  useJobDetail,
-} from "@/hooks/use-job-detail";
+import { useJobDetail } from "@/hooks/use-job-detail";
 import { SalaryGuidePanel } from "./salary-guide-panel";
-import { JobActionCards } from "@/components/dashboard/job-action-cards";
+import { JobActionCards } from "@/components/jobs/job-action-cards";
 import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
 import { SkillResources } from "@/components/ads/affiliate-inline";
 import { missingSkillsOf } from "@/lib/affiliate";
+import { loginPathForJob } from "@/lib/public-job";
+import { useToast } from "@/hooks/use-toast";
+import { useSession } from "@/hooks/use-session";
+import { afterSaveJob, updateJobDetail } from "@/lib/job-cache";
 
 const APPLY_TOAST_DURATION = 60_000;
 
@@ -41,12 +40,17 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
   const queryClient = useQueryClient();
   const [savePending, setSavePending] = useState<boolean | null>(null);
   const toast = useToast();
+  const { user } = useSession();
   const { data, error } = useJobDetail(jobId);
 
   const job = data?.job ?? null;
   const match = data?.match ?? null;
   const saved = savePending ?? job?.saved ?? false;
   const toggleSave = () => {
+    if (!user) {
+      router.push(loginPathForJob(jobId));
+      return;
+    }
     const next = !saved;
     setSavePending(next);
     void (next ? jobsService.save(jobId) : jobsService.unsave(jobId))
@@ -68,6 +72,10 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
   };
 
   const handleApply = async () => {
+    if (!user) {
+      router.push(loginPathForJob(jobId));
+      return;
+    }
     if (job?.application) {
       if (job?.url) window.open(job.url, "_blank", "noopener");
       return;
@@ -162,12 +170,14 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
           <SkillResources
             jobId={job.id}
             occupation={job.occupationCode}
-            skills={missingSkillsOf(job.systemMatch)}
+            skills={user ? missingSkillsOf(job.systemMatch) : []}
           />
 
           <div id="mo-ta" className="scroll-mt-20">
             <JobDescriptionCard
               description={job.description}
+              url={job.url}
+              source={job.source}
               defaultOpen={
                 !match || match.strengths.length + match.gaps.length === 0
               }

@@ -2,7 +2,7 @@
 
 import { CaretLeft, CaretRight } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
-import { formatCount } from "@/utils";
+import { formatCount } from "@/lib/number";
 
 interface PaginationProps {
   offset: number;

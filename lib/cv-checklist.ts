@@ -1,6 +1,5 @@
-import type { CvContentInput } from "@/services";
-import type { CvTodo } from "@/types";
-import { fold } from "@/utils";
+import type { CvTodo, CvContentInput } from "@/types";
+import { fold } from "@/lib/text";
 
 const PLACEHOLDER =
   /không cung cấp|chưa cung cấp|không có thông tin|not provided/i;

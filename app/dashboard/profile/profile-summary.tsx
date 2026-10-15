@@ -5,13 +5,14 @@ import { PencilSimple } from "@phosphor-icons/react/ssr";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 import { jobsService } from "@/services";
-import { useSession } from "@/components/dashboard/session";
 import { Card } from "@/components/ui/card";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
-import { cn, personInitials } from "@/utils";
-import { EXPERIENCE_LEVELS } from "./profile-config";
+import { EXPERIENCE_LEVELS } from "@/lib/profile-form";
 import { useProfile, useProfileUi, useSaveProfile } from "@/hooks/use-profile";
+import { cn } from "@/lib/cn";
+import { personInitials } from "@/lib/company";
+import { useSession } from "@/hooks/use-session";
 
 /** Đầu trang hồ sơ: tên, chức danh và hai ô Ngành / Cấp bậc quyết định "Việc làm phù hợp". */
 export function ProfileHeader() {

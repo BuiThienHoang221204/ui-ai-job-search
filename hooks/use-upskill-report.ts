@@ -8,7 +8,8 @@ import { failureMessage } from "@/lib/failure-message";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
-import { upskillService, type UpskillReportRecord } from "@/services";
+import { upskillService } from "@/services";
+import type { UpskillReportRecord } from "@/types";
 
 const LOGIN_NEXT = "/login?next=/dashboard/upskill";
 const POLL_INTERVAL_MS = 2000;

@@ -1,20 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import {
-  questionBankService,
-  type QuestionFacets,
-  type QuestionPage,
-} from "@/services/question-bank";
+import { questionBankService } from "@/services/question-bank";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useDebounce } from "@/hooks/use-debounce";
 import { keys } from "@/lib/query-keys";
+import { questionFilters } from "@/lib/question-filters";
+import type { QuestionFacets, QuestionPage } from "@/types";
+import type { QuestionFilterOption } from "@/types";
 
 export const QUESTION_PAGE_SIZE = 20;
 
 const SEARCH_DEBOUNCE_MS = 250;
-
-export type QuestionFilterOption = { code: string; name: string; count: number };
 
 /** Đảm bảo mục đang chọn luôn có trong danh sách, kể cả khi số đếm về 0. */
 function withSelected(
@@ -30,22 +27,6 @@ function withSelected(
 /** Đổi danh sách độ khó (chỉ có tên) sang cùng dạng lựa chọn với các bộ lọc khác. */
 const difficultyOptionsOf = (facets: QuestionFacets): QuestionFilterOption[] =>
   facets.difficulties.map((d) => ({ code: d.name, name: d.name, count: d.count }));
-
-/** Bộ lọc gửi lên API; `null` nghĩa là chưa lọc gì, tức đúng bộ lọc server đã dùng để tải sẵn trang đầu. */
-export function questionFilters(
-  term: string,
-  industry: string | null,
-  type: string | null,
-  difficulty: string | null,
-) {
-  const filters = {
-    industry: industry ?? undefined,
-    type: type ?? undefined,
-    difficulty: difficulty ?? undefined,
-    q: term.trim() || undefined,
-  };
-  return Object.values(filters).some(Boolean) ? filters : null;
-}
 
 /** Trạng thái bộ lọc, phân trang và dữ liệu của ngân hàng câu hỏi; đổi bộ lọc nào cũng quay về trang đầu. */
 export function useQuestionBank(initialFacets: QuestionFacets, initial: QuestionPage) {

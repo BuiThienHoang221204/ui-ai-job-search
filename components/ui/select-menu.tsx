@@ -3,7 +3,8 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { CaretDown, Check, MagnifyingGlass } from "@phosphor-icons/react/ssr";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
-import { cn, fold } from "@/utils";
+import { cn } from "@/lib/cn";
+import { fold } from "@/lib/text";
 
 export interface SelectMenuOption<T extends string | number> {
   value: T;

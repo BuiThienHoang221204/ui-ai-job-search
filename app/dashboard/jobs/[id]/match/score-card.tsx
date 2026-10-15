@@ -1,17 +1,13 @@
 import { ArrowClockwise, Info } from "@phosphor-icons/react/ssr";
-import type { JobMatchDetail } from "@/services";
+import type { JobMatchDetail } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ProgressCircle } from "@/components/ui/progress-circle";
-import {
-  cn,
-  matchTone,
-  matchToneClasses,
-  relativeTime,
-  scoreBarClass,
-} from "@/utils";
-import { SCORE_ROWS } from "../job-detail-constants";
+import { SCORE_ROWS } from "@/lib/match-labels";
+import { cn } from "@/lib/cn";
+import { matchTone, matchToneClasses, scoreBarClass } from "@/lib/score";
+import { relativeTime } from "@/lib/date";
 
 const VERDICTS = {
   good: "Rất phù hợp",

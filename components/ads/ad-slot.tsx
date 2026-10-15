@@ -2,17 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { X } from "@phosphor-icons/react/ssr";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
+import type { BannerSize } from "@/types";
 
 // Tạm tắt quảng cáo tới khi Adsterra chặn xong nhóm cờ bạc/cho vay; bật lại bằng cách thay null bằng link đang comment.
-const BANNER_SRC = {
+const BANNER_SRC: Record<BannerSize, string | null> = {
   // "300x250": "https://bauval.org/22/60aacb930c6729e804806d6db74e6f5c",
   "300x250": null as string | null,
   // "728x90": "https://bauval.org/22/8f081c5f58fd8255f6a81079656d34fb",
   "728x90": null as string | null,
 };
 
-export type BannerSize = keyof typeof BANNER_SRC;
 export type AdAlign = "start" | "center" | "end";
 
 let bannerQueue: Promise<void> = Promise.resolve();

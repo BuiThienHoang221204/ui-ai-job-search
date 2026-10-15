@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { Briefcase, FileText, MagnifyingGlass } from "@phosphor-icons/react/ssr";
 import type { DashboardOverview } from "@/types";
-import { useSession } from "@/components/dashboard/session";
 import { Card } from "@/components/ui/card";
 import { Stepper, type Step } from "@/components/ui/stepper";
 import { useDashboard } from "@/hooks/use-dashboard";
+import { useSession } from "@/hooks/use-session";
 
 /** Năm chặng của hành trình tìm việc và chặng đang làm (chặng đầu tiên chưa xong). */
 function journeySteps(data: DashboardOverview): { steps: Step[]; current: number } {

@@ -1,4 +1,4 @@
-export type AiFailureKind = "SCHEMA" | "TIMEOUT" | "UPSTREAM" | "OTHER";
+import type { AiFailureKind } from "@/types";
 
 const MESSAGES: Record<AiFailureKind, string> = {
   SCHEMA:

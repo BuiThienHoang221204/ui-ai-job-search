@@ -1,5 +1,5 @@
 import { ArrowClockwise, Sparkle } from "@phosphor-icons/react/ssr";
-import type { JobMatchDetail } from "@/services";
+import type { JobMatchDetail } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { failureMessage } from "@/lib/failure-message";

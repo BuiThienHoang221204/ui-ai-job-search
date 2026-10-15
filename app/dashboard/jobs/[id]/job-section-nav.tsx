@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { companiesService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
-import { cn, matchTone } from "@/utils";
 import { useJobDetail } from "@/hooks/use-job-detail";
+import { cn } from "@/lib/cn";
+import { matchTone } from "@/lib/score";
+import { useSession } from "@/hooks/use-session";
 
 const BADGE_TONES = {
   good: "bg-emerald-50 text-emerald-700",
@@ -22,6 +24,7 @@ interface Section {
 
 /** Thanh mục lục dính trên trang chi tiết tin: bấm để cuộn tới phần đó, mục đang xem tự sáng. */
 export function JobSectionNav({ jobId }: { jobId: string }) {
+  const { user } = useSession();
   const { data } = useJobDetail(jobId);
   const match = data?.match ?? null;
   const system = data?.job.systemMatch ?? null;
@@ -51,10 +54,12 @@ export function JobSectionNav({ jobId }: { jobId: string }) {
           {
             id: "doi-chieu",
             label: "Đối chiếu yêu cầu",
-            badge: must.length ? `${mustMet}/${must.length}` : undefined,
-            badgeClassName: must.length
-              ? BADGE_TONES[matchTone((mustMet / must.length) * 100)]
-              : undefined,
+            badge:
+              user && must.length ? `${mustMet}/${must.length}` : undefined,
+            badgeClassName:
+              user && must.length
+                ? BADGE_TONES[matchTone((mustMet / must.length) * 100)]
+                : undefined,
           },
         ]
       : []),

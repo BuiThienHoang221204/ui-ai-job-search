@@ -9,7 +9,7 @@ import { apiErrorMessage } from "@/lib/axios";
 import { jobsService, profileService } from "@/services";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 const EXPERIENCE_OPTIONS = [
   { value: "FRESHER", label: "Mới tốt nghiệp", detail: "0 - 1 năm" },

@@ -1,4 +1,5 @@
-import { failureMessage, type AiFailureKind } from "@/lib/failure-message";
+import { failureMessage } from "@/lib/failure-message";
+import type { AiFailureKind } from "@/types";
 
 export class ModelStreamError extends Error {}
 

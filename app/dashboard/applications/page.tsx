@@ -18,16 +18,14 @@ import {
   APPLICATION_STATUS_VARIANTS,
   NEXT_STATUSES,
 } from "@/lib/application-status";
-import { companyColor, companyInitials, formatDate, openBlobInNewTab } from "@/utils";
-import { PageHeader } from "@/components/dashboard/page-header";
-import { CompanyLogo } from "@/components/dashboard/company-logo";
-import { LocationText } from "@/components/dashboard/location-text";
+import { PageHeader } from "@/components/ui/page-header";
+import { CompanyLogo } from "@/components/jobs/company-logo";
+import { LocationText } from "@/components/jobs/location-text";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/components/ui/toast";
 import { SelectMenu } from "@/components/ui/select-menu";
 import {
   Table,
@@ -37,6 +35,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { companyColor, companyInitials } from "@/lib/company";
+import { formatDate } from "@/lib/date";
+import { openBlobInNewTab } from "@/lib/blob";
+import { useToast } from "@/hooks/use-toast";
 
 type StatusFilter = "all" | ApplicationStatus;
 

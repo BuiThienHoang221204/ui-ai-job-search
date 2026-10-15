@@ -1,4 +1,3 @@
-import { cn } from "@/utils";
 
 export interface TabItem {
   value: string;
@@ -44,4 +43,4 @@ export function Tabs({ tabs, value, onChange, className }: TabsProps) {
     </div>
   );
 }
-
+import { cn } from "@/lib/cn";

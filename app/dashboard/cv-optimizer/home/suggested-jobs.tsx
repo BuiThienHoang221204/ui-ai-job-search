@@ -5,12 +5,14 @@ import { ArrowRight, Target } from "@phosphor-icons/react/ssr";
 import { documentsService, matchesService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
-import { CompanyLogo } from "@/components/dashboard/company-logo";
+import { CompanyLogo } from "@/components/jobs/company-logo";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CvGenerate } from "@/types";
-import { cn, companyColor, companyInitials, matchTone } from "@/utils";
 import { CV_PAGE_SIZE } from "./cv-list";
+import { cn } from "@/lib/cn";
+import { companyColor, companyInitials } from "@/lib/company";
+import { matchTone } from "@/lib/score";
 
 const SUGGESTION_LIMIT = 8;
 

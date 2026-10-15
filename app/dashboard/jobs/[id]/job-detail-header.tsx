@@ -8,14 +8,14 @@ import {
   Sparkle,
   Wallet,
 } from "@phosphor-icons/react/ssr";
-import type { Job } from "@/types";
-import type { JobMatchDetail, JobRecord } from "@/services";
-import { cn, formatJobSalary } from "@/utils";
-import { CompanyLogo } from "@/components/dashboard/company-logo";
-import { JobTime } from "@/components/dashboard/job-time";
+import type { Job, JobMatchDetail, JobRecord } from "@/types";
+import { CompanyLogo } from "@/components/jobs/company-logo";
+import { JobTime } from "@/components/jobs/job-time";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { VERDICT_META } from "./job-detail-constants";
+import Link from "next/link";
+import { loginPathForJob } from "@/lib/public-job";
+import { VERDICT_META } from "@/lib/match-labels";
 
 interface JobDetailHeaderProps {
   card: Job;
@@ -35,6 +35,7 @@ export function JobDetailHeader({
   onToggleSave,
   onApply,
 }: JobDetailHeaderProps) {
+  const { user } = useSession();
   const verdict = match?.verdict ? VERDICT_META[match.verdict] : null;
   const submitted = job.application?.status === "APPLIED";
 
@@ -64,10 +65,21 @@ export function JobDetailHeader({
             {card.title}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-slate-500">
-            <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700">
-              <Wallet className="size-4.5" />
-              {formatJobSalary(card)}
-            </span>
+            {user && (
+              <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700">
+                <Wallet className="size-4.5" />
+                {formatJobSalary(card)}
+              </span>
+            )}
+            {!user && (
+              <Link
+                href={loginPathForJob(job.id)}
+                className="inline-flex items-center gap-1.5 font-semibold text-primary-600 hover:text-primary-700"
+              >
+                <Wallet className="size-4.5" />
+                Đăng nhập để xem lương
+              </Link>
+            )}
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="size-4.5" />
               {card.location}
@@ -119,3 +131,6 @@ export function JobDetailHeader({
     </div>
   );
 }
+import { cn } from "@/lib/cn";
+import { formatJobSalary } from "@/lib/salary";
+import { useSession } from "@/hooks/use-session";

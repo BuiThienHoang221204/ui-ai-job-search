@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { cvChecklist, cvText, hasKeyword, withSkill } from "@/lib/cv-checklist";
-import type { CvContentInput } from "@/services";
+import type { CvContentInput } from "@/types";
 
 const cv = (overrides: Partial<CvContentInput> = {}): CvContentInput => ({
   profileStatement: "Fullstack developer dùng Node.js và React.",

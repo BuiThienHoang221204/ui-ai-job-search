@@ -2,18 +2,15 @@
 
 import { useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  documentsService,
-  type CvLanguage,
-  type CvSourceInput,
-} from "@/services";
-import { DocumentJobStatus } from "@/components/dashboard/document-job";
+import { documentsService } from "@/services";
+import { DocumentJobStatus } from "@/components/documents";
 import { useDocumentJob } from "@/hooks/use-document-job";
 import { CvGenerating } from "./cv-generating";
 import { CvHero } from "./home/cv-hero";
 import { CvList } from "./home/cv-list";
 import { SuggestedJobs } from "./home/suggested-jobs";
 import { CvWorkspace } from "./workspace/cv-workspace";
+import type { CvLanguage, CvSourceInput } from "@/types";
 
 const LOGIN_NEXT = "/dashboard/cv-optimizer";
 

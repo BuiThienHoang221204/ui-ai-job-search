@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 interface SectionCardProps {
   title: ReactNode;

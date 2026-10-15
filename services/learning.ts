@@ -1,5 +1,9 @@
 import { api } from "@/lib/axios";
-import type { LearningItem, LearningOverview, SaveLearningInput } from "@/types";
+import type {
+  LearningItem,
+  LearningOverview,
+  SaveLearningInput,
+} from "@/types";
 
 const path = (key: string) => `/learning/${encodeURIComponent(key)}`;
 

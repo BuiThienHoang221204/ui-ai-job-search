@@ -2,10 +2,19 @@
 
 import type { ReactNode } from "react";
 import { Check } from "@phosphor-icons/react/ssr";
-import type { ProfileRecord } from "@/services";
-import { DEAL_BREAKER_OPTIONS, DRAINING_OPTIONS, ENERGIZING_OPTIONS, SECTOR_OPTIONS, TEAM_OPTIONS, WORK_STYLE_OPTIONS, asObject, strings } from "../profile-config";
+import {
+  DEAL_BREAKER_OPTIONS,
+  DRAINING_OPTIONS,
+  ENERGIZING_OPTIONS,
+  SECTOR_OPTIONS,
+  TEAM_OPTIONS,
+  WORK_STYLE_OPTIONS,
+  asObject,
+  strings,
+} from "@/lib/profile-form";
 import { useProfile, useSaveProfile } from "@/hooks/use-profile";
 import { TagPicker } from "./skills-section";
+import type { ProfileRecord } from "@/types";
 
 /** Một câu hỏi của tab "Mong muốn tìm việc", kèm dấu "Đã trả lời" hoặc "Chưa trả lời". */
 export function Question({

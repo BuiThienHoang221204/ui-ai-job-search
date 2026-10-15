@@ -1,6 +1,6 @@
 import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { CircleNotch } from "@phosphor-icons/react/ssr";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg" | "icon";

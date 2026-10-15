@@ -1,43 +1,8 @@
-export interface SalaryOccupation {
-  code: string;
-  name: string;
-  positionCount: number;
-}
-
-export interface SalaryPositionSummary {
-  positionSlug: string;
-  positionName: string;
-  occupationCode: string | null;
-  occupationName: string | null;
-  avgMonthly: number | null;
-  rangeMin: number | null;
-  rangeMax: number | null;
-  currency: string;
-}
-
-export interface SalaryBand {
-  experienceLabel: string;
-  minAmount: number | null;
-  avgAmount: number | null;
-  maxAmount: number | null;
-}
-
-export interface SalaryPeer {
-  positionSlug: string;
-  positionName: string;
-  avgMonthly: number | null;
-  rank: number;
-  isCurrent: boolean;
-}
-
-export interface SalaryPositionDetail extends SalaryPositionSummary {
-  provider: string;
-  providerUrl: string;
-  updatedAt: string;
-  sampleSize: number | null;
-  bands: SalaryBand[];
-  peers: SalaryPeer[];
-}
+import type {
+  SalaryOccupation,
+  SalaryPositionDetail,
+  SalaryPositionSummary,
+} from "@/types";
 
 const API = `${process.env.BACKEND_URL ?? "http://localhost:4000"}/api`;
 

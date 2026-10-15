@@ -3,20 +3,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import type { JobListItem, JobSort } from "@/services";
+import type { Job, JobListItem, JobSort, JobFilterValue } from "@/types";
 import { jobsService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useDebounce } from "@/hooks/use-debounce";
-import { readFilter, writeFilter } from "./job-filter-url";
+import { DEFAULT_SORT, readFilter, writeFilter } from "@/lib/job-filter-url";
 import { keys } from "@/lib/query-keys";
-import { afterSaveJob } from "@/hooks/use-job-detail";
-import { toJobCardFromRecord } from "@/lib/adapters";
+import { toJobCardFromPublic, toJobCardFromRecord } from "@/lib/adapters";
 import { squeezeSidebar } from "@/lib/sidebar";
-import {
-  JobFilterBar,
-  type JobFilterValue,
-} from "@/components/dashboard/job-filter-bar";
-import { cn } from "@/utils";
+import { JobFilterBar } from "./job-filter-bar";
 import { SortDescending } from "@phosphor-icons/react/ssr";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { Alert } from "@/components/ui/alert";
@@ -26,6 +21,9 @@ import { Pagination } from "@/components/ui/pagination";
 import { Skeleton, SkeletonGrid, SkeletonPage } from "@/components/ui/skeleton";
 import { JobDetailView } from "./[id]/job-detail-view";
 import { JobList } from "./job-list";
+import { cn } from "@/lib/cn";
+import { useSession } from "@/hooks/use-session";
+import { afterSaveJob } from "@/lib/job-cache";
 
 const SORT_OPTIONS: { value: JobSort; label: string }[] = [
   { value: "newest", label: "Mới nhất" },
@@ -40,11 +38,19 @@ export function JobsView() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const params = useSearchParams();
+  const { user } = useSession();
   const scored = params.get("scored") === "1";
-  const filter = useMemo(
-    () => readFilter(new URLSearchParams(params.toString())),
-    [params],
-  );
+  const filter = useMemo(() => {
+    const read = readFilter(new URLSearchParams(params.toString()));
+    if (user) return read;
+    return {
+      ...read,
+      salaryMin: 0,
+      saved: false,
+      applied: false,
+      sort: DEFAULT_SORT,
+    };
+  }, [params, user]);
   const offset = Number(params.get("offset") ?? 0) || 0;
   const selected = params.get("job");
   const [draftQuery, setDraftQuery] = useState(filter.q);
@@ -106,6 +112,28 @@ export function JobsView() {
     {
       errorMessage: "Không tải được danh sách việc làm",
       keepPrevious: true,
+      enabled: Boolean(user),
+    },
+  );
+
+  const guestPage = useApiQuery(
+    keys.publicJobList({ ...filter, offset }),
+    () =>
+      jobsService.publicList({
+        limit: PAGE_SIZE,
+        offset,
+        ...(filter.q ? { q: filter.q } : {}),
+        ...(filter.province.length ? { province: filter.province } : {}),
+        ...(filter.occupation.length ? { occupation: filter.occupation } : {}),
+        ...(filter.subOccupation.length
+          ? { subOccupation: filter.subOccupation }
+          : {}),
+        ...(filter.postedWithin ? { postedWithin: filter.postedWithin } : {}),
+      }),
+    {
+      errorMessage: "Không tải được danh sách việc làm",
+      keepPrevious: true,
+      enabled: !user && !scored,
     },
   );
 
@@ -148,22 +176,42 @@ export function JobsView() {
     [queryClient],
   );
 
-  if (page.error) return <Alert tone="danger">{page.error}</Alert>;
-
-  if (!page.data) {
+  if (!user && scored) {
     return (
-      <SkeletonPage className="space-y-4">
-        <Skeleton className="h-14 w-72" />
-        <SkeletonGrid
-          count={4}
-          className="grid gap-4 lg:grid-cols-2"
-          itemClassName="h-52"
-        />
-      </SkeletonPage>
+      <EmptyState
+        title="Đăng nhập để xem việc làm phù hợp"
+        description="Trang này lọc việc làm theo ngành và kinh nghiệm trong hồ sơ của bạn. Bạn vẫn xem được mọi tin ở Tất cả việc làm mà không cần đăng nhập."
+        action={
+          <Link
+            href="/login?next=%2Fdashboard%2Fjobs%3Fscored%3D1"
+            className="text-primary-600 hover:text-primary-700 text-sm font-semibold"
+          >
+            Đăng nhập
+          </Link>
+        }
+      />
     );
   }
 
-  if (page.data.needsOccupation) {
+  const error = user ? page.error : guestPage.error;
+  const loading = user ? page.loading : guestPage.loading;
+  let list: { jobs: Job[]; total: number } | null = null;
+  if (user && page.data && !page.data.needsOccupation) {
+    list = {
+      jobs: page.data.items.map(toJobCardFromRecord),
+      total: page.data.total,
+    };
+  }
+  if (!user && guestPage.data) {
+    list = {
+      jobs: guestPage.data.items.map(toJobCardFromPublic),
+      total: guestPage.data.total,
+    };
+  }
+
+  if (error) return <Alert tone="danger">{error}</Alert>;
+
+  if (page.data?.needsOccupation) {
     return (
       <EmptyState
         title="Chọn ngành nghề để xem việc làm phù hợp"
@@ -174,6 +222,19 @@ export function JobsView() {
           </Link>
         }
       />
+    );
+  }
+
+  if (!list) {
+    return (
+      <SkeletonPage className="space-y-4">
+        <Skeleton className="h-14 w-72" />
+        <SkeletonGrid
+          count={4}
+          className="grid gap-4 lg:grid-cols-2"
+          itemClassName="h-52"
+        />
+      </SkeletonPage>
     );
   }
 
@@ -192,16 +253,20 @@ export function JobsView() {
           
           <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3.5 py-2">
             <span className="text-xs text-slate-500">
-              {page.data.total} tin
+              {list.total} tin
               {scored && (
                 <span className="text-primary-600 ml-1 font-medium">
                   · Đúng ngành và kinh nghiệm
                 </span>
               )}
             </span>
-            {scored ? (
+            {scored && (
               <span className="text-xs text-slate-500">Mới đăng trước</span>
-            ) : (
+            )}
+            {!scored && !user && (
+              <span className="text-xs text-slate-500">Mới nhất</span>
+            )}
+            {!scored && user && (
               <SelectMenu
                 label="Sắp xếp"
                 icon={SortDescending}
@@ -215,11 +280,11 @@ export function JobsView() {
           <div
             className={cn(
               "min-h-0 flex-1 scrollbar-thin xl:overflow-y-auto",
-              page.loading && "opacity-50 transition-opacity",
+              loading && "opacity-50 transition-opacity",
             )}
           >
             <JobList
-              jobs={page.data.items.map(toJobCardFromRecord)}
+              jobs={list.jobs}
               selectedId={selected}
               onSelect={handleSelect}
               onSavedChange={handleSavedChange}
@@ -230,9 +295,9 @@ export function JobsView() {
             <Pagination
               offset={offset}
               limit={PAGE_SIZE}
-              total={page.data.total}
+              total={list.total}
               noun="tin"
-              disabled={page.loading}
+              disabled={loading}
               onOffsetChange={(next) => push(filter, next, selected)}
             />
           </div>

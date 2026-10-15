@@ -17,7 +17,8 @@ import { useCopy } from "@/hooks/use-copy";
 import { useLetterDocument } from "@/hooks/use-letters";
 import { apiErrorMessage } from "@/lib/axios";
 import { gmailComposeUrl } from "@/lib/mail-link";
-import { openBlobInNewTab, relativeTime } from "@/utils";
+import { openBlobInNewTab } from "@/lib/blob";
+import { relativeTime } from "@/lib/date";
 
 /** Đầu khu làm việc của một thư: loại thư, tin nhắm tới, sao chép và gửi (Gmail) hoặc tải PDF. */
 export function LetterHeader({ documentId }: { documentId: string }) {

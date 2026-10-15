@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 interface EmptyStateProps {
   icon?: PhosphorIcon;

@@ -5,18 +5,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
-import {
-  interviewService,
-  type AnswerKind,
-  type InterviewPrepRecord,
-  type SavedAnswer,
-} from "@/services";
+import { interviewService } from "@/services";
+import { isPrepBusy } from "@/lib/interview-status";
+import type { AnswerKind, InterviewPrepRecord, SavedAnswer } from "@/types";
 
 const POLL_MS = 2500;
-
-/** Bộ câu hỏi còn đang chờ hoặc đang soạn. */
-export const isPrepBusy = (status: string) =>
-  status === "PENDING" || status === "RUNNING";
 
 /** Vị trí đang mở nằm trên URL (`?job=`) để danh sách, hộp thêm vị trí và trang phỏng vấn thử cùng trỏ về được. */
 export function useSelectedJob(): [string | null, (jobId: string) => void] {

@@ -10,11 +10,11 @@ import {
   SignOut,
   UserGear,
 } from "@phosphor-icons/react/ssr";
-import { useSession } from "@/components/dashboard/session";
-import { PageHeader } from "@/components/dashboard/page-header";
+import { PageHeader } from "@/components/ui/page-header";
 import { SectionCard } from "@/components/ui/section-card";
 import { DisplayCard } from "./display-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSession } from "@/hooks/use-session";
 
 /** Trang tài khoản; chỉ hiện những gì backend thật sự có. */
 export default function SettingsPage() {

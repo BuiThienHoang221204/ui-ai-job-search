@@ -1,7 +1,7 @@
 import { Lightbulb } from "@phosphor-icons/react/ssr";
 import { Markdown } from "@/components/ui/markdown";
-import { cn } from "@/utils";
 import type { InterviewTurn } from "@/lib/interview-transcript";
+import { cn } from "@/lib/cn";
 
 /** Một lượt hỏi - đáp - nhận xét, dựng như một trang biên bản. */
 export function InterviewTurnBlock({

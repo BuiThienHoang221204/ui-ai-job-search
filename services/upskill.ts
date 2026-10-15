@@ -1,22 +1,5 @@
-import type { AiFailureKind } from "@/lib/failure-message";
 import { api } from "@/lib/axios";
-import type { QueuedReport, WorkStatus } from "./types";
-
-export interface UpskillReportRecord {
-  id: string;
-  mode: "AGGREGATE" | "TARGETED";
-  jobId: string | null;
-  status: WorkStatus;
-  jobsAnalysed: number;
-  hardGaps: unknown;
-  synthesisedGaps: unknown;
-  learningPlan: unknown;
-  summary: string | null;
-  modelId: string | null;
-  generatedAt: string | null;
-  failureKind: AiFailureKind | null;
-  createdAt: string;
-}
+import type { QueuedReport, UpskillReportRecord } from "@/types";
 
 export const upskillService = {
   latest: () => api.get<UpskillReportRecord>("/upskill").then((r) => r.data),

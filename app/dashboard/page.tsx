@@ -2,20 +2,20 @@
 
 import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
 import { SkillResources } from "@/components/ads/affiliate-inline";
-import { useSession } from "@/components/dashboard/session";
 import { PageError } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 import { Skeleton, SkeletonGrid, SkeletonPage } from "@/components/ui/skeleton";
 import { suggestionSkill } from "@/lib/affiliate";
 import { FirstRun } from "./first-run";
 import { MarketCard } from "./market-card";
-import { onboardingLevel } from "./onboarding-state";
+import { onboardingLevel } from "@/lib/onboarding";
 import { ProgressPanel } from "./progress-panel";
 import { QuickStartOnboarding } from "./quick-start-onboarding";
 import { QuickStrip } from "./quick-strip";
 import { ScoreBreakdown } from "./score-breakdown";
 import { TopMatches } from "./top-matches";
 import { useDashboard } from "@/hooks/use-dashboard";
+import { useSession } from "@/hooks/use-session";
 
 /** Trang tổng quan của dashboard. */
 export default function DashboardPage() {

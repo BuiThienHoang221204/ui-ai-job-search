@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 export interface Step {
   label: string;

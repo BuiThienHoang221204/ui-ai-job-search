@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 /** Một khối xám giữ chỗ khi đang tải. */
 export function Skeleton({ className }: { className?: string }) {

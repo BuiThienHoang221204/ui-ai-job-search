@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 /** Nhãn nhỏ in hoa mở đầu một khối nội dung bên trong thẻ. */
 export function SectionTitle({

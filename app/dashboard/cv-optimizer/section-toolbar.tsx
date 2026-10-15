@@ -7,9 +7,9 @@ import {
   Plus,
   Trash,
 } from "@phosphor-icons/react/ssr";
-import type { CvSectionKey } from "@/services";
 import { useCvDraft } from "@/hooks/use-cv-draft";
 import { ADD_ENTRY_LABELS, SECTION_LABELS, swap } from "@/lib/cv-fields";
+import type { CvSectionKey } from "@/types";
 
 const ICON_BUTTON =
   "inline-flex h-7 min-w-7 cursor-pointer items-center justify-center gap-1 rounded-md px-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent";

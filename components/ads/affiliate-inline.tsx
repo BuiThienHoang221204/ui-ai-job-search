@@ -2,9 +2,8 @@
 
 import { useState, useSyncExternalStore, useMemo } from "react";
 import { ArrowSquareOut, ArrowUpRight, Gift } from "@phosphor-icons/react/ssr";
-import { DashSection } from "@/components/dashboard/dash-section";
+import { DashSection } from "@/components/ui/dash-section";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/utils";
 import {
   AFFILIATE_OFFERS,
   affiliateLink,
@@ -12,6 +11,7 @@ import {
   type AffiliateOffer,
   type AffiliatePlacement,
 } from "@/lib/affiliate";
+import { cn } from "@/lib/cn";
 
 let clientSeed = 0;
 function getClientSeed(): number {

@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { Target } from "@phosphor-icons/react/ssr";
-import { CompanyLogo } from "@/components/dashboard/company-logo";
+import { CompanyLogo } from "@/components/jobs/company-logo";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRecentDocuments } from "@/hooks/use-letters";
-import { companyColor, companyInitials } from "@/utils";
+import { companyColor, companyInitials } from "@/lib/company";
 
 const LIMIT = 3;
 

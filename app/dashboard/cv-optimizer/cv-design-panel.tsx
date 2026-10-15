@@ -1,10 +1,10 @@
 "use client";
 
-import type { CvFont, CvFontSize } from "@/services";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { useCvTemplates } from "@/hooks/use-cv-templates";
 import { useCvDraft } from "@/hooks/use-cv-draft";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
+import type { CvFont, CvFontSize } from "@/types";
 
 const ACCENT_CHOICES = [
   "#3873b3",

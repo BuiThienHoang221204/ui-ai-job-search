@@ -1,7 +1,7 @@
 import { CheckCircle, Warning } from "@phosphor-icons/react/ssr";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/utils";
 import { useJobDetail } from "@/hooks/use-job-detail";
+import { cn } from "@/lib/cn";
 
 const COLUMNS = [
   {

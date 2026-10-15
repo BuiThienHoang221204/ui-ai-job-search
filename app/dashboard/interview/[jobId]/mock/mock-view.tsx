@@ -1,6 +1,6 @@
 "use client";
 
-import { isClosed, useMockInterview } from "@/hooks/use-mock-interview";
+import { useMockInterview } from "@/hooks/use-mock-interview";
 
 import Link from "next/link";
 import {
@@ -12,8 +12,10 @@ import {
 
 import { buildTranscript, pendingTurn } from "@/lib/interview-transcript";
 
-import { InterviewStatusBadge } from "@/components/dashboard/interview-status-badge";
-import { PageHeader } from "@/components/dashboard/page-header";
+import {
+  InterviewStatusBadge,
+} from "../../interview-status-badge";
+import { PageHeader } from "@/components/ui/page-header";
 import { Alert, PageError } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -23,6 +25,7 @@ import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { AnswerBox } from "./answer-box";
 import { InterviewTurnBlock } from "./interview-turns";
 import { failureMessage } from "@/lib/failure-message";
+import { isClosed } from "@/lib/interview-status";
 
 /** Màn luyện phỏng vấn thử: biên bản các lượt, câu đang chảy về và ô trả lời. */
 export function MockInterviewView({

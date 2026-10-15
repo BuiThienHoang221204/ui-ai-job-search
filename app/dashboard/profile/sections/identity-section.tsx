@@ -1,7 +1,7 @@
 "use client";
 
 import { PencilSimple, User } from "@phosphor-icons/react/ssr";
-import { DashSection } from "@/components/dashboard/dash-section";
+import { DashSection } from "@/components/ui/dash-section";
 import { useProfile, useProfileUi } from "@/hooks/use-profile";
 
 const EDIT_BUTTON =

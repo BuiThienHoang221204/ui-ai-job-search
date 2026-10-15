@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Google_Sans_Flex } from "next/font/google";
-import { QueryProvider } from "@/lib/query-client";
-import { ToastProvider } from "@/components/ui/toast";
+import { QueryProvider } from "@/providers/query-provider";
+import { ToastProvider } from "@/providers/toast-provider";
 import { RegisterServiceWorker } from "@/components/pwa/register-sw";
 import { FONT_SCALE_BOOTSTRAP } from "@/lib/font-scale";
 import { SIDEBAR_BOOTSTRAP } from "@/lib/sidebar";

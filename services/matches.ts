@@ -1,18 +1,11 @@
-import type { JobMatchWithJob } from "@/types";
-import type { JobMatchDetail } from "./jobs";
 import { api } from "@/lib/axios";
-import type { Paginated, QueuedResult } from "./types";
-
-export type EvaluateResult =
-  | (QueuedResult & { alreadyScored: false })
-  | {
-      queued: false;
-      alreadyScored: true;
-      overallScore: number | null;
-      verdict: JobMatchWithJob["verdict"];
-    };
-
-export type MatchSort = "newest" | "score_desc" | "score_asc";
+import type {
+  EvaluateResult,
+  JobMatchDetail,
+  JobMatchWithJob,
+  MatchSort,
+  Paginated,
+} from "@/types";
 
 export const matchesService = {
   list: (params?: { limit?: number; offset?: number; sort?: MatchSort }) =>

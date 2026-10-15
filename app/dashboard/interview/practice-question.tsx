@@ -9,16 +9,13 @@ import {
   PencilSimpleLine,
   Sparkle,
 } from "@phosphor-icons/react/ssr";
-import {
-  interviewService,
-  type AnswerKind,
-  type PrepAnswer,
-} from "@/services";
+import { interviewService } from "@/services";
 import { apiErrorMessage } from "@/lib/axios";
 import { usePrepCache } from "@/hooks/use-interview-prep";
-import { useToast } from "@/components/ui/toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import type { AnswerKind, PrepAnswer } from "@/types";
 
 const FEEDBACK_MIN = 20;
 

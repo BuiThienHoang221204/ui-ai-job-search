@@ -1,4 +1,3 @@
-import { cn } from "@/utils";
 
 interface ProgressCircleProps {
   value: number;
@@ -52,3 +51,4 @@ export function ProgressCircle({
     </div>
   );
 }
+import { cn } from "@/lib/cn";

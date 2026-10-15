@@ -1,12 +1,12 @@
 import type {
   CvContentInput,
   CvIdentityEdit,
-  CvTypography,
   CvLanguage,
   CvLayout,
   CvSectionKey,
   CvSourceInput,
-} from "@/services";
+  CvTypography,
+} from "./document";
 
 export interface CvTodo {
   id: string;

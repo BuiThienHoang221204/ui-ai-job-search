@@ -8,18 +8,14 @@ import { useMockInterviewRun } from "@/hooks/use-mock-interview-run";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { useJobDetail } from "@/hooks/use-job-detail";
 import { invalidateAfter, keys } from "@/lib/query-keys";
-import { useToast } from "@/components/ui/toast";
 import {
   InterviewStreamError,
   streamInterviewOpen,
   streamInterviewTurn,
 } from "@/lib/interview-stream";
+import { useToast } from "@/hooks/use-toast";
 
 const WORKFLOW = "interview";
-
-/** Lượt chạy đã dừng hẳn, không còn chờ gì. */
-export const isClosed = (status: string) =>
-  status === "DONE" || status === "FAILED";
 
 /** Hook buổi luyện phỏng vấn: mở buổi được chọn (hoặc buổi gần nhất), bắt đầu buổi mới và gửi câu trả lời. */
 export function useMockInterview(jobId: string, chosenRunId?: string) {

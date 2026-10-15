@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
-import { mockInterviewService, type MockInterviewRecord } from "@/services";
+import { mockInterviewService } from "@/services";
+import type { MockInterviewRecord } from "@/types";
 
 const POLL_INTERVAL_MS = 2000;
 

@@ -1,0 +1,44 @@
+"use client";
+
+import { useState } from "react";
+import { Header } from "@/components/layout/header";
+
+interface AppLayoutProps {
+  children: React.ReactNode;
+  sidebar: React.ReactNode;
+}
+
+/** Khung dashboard: sidebar cố định trên desktop, drawer trên mobile, header và nội dung. */
+export function AppLayout({ children, sidebar }: AppLayoutProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <div className="flex min-h-screen bg-surface">
+      <div className="fixed inset-y-0 left-0 z-40 hidden lg:block">{sidebar}</div>
+
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div
+            className="absolute inset-0 bg-slab/60 backdrop-blur-sm"
+            onClick={() => setMobileOpen(false)}
+          />
+          <div className="absolute inset-y-0 left-0 flex">
+            {sidebar}
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="ml-4 self-center rounded-lg bg-white/10 px-3 py-1 text-xl text-white"
+              aria-label="Đóng menu"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="flex min-w-0 flex-1 flex-col transition-[padding] duration-200 lg:pl-(--sidebar-width)">
+        <Header onMenuClick={() => setMobileOpen(true)} />
+        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+      </div>
+    </div>
+  );
+}

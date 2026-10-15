@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { documentsService, type ApplicationEmailInput } from "@/services";
-import { DocumentJobStatus } from "@/components/dashboard/document-job";
+import { documentsService } from "@/services";
+import { DocumentJobStatus } from "@/components/documents";
 import { useDocumentJob } from "@/hooks/use-document-job";
-import type { LetterKind, PartialLetter } from "@/types";
+import type { LetterKind, PartialLetter, ApplicationEmailInput } from "@/types";
 import { LetterHero } from "./home/letter-hero";
 import { LetterList } from "./home/letter-list";
 import { LetterSuggestions } from "./home/letter-suggestions";

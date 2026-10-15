@@ -10,7 +10,6 @@ import {
   Sun,
 } from "@phosphor-icons/react/ssr";
 import { SectionCard } from "@/components/ui/section-card";
-import { cn } from "@/utils";
 import {
   applyFontScale,
   DEFAULT_PERCENT,
@@ -29,6 +28,7 @@ import {
   THEMES,
   type ThemeId,
 } from "@/lib/theme";
+import { cn } from "@/lib/cn";
 
 const THEME_ICON: Record<ThemeId, typeof Sun> = {
   light: Sun,

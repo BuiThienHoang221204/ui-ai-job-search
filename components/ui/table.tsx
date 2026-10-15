@@ -1,5 +1,5 @@
 import type { HTMLAttributes, TdHTMLAttributes, ThHTMLAttributes } from "react";
-import { cn } from "@/utils";
+import { cn } from "@/lib/cn";
 
 /** Bảng dữ liệu có khung cuộn ngang. */
 export function Table({ className, ...props }: HTMLAttributes<HTMLTableElement>) {

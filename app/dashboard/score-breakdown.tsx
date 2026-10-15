@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { ChartBar } from "@phosphor-icons/react/ssr";
 import type { DashboardOverview } from "@/types";
-import { cn } from "@/utils";
-import { DashSection } from "@/components/dashboard/dash-section";
+import { DashSection } from "@/components/ui/dash-section";
 import { useDashboard } from "@/hooks/use-dashboard";
+import { cn } from "@/lib/cn";
 
 const GOOD_SCORE = 70;
 
