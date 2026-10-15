@@ -1,5 +1,7 @@
 import type {
   CvContentInput,
+  CvIdentityEdit,
+  CvTypography,
   CvLanguage,
   CvLayout,
   CvSectionKey,
@@ -15,13 +17,15 @@ export interface CvTodo {
   done: boolean;
 }
 
-export type CvRailTab = "hoan-thien" | "noi-dung" | "bo-cuc";
+export type CvRailTab = "hoan-thien" | "thiet-ke" | "bo-cuc";
 
 export interface CvDraft {
   content: CvContentInput;
+  identity: CvIdentityEdit;
   layout: CvLayout;
   templateId: string;
   accent: string | undefined;
+  typography: CvTypography;
 }
 
 export type CvGenerate = (input: CvSourceInput, language: CvLanguage) => void;

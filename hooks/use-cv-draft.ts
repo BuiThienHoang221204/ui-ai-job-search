@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { create } from "zustand";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -8,11 +8,18 @@ import {
   type CvContentInput,
   type CvLayout,
   type CvSectionKey,
+  type CvTypography,
   type DocumentRecord,
 } from "@/services";
 import { apiErrorMessage } from "@/lib/axios";
 import { useApiQuery } from "@/hooks/use-api-query";
-import { useDebounce } from "@/hooks/use-debounce";
+import {
+  addCvEntry,
+  insertCvLine,
+  removeCvItem,
+  setCvField,
+  withoutEmptyLines,
+} from "@/lib/cv-fields";
 import { parseCvContent } from "@/lib/document-content";
 import { keys } from "@/lib/query-keys";
 import { openBlobInNewTab } from "@/utils";
@@ -27,21 +34,26 @@ const SECTION_KEYS: CvSectionKey[] = [
   "skills",
 ];
 
-const PREVIEW_DEBOUNCE_MS = 400;
-
 interface CvDraftState extends CvDraft {
   recordId: string | null;
   saved: CvDraft | null;
   tab: CvRailTab;
-  openSection: CvSectionKey | null;
+  previewRev: number;
+  target: CvSectionKey | null;
   skipped: string[];
   load: (record: DocumentRecord) => void;
   setContent: (content: CvContentInput) => void;
+  editText: (path: string, text: string) => void;
+  insertLine: (path: string) => void;
+  removeLine: (path: string) => void;
+  addEntry: (section: CvSectionKey) => void;
+  removeEntry: (path: string) => void;
   setLayout: (layout: CvLayout) => void;
   setTemplate: (templateId: string) => void;
   setAccent: (accent: string) => void;
+  setTypography: (typography: CvTypography) => void;
   setTab: (tab: CvRailTab) => void;
-  openEditor: (section: CvSectionKey | null) => void;
+  goTo: (section: CvSectionKey | null) => void;
   skip: (keyword: string) => void;
 }
 
@@ -84,50 +96,106 @@ const toDraft = (raw: unknown): CvContentInput => {
 const toLayout = (raw: CvLayout | null): CvLayout => {
   const order = (raw?.order ?? []).filter((key) => SECTION_KEYS.includes(key));
   const missing = SECTION_KEYS.filter((key) => !order.includes(key));
-  return { order: [...order, ...missing], hidden: raw?.hidden ?? [] };
+  return {
+    order: [...order, ...missing],
+    hidden: raw?.hidden ?? [],
+    titles: raw?.titles ?? {},
+  };
 };
 
-/** Bản nháp của CV đang mở; header, dải mẫu, bản xem trước và cột phải đọc chung, không truyền props. */
+/** Bản nháp của CV đang mở. Gõ chữ trên trang chỉ sửa `content`; thao tác đổi cấu trúc tăng `previewRev` để dựng lại trang. */
 export const useCvDraft = create<CvDraftState>((set) => ({
   recordId: null,
   saved: null,
   content: toDraft(null),
+  identity: {},
   layout: toLayout(null),
   templateId: "",
   accent: undefined,
+  typography: {},
   tab: "hoan-thien",
-  openSection: null,
+  previewRev: 0,
+  target: null,
   skipped: [],
   load: (record) => {
     const saved: CvDraft = {
       content: toDraft(record.content),
+      identity: record.identity ?? {},
       layout: toLayout(record.layout),
       templateId: record.templateId,
       accent: record.templateOptions?.accent,
+      typography: {
+        font: record.templateOptions?.font,
+        size: record.templateOptions?.size,
+        lineHeight: record.templateOptions?.lineHeight,
+      },
     };
     set((now) => ({
       ...saved,
       saved,
       recordId: record.id,
+      previewRev: now.previewRev + 1,
       ...(now.recordId === record.id
         ? {}
-        : { tab: "hoan-thien", openSection: null, skipped: [] }),
+        : { tab: "hoan-thien", target: null, skipped: [] }),
     }));
   },
-  setContent: (content) => set({ content }),
-  setLayout: (layout) => set({ layout }),
-  setTemplate: (templateId) => set({ templateId, accent: undefined }),
-  setAccent: (accent) => set({ accent }),
+  setContent: (content) =>
+    set((now) => ({
+      content: withoutEmptyLines(content),
+      previewRev: now.previewRev + 1,
+    })),
+  editText: (path, text) =>
+    set((now) => {
+      if (path.startsWith("identity.")) {
+        const key = path.slice("identity.".length);
+        return { identity: { ...now.identity, [key]: text } };
+      }
+      if (path.startsWith("layout.titles.")) {
+        const key = path.slice("layout.titles.".length);
+        const titles = { ...now.layout.titles, [key]: text };
+        return { layout: { ...now.layout, titles } };
+      }
+      return { content: setCvField(now.content, path, text) };
+    }),
+  insertLine: (path) =>
+    set((now) => ({ content: insertCvLine(now.content, path) })),
+  removeLine: (path) =>
+    set((now) => ({ content: removeCvItem(now.content, path) })),
+  addEntry: (section) =>
+    set((now) => ({
+      content: addCvEntry(withoutEmptyLines(now.content), section),
+      previewRev: now.previewRev + 1,
+    })),
+  removeEntry: (path) =>
+    set((now) => ({
+      content: removeCvItem(withoutEmptyLines(now.content), path),
+      previewRev: now.previewRev + 1,
+    })),
+  setLayout: (layout) =>
+    set((now) => ({ layout, content: withoutEmptyLines(now.content) })),
+  setTemplate: (templateId) =>
+    set((now) => ({
+      templateId,
+      accent: undefined,
+      content: withoutEmptyLines(now.content),
+    })),
+  setAccent: (accent) =>
+    set((now) => ({ accent, content: withoutEmptyLines(now.content) })),
+  setTypography: (typography) =>
+    set((now) => ({ typography, content: withoutEmptyLines(now.content) })),
   setTab: (tab) => set({ tab }),
-  openEditor: (section) => set({ tab: "noi-dung", openSection: section }),
+  goTo: (target) => set({ target }),
   skip: (keyword) => set((now) => ({ skipped: [...now.skipped, keyword] })),
 }));
 
 const draftOf = (state: CvDraft): CvDraft => ({
   content: state.content,
+  identity: state.identity,
   layout: state.layout,
   templateId: state.templateId,
   accent: state.accent,
+  typography: state.typography,
 });
 
 /** Bản nháp khác bản đã lưu chưa. */
@@ -139,24 +207,28 @@ export function useCvDirty(): boolean {
   );
 }
 
-/** HTML xem trước của bản nháp, hỏi lại máy chủ sau khi người dùng ngừng gõ. */
+/** HTML của trang CV ở chế độ sửa. Chỉ hỏi lại máy chủ khi cấu trúc, bố cục hay mẫu đổi — chữ đang gõ đã nằm sẵn trên trang. */
 export function useCvPreview(recordId: string) {
-  const content = useCvDraft((state) => state.content);
-  const layout = useCvDraft((state) => state.layout);
+  const previewRev = useCvDraft((state) => state.previewRev);
+  const order = useCvDraft((state) => state.layout.order);
+  const hidden = useCvDraft((state) => state.layout.hidden);
   const templateId = useCvDraft((state) => state.templateId);
   const accent = useCvDraft((state) => state.accent);
-  const draft = useMemo(
-    () => ({ content, layout, templateId, accent }),
-    [content, layout, templateId, accent],
-  );
-  const key = useDebounce(
-    `${recordId}|${JSON.stringify(draft)}`,
-    PREVIEW_DEBOUNCE_MS,
-  );
+  const typography = useCvDraft((state) => state.typography);
+  const key = `${recordId}|${previewRev}|${order.join()}|${hidden.join()}|${templateId}|${accent}|${JSON.stringify(typography)}`;
 
   return useApiQuery(
     keys.cvPreview(key),
-    () => documentsService.previewDraft(recordId, draft),
+    () =>
+      documentsService.previewDraft(recordId, {
+        content: withoutEmptyLines(useCvDraft.getState().content),
+        identity: useCvDraft.getState().identity,
+        layout: useCvDraft.getState().layout,
+        templateId,
+        accent,
+        ...typography,
+        editing: true,
+      }),
     { errorMessage: "Không tải được bản xem trước", keepPrevious: true },
   );
 }
@@ -173,18 +245,20 @@ export function useCvActions(recordId: string) {
     setError(null);
     try {
       let saved = await documentsService.updateCv(recordId, {
-        content: state.content,
+        content: withoutEmptyLines(state.content),
+        identity: state.identity,
         layout: state.layout,
       });
       if (
         state.templateId !== state.saved?.templateId ||
-        state.accent !== state.saved?.accent
+        state.accent !== state.saved?.accent ||
+        JSON.stringify(state.typography) !==
+          JSON.stringify(state.saved?.typography)
       ) {
-        saved = await documentsService.setTemplate(
-          recordId,
-          state.templateId,
-          state.accent,
-        );
+        saved = await documentsService.setTemplate(recordId, state.templateId, {
+          accent: state.accent,
+          ...state.typography,
+        });
       }
       queryClient.setQueryData<DocumentRecord>(
         keys.document(recordId),

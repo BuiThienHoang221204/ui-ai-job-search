@@ -3,7 +3,7 @@
 import { DocumentSource } from "@/components/dashboard/document-job";
 import { Card } from "@/components/ui/card";
 import type { CvRailTab } from "@/types";
-import { CvEditor } from "../cv-editor";
+import { CvDesignPanel } from "../cv-design-panel";
 import { CvLayoutPanel } from "../cv-layout-panel";
 import { useCvDraft } from "@/hooks/use-cv-draft";
 import { CvChecklist } from "./cv-checklist";
@@ -12,11 +12,11 @@ const LOGIN_NEXT = "/dashboard/cv-optimizer";
 
 const RAIL_TABS: { value: CvRailTab; label: string }[] = [
   { value: "hoan-thien", label: "Hoàn thiện" },
-  { value: "noi-dung", label: "Sửa nội dung" },
+  { value: "thiet-ke", label: "Thiết kế" },
   { value: "bo-cuc", label: "Bố cục" },
 ];
 
-/** Cột phải: danh sách hoàn thiện, trình sửa nội dung và bố cục. */
+/** Cột phải: danh sách hoàn thiện, thiết kế chữ và bố cục; nội dung sửa thẳng trên trang CV. */
 export function CvRail({
   documentId,
   jobId,
@@ -26,11 +26,26 @@ export function CvRail({
 }) {
   const tab = useCvDraft((state) => state.tab);
   const setTab = useCvDraft((state) => state.setTab);
-  const content = useCvDraft((state) => state.content);
   const layout = useCvDraft((state) => state.layout);
-  const openSection = useCvDraft((state) => state.openSection);
-  const setContent = useCvDraft((state) => state.setContent);
   const setLayout = useCvDraft((state) => state.setLayout);
+
+  let panel = <CvChecklist jobId={jobId} />;
+  if (tab === "thiet-ke") panel = <CvDesignPanel />;
+  if (tab === "bo-cuc") {
+    panel = (
+      <div className="space-y-5">
+        <CvLayoutPanel layout={layout} onChange={setLayout} />
+        <div className="border-t border-slate-100 pt-4">
+          <p className="mb-2 text-xs font-semibold text-slate-500">Bản LaTeX</p>
+          <DocumentSource
+            key={documentId}
+            documentId={documentId}
+            loginNext={LOGIN_NEXT}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Card className="xl:sticky xl:top-4">
@@ -56,33 +71,7 @@ export function CvRail({
           </button>
         ))}
       </div>
-      <div className="p-5">
-        {tab === "hoan-thien" ? (
-          <CvChecklist jobId={jobId} />
-        ) : tab === "noi-dung" ? (
-          <CvEditor
-            content={content}
-            layout={layout}
-            openKey={openSection}
-            onOpenKeyChange={(key) => useCvDraft.setState({ openSection: key })}
-            onContentChange={setContent}
-          />
-        ) : (
-          <div className="space-y-5">
-            <CvLayoutPanel layout={layout} onChange={setLayout} />
-            <div className="border-t border-slate-100 pt-4">
-              <p className="mb-2 text-xs font-semibold text-slate-500">
-                Bản LaTeX
-              </p>
-              <DocumentSource
-                key={documentId}
-                documentId={documentId}
-                loginNext={LOGIN_NEXT}
-              />
-            </div>
-          </div>
-        )}
-      </div>
+      <div className="p-5">{panel}</div>
     </Card>
   );
 }

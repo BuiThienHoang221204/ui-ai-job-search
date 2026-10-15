@@ -2,7 +2,7 @@
 
 import { ArrowDown, ArrowUp, Eye, EyeSlash } from "@phosphor-icons/react/ssr";
 import type { CvLayout, CvSectionKey } from "@/services";
-import { SECTION_LABELS, swap } from "./cv-fields";
+import { SECTION_LABELS, swap } from "@/lib/cv-fields";
 
 /** Panel chỉnh bố cục CV: đổi thứ tự và ẩn hiện các phần. */
 export function CvLayoutPanel({
@@ -112,7 +112,8 @@ export function CvLayoutPanel({
       </div>
 
       <p className="border-t border-slate-100 pt-3 text-xs text-slate-500">
-        Mục bị ẩn không được vẽ ra CV, kể cả trong tầng chữ mà máy lọc hồ sơ đọc.
+        Mục bị ẩn không được vẽ ra CV, kể cả trong tầng chữ mà máy lọc hồ sơ
+        đọc.
       </p>
     </div>
   );

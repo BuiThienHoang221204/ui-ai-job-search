@@ -1,33 +1,15 @@
 "use client";
 
-import { documentsService } from "@/services";
-import { useApiQuery } from "@/hooks/use-api-query";
-import { keys } from "@/lib/query-keys";
+import { useCvTemplates } from "@/hooks/use-cv-templates";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/utils";
 import { useCvDraft } from "@/hooks/use-cv-draft";
 
-const ACCENT_CHOICES = [
-  "#3873b3",
-  "#0f766e",
-  "#b45309",
-  "#1f3864",
-  "#334155",
-  "#9d174d",
-] as const;
-
 /** Dải chọn mẫu trình bày ngay dưới đầu khu làm việc; đổi mẫu chỉ đổi bản xem trước, không gọi AI. */
 export function CvTemplateStrip() {
-  const { data: templates } = useApiQuery(
-    keys.cvTemplates(),
-    () => documentsService.cvTemplates(),
-    { errorMessage: "Không tải được danh sách mẫu", staleTime: Infinity },
-  );
+  const { data: templates } = useCvTemplates();
   const templateId = useCvDraft((state) => state.templateId);
-  const accent = useCvDraft((state) => state.accent);
   const setTemplate = useCvDraft((state) => state.setTemplate);
-  const setAccent = useCvDraft((state) => state.setAccent);
-  const selected = templates?.find((template) => template.id === templateId);
 
   return (
     <div className="flex flex-wrap items-center gap-2 px-5 py-4 sm:px-6">
@@ -59,28 +41,6 @@ export function CvTemplateStrip() {
               {template.name}
             </button>
           ))}
-
-      {selected?.usesAccent && (
-        <span className="ml-auto flex items-center gap-1.5">
-          <span className="mr-1 text-xs text-slate-500">Màu nhấn</span>
-          {ACCENT_CHOICES.map((choice) => (
-            <button
-              key={choice}
-              type="button"
-              aria-label={`Màu ${choice}`}
-              aria-pressed={(accent ?? selected.accent) === choice}
-              onClick={() => setAccent(choice)}
-              className={cn(
-                "size-6 cursor-pointer rounded-full border-2 transition",
-                (accent ?? selected.accent) === choice
-                  ? "border-slate-900"
-                  : "border-transparent hover:border-slate-300",
-              )}
-              style={{ backgroundColor: choice }}
-            />
-          ))}
-        </span>
-      )}
     </div>
   );
 }

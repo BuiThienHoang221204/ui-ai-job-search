@@ -49,6 +49,22 @@ export interface CvContentInput {
 
 export type CvLanguage = "vi" | "en";
 
+export type CvFont = "noto-sans" | "noto-serif" | "arial" | "times";
+
+export type CvFontSize = "small" | "medium" | "large";
+
+/** Font, cỡ chữ, khoảng cách dòng người dùng chọn; vắng mặt = theo mẫu. */
+export interface CvTypography {
+  font?: CvFont;
+  size?: CvFontSize;
+  lineHeight?: number;
+}
+
+/** Phần đầu CV sửa riêng cho một CV; khoá vắng mặt = lấy theo tài khoản/hồ sơ, chuỗi rỗng = ẩn. */
+export type CvIdentityEdit = Partial<
+  Record<"name" | "email" | "phone" | "location" | "title", string>
+>;
+
 export type CvSectionKey =
   | "profile"
   | "competencies"
@@ -60,6 +76,7 @@ export type CvSectionKey =
 export interface CvLayout {
   order: CvSectionKey[];
   hidden: CvSectionKey[];
+  titles?: Partial<Record<CvSectionKey, string>>;
 }
 
 export interface CvTemplate {
@@ -81,8 +98,9 @@ export interface DocumentRecord {
   content: unknown;
   storageKey: string | null;
   templateId: string;
-  templateOptions: { accent?: string } | null;
+  templateOptions: (CvTypography & { accent?: string }) | null;
   layout: CvLayout | null;
+  identity: CvIdentityEdit | null;
   language: "VI" | "EN";
   modelId: string | null;
   generatedAt: string | null;
@@ -180,8 +198,13 @@ export const documentsService = {
     draft: {
       content?: CvContentInput;
       layout?: CvLayout;
+      identity?: CvIdentityEdit;
       templateId?: string;
       accent?: string;
+      font?: CvFont;
+      size?: CvFontSize;
+      lineHeight?: number;
+      editing?: boolean;
     },
   ) => {
     try {
@@ -199,13 +222,24 @@ export const documentsService = {
   /** Lưu bản CV người dùng đã sửa, không tốn lượt gọi model. */
   updateCv: (
     id: string,
-    input: { content?: CvContentInput; layout?: CvLayout },
+    input: {
+      content?: CvContentInput;
+      layout?: CvLayout;
+      identity?: CvIdentityEdit;
+    },
   ) =>
     api.put<DocumentRecord>(`/documents/${id}/cv`, input).then((r) => r.data),
 
   /** Lưu mẫu CV và màu nhấn đã chọn. */
-  setTemplate: (id: string, templateId: string, accent?: string) =>
+  setTemplate: (
+    id: string,
+    templateId: string,
+    options: CvTypography & { accent?: string },
+  ) =>
     api
-      .put<DocumentRecord>(`/documents/${id}/template`, { templateId, accent })
+      .put<DocumentRecord>(`/documents/${id}/template`, {
+        templateId,
+        ...options,
+      })
       .then((r) => r.data),
 };

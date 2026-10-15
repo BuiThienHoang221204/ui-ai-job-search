@@ -1,116 +1,83 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { CvSectionKey } from "@/services";
+import { useEffect, useRef, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCvDraft } from "@/hooks/use-cv-draft";
+import { useCvInlineEdit } from "@/hooks/use-cv-inline-edit";
+import { placeCaretAtEnd } from "@/lib/cv-frame";
+import { SectionToolbar } from "./section-toolbar";
 
 const PAGE_WIDTH = 794;
 const PAGE_HEIGHT = 1123;
 
 const PREVIEW_PAGES = 2;
 
-/** Khung xem trước CV thu nhỏ đúng tỉ lệ A4 qua iframe `srcDoc`. */
+/** Trang CV đúng tỉ lệ A4 trong iframe `srcDoc`, gõ sửa thẳng lên trang được. `fullSize` hiện đúng 100% thay vì vừa khung. */
 export function CvPreview({
   html,
-  activeSection,
-  onSectionClick,
+  fullSize,
 }: {
   html: string | null;
-  activeSection?: CvSectionKey | null;
-  onSectionClick?: (key: CvSectionKey) => void;
+  fullSize: boolean;
 }) {
   const boxRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
-  const [scale, setScale] = useState(0);
-
+  const [fitScale, setFitScale] = useState(0);
   const [loads, setLoads] = useState(0);
+  const active = useCvInlineEdit(frameRef, loads);
+  const target = useCvDraft((state) => state.target);
+  const scale = fullSize ? 1 : fitScale;
 
   useEffect(() => {
     const box = boxRef.current;
     if (!box) return;
 
     const observer = new ResizeObserver(([entry]) => {
-      setScale(entry.contentRect.width / PAGE_WIDTH);
+      setFitScale(entry.contentRect.width / PAGE_WIDTH);
     });
     observer.observe(box);
     return () => observer.disconnect();
   }, []);
 
-  const sectionAt = useCallback((target: EventTarget | null) => {
-    const node = target as Element | null;
-    if (!node || typeof node.closest !== "function") return null;
-    return node.closest("[data-section]")?.getAttribute("data-section") ?? null;
-  }, []);
-
   useEffect(() => {
-    if (loads === 0 || !onSectionClick) return;
-    const doc = frameRef.current?.contentDocument;
-    if (!doc) return;
-
-    const onClick = (event: MouseEvent) => {
-      const key = sectionAt(event.target);
-      if (key) onSectionClick(key as CvSectionKey);
-    };
-
-    doc.addEventListener("click", onClick);
-    return () => doc.removeEventListener("click", onClick);
-  }, [loads, onSectionClick, sectionAt]);
-
-  useEffect(() => {
-    if (loads === 0) return;
-    const doc = frameRef.current?.contentDocument;
-    if (!doc) return;
-
-    const style = doc.createElement("style");
-    style.textContent = `
-      [data-section] {
-        cursor: pointer;
-        outline: 2px dashed transparent;
-        outline-offset: 6px;
-        transition: outline-color .15s;
-      }
-      [data-section]:hover { outline-color: rgba(79,70,229,.35); }
-      [data-section].cv-active { outline-color: rgba(79,70,229,.85); }
-    `;
-    doc.head.appendChild(style);
-    return () => style.remove();
-  }, [loads]);
-
-  useEffect(() => {
-    if (loads === 0 || !activeSection || scale <= 0) return;
+    if (loads === 0 || !target || scale <= 0) return;
     const doc = frameRef.current?.contentDocument;
     const box = boxRef.current;
-    if (!doc || !box) return;
-
-    for (const node of doc.querySelectorAll("[data-section]")) {
-      node.classList.toggle(
-        "cv-active",
-        node.getAttribute("data-section") === activeSection,
-      );
-    }
-
-    const target = doc.querySelector(`[data-section="${activeSection}"]`);
-    if (!target) return;
+    const section = doc?.querySelector<HTMLElement>(
+      `[data-section="${target}"]`,
+    );
+    useCvDraft.getState().goTo(null);
+    if (!box || !section) return;
 
     box.scrollTo({
-      top: Math.max(0, (target as HTMLElement).offsetTop * scale - 12),
+      top: Math.max(0, section.offsetTop * scale - 48),
       behavior: "smooth",
     });
-  }, [loads, activeSection, scale]);
+    const fields = [...section.querySelectorAll<HTMLElement>("[data-field]")];
+    const field = fields.find((item) => item.textContent === "") ?? fields[0];
+    if (field) placeCaretAtEnd(field);
+  }, [loads, target, scale]);
 
   return (
     <div
       ref={boxRef}
-      className="aspect-210/297 w-full overflow-x-hidden overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-sm"
+      className="aspect-210/297 w-full overflow-auto rounded-lg border border-slate-200 bg-white shadow-sm"
     >
       {html && scale > 0 ? (
-        <div style={{ height: PAGE_HEIGHT * PREVIEW_PAGES * scale }}>
+        <div
+          className="relative"
+          style={{
+            width: PAGE_WIDTH * scale,
+            height: PAGE_HEIGHT * PREVIEW_PAGES * scale,
+          }}
+        >
           <iframe
             ref={frameRef}
             title="Xem trước CV"
             srcDoc={html}
             sandbox="allow-same-origin"
             onLoad={() => setLoads((n) => n + 1)}
+            className="max-md:pointer-events-none"
             style={{
               width: PAGE_WIDTH,
               height: PAGE_HEIGHT * PREVIEW_PAGES,
@@ -119,6 +86,13 @@ export function CvPreview({
               border: 0,
             }}
           />
+          {active && (
+            <SectionToolbar
+              section={active.section}
+              entry={active.entry}
+              top={active.top * scale}
+            />
+          )}
         </div>
       ) : (
         <Skeleton className="size-full" />

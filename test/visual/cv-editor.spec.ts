@@ -15,24 +15,128 @@ async function moCv(page: import("@playwright/test").Page) {
   });
 }
 
-test("sua chu thi ban xem truoc doi theo", async ({ page }) => {
+test("go thang len CV thi hien nut Luu va luu duoc", async ({ page }) => {
   await moCv(page);
-  await page.getByRole("tab", { name: "Sửa nội dung" }).click();
-  // Các mục trong ô sửa đóng sẵn, bấm tiêu đề mới mở.
-  await page.getByRole("button", { name: "Giới thiệu", exact: true }).click();
 
-  const gioiThieu = page.getByPlaceholder("Vài câu giới thiệu bản thân");
-  await gioiThieu.fill("CHU-VUA-SUA-TRONG-TEST");
+  const frame = page.frameLocator('iframe[title="Xem trước CV"]');
+  const gioiThieu = frame.locator('[data-field="profileStatement"]');
+  await expect(gioiThieu).toBeVisible({ timeout: 15_000 });
 
-  // Debounce 400ms rồi mới gọi xem trước.
-  await expect(
-    page.frameLocator("iframe").getByText("CHU-VUA-SUA-TRONG-TEST"),
-  ).toBeVisible({ timeout: 15_000 });
+  await gioiThieu.click();
+  await page.keyboard.press("ControlOrMeta+A");
+  // Chuỗi mới mỗi lần chạy: gõ lại đúng chữ đã lưu thì bản nháp không đổi và nút Lưu không hiện.
+  const chu = `CHU-VUA-SUA-${Date.now()}`;
+  await page.keyboard.type(chu);
+
+  await page.getByRole("button", { name: "Lưu thay đổi" }).click();
+  await expect(gioiThieu).toHaveText(chu, {
+    timeout: 15_000,
+  });
 
   await page.locator("iframe").scrollIntoViewIfNeeded();
   await page.locator("iframe").screenshot({
     path: "test/visual/screenshots/cv-editor-sua-chu.png",
   });
+});
+
+test("phan dau CV sua duoc ngay tren trang", async ({ page }) => {
+  await moCv(page);
+
+  const frame = page.frameLocator('iframe[title="Xem trước CV"]');
+  const chucDanh = frame.locator('[data-field="identity.title"]');
+  await expect(chucDanh).toBeVisible({ timeout: 15_000 });
+
+  await chucDanh.click();
+  await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.type("CHUC-DANH-TRONG-TEST");
+
+  // Không bấm lưu: chỉ kiểm phần đầu sửa được và làm bản nháp đổi, giữ nguyên dữ liệu dev cho các spec khác.
+  await expect(chucDanh).toHaveText("CHUC-DANH-TRONG-TEST");
+  await expect(
+    page.getByRole("button", { name: "Lưu thay đổi" }),
+  ).toBeVisible();
+});
+
+test("enter o gach dau dong thi them dong moi ngay ben duoi", async ({
+  page,
+}) => {
+  await moCv(page);
+
+  const frame = page.frameLocator('iframe[title="Xem trước CV"]');
+  const dongDau = frame.locator('[data-field="experiences.0.bullets.0"]');
+  await expect(dongDau).toBeVisible({ timeout: 15_000 });
+
+  await dongDau.click();
+  await page.keyboard.press("End");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("DONG-MOI-TRONG-TEST");
+
+  await expect(
+    frame.locator('[data-field="experiences.0.bullets.1"]'),
+  ).toHaveText("DONG-MOI-TRONG-TEST");
+});
+
+test("re chuot vao mot muc thi hien thanh cong cu cua muc do", async ({
+  page,
+}) => {
+  await moCv(page);
+
+  const frame = page.frameLocator('iframe[title="Xem trước CV"]');
+  await frame.locator("[data-section='experience']").hover();
+
+  await expect(
+    page.getByRole("button", { name: "Thêm kinh nghiệm" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Thêm kinh nghiệm" }).click();
+
+  // Mục mới chưa có chữ: chỉ hiện chữ gợi ý ở chế độ sửa, không vào bản PDF.
+  await expect(
+    frame.locator('[data-entry] [data-placeholder="Tên công ty"]:empty'),
+  ).toHaveCount(1, { timeout: 15_000 });
+});
+
+test("tab Thiet ke doi co chu thi trang CV doi theo", async ({ page }) => {
+  await moCv(page);
+
+  const frame = page.frameLocator('iframe[title="Xem trước CV"]');
+  await expect(frame.locator("[data-section]").first()).toBeVisible({
+    timeout: 15_000,
+  });
+  const coChu = () =>
+    frame.locator("body").evaluate((body) => getComputedStyle(body).fontSize);
+  const truoc = parseFloat(await coChu());
+
+  await page.getByRole("tab", { name: "Thiết kế" }).click();
+  await page.getByRole("button", { name: "Lớn", exact: true }).click();
+
+  await expect
+    .poll(async () => parseFloat(await coChu()))
+    .toBeGreaterThan(truoc);
+  await expect(
+    page.getByRole("button", { name: "Lưu thay đổi" }),
+  ).toBeVisible();
+});
+
+test("mau nhan nam o tab Thiet ke va doi mau tren trang CV", async ({
+  page,
+}) => {
+  await moCv(page);
+
+  await page.getByRole("button", { name: /Tiêu chuẩn/ }).click();
+  await expect(page.getByText("Màu nhấn")).toBeHidden();
+
+  await page.getByRole("tab", { name: "Thiết kế" }).click();
+  await page.getByRole("button", { name: "Màu #9d174d" }).click();
+
+  const frame = page.frameLocator('iframe[title="Xem trước CV"]');
+  await expect
+    .poll(() => frame.locator("html").evaluate((html) => html.outerHTML), {
+      timeout: 15_000,
+    })
+    .toContain("#9d174d");
+  await expect(
+    page.getByRole("button", { name: "Màu #9d174d" }),
+  ).toHaveAttribute("aria-pressed", "true");
 });
 
 test("an mot muc thi muc do bien khoi ban xem truoc", async ({ page }) => {
@@ -60,30 +164,11 @@ test("doi thu tu muc bang nut mui ten", async ({ page }) => {
 
   await page
     .getByRole("button", { name: "Đưa Năng lực chính lên trên" })
+    .first()
     .click();
 
   await expect(tieuDe.first()).toHaveText("Năng lực chính");
   await expect(tieuDe.nth(1)).toHaveText("Giới thiệu");
-});
-
-test("bam vao mot muc tren ban xem truoc thi o sua mo dung muc do", async ({
-  page,
-}) => {
-  await moCv(page);
-
-  const frame = page.frameLocator("iframe");
-  await expect(frame.getByText("HỌC VẤN")).toBeVisible({ timeout: 15_000 });
-
-  await page.getByRole("tab", { name: "Sửa nội dung" }).click();
-  const hocVan = page.getByRole("button", { name: /^Học vấn/ });
-  await expect(hocVan).toHaveAttribute("aria-expanded", "false");
-
-  await frame.locator("[data-section='education']").click();
-
-  await expect(hocVan).toHaveAttribute("aria-expanded", "true");
-  await expect(
-    page.getByRole("button", { name: /^Giới thiệu/ }),
-  ).toHaveAttribute("aria-expanded", "false");
 });
 
 test("dai chon mau nam cung trang voi mot khung xem truoc", async ({
