@@ -1,8 +1,6 @@
 import type { AuthUser } from "./auth";
 
 export interface AuthResult {
-  accessToken: string;
-  refreshToken: string;
   user: AuthUser;
 }
 

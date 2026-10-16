@@ -21,9 +21,6 @@ export interface BriefSource {
 }
 
 export interface CompanyBriefRecord {
-  id: string;
-  nameKey: string;
-  name: string;
   verdict: CompanyVerdict;
   summary: string;
   pros: string[];
@@ -32,9 +29,6 @@ export interface CompanyBriefRecord {
   rating: number | null;
   reviewCount: number | null;
   sources: BriefSource[];
-  modelId: string | null;
-  expiresAt: string;
-  createdAt: string;
   updatedAt: string;
 }
 
