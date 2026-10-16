@@ -15,7 +15,10 @@ const googleSans = Google_Sans_Flex({
   display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Careelot | Tìm việc làm bằng AI",
   description:
     "Dashboard ứng dụng Careelot: phân tích AI match, tối ưu CV, cover letter và theo dõi quy trình ứng tuyển.",
