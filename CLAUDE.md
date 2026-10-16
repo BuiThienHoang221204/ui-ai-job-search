@@ -7,6 +7,7 @@ Frontend Next.js (App Router) + Tailwind v4 + TanStack Query + zustand + react-h
 **1. Code đơn giản, dễ đọc.** Logic thẳng, ít tầng, không trừu tượng hoá trước khi cần. Ba dòng lặp lại tốt hơn một helper khó hiểu. Cụ thể (chốt 2026-10-14 sau một đợt rà):
 
 - **Hành động gắn với sự kiện người dùng, không với `useEffect` + `setTimeout`.** Đã sửa: tự lưu câu trả lời bằng effect hẹn giờ + `useCallback` + cờ `dirty` + hàm `toggle` phải phối hợp với nhau, dễ sinh lưu lặp khi danh tính hàm đổi. Nay `practice-question.tsx` lưu ở `onBlur` của ô nhập — bấm nút nào khác cũng làm ô mất focus nên không mất chữ.
+- **Đủ dùng, không làm trước cho quy mô chưa tới.** Một cơ chế cho một vấn đề; tối ưu khi đã đo thấy chậm; giữ đúng phạm vi việc được giao; một test cho một hành vi. Trước khi coi là xong, xem `git diff --numstat` — code chạy thật tăng nhiều hơn phần tính năng cần thì rút lại. Chi tiết: `../ai-job-search/CLAUDE.md`, mục "Sửa ĐỦ DÙNG".
 - **Không ternary lồng**, kể cả trong biến hiển thị: gán bằng `if` trước `return`.
 - **Chỉ tách hàm/component khi có lý do** (dùng ≥ 2 nơi, hoặc là một khái niệm có tên rõ). Hàm không dùng state của component thì đưa ra `lib/`, đừng khai trong thân component.
 - **Không dùng mẹo để code ngắn hơn** (`flatMap` trả `[]`/`[x]`, ghép chuỗi rồi lọc theo hậu tố…): viết `filter` + `map` hoặc vòng lặp thường.
@@ -73,13 +74,13 @@ Lý do và nguồn của từng quy tắc dưới đây (docs Next.js 16, react.
 **Bảo mật**
 
 - **Chữ do model hoặc người dùng sinh ra render dạng text của React.** `dangerouslySetInnerHTML` chỉ có ở script khởi tạo trong `app/layout.tsx`; JSON-LD (nếu có) phải thay `<` bằng `<`.
-- **Khung xem trước CV giữ `sandbox="allow-same-origin"`, không bật `allow-scripts`** — lý do ở `../ai-job-search/CLAUDE.md`, mục bản xem trước CV.
+- **Khung xem trước CV giữ `sandbox="allow-same-origin"`, không bật `allow-scripts`** — lý do ở `../ai-job-search/docs/adr/0003-nguoi-dung-sua-cv.md`.
 - **Xác thực chỉ bằng cookie httpOnly do backend đặt.** Token không vào `localStorage`, state hay URL. Chuyển hướng sau đăng nhập luôn qua `safeNextPath` (`lib/redirect.ts`).
 - **Trang cho khách:** đường dẫn khai trong `isGuestPath` (`lib/public-job.ts`); trang đó chỉ gọi API `/public/...` hoặc route `@Public()` của backend. `QueryProvider` chuyển về đăng nhập khi gặp bất kỳ 401 nào, nên một query cần đăng nhập lọt vào trang khách sẽ đẩy khách ra ngoài. Lương và toàn văn mô tả tin do backend quyết định có trả cho khách hay không — FE không tự ghép lại.
 
 **SEO**
 
-- Khu riêng tư (`/dashboard/*` khi đã đăng nhập) và trang tin tuyển dụng: `robots: { index: false, follow: false }` — trang tin vì điều khoản portal (`../ai-job-search/CLAUDE.md`, mục "Trang việc làm công khai").
+- Khu riêng tư (`/dashboard/*` khi đã đăng nhập) và trang tin tuyển dụng: `robots: { index: false, follow: false }` — trang tin vì điều khoản portal (`../ai-job-search/docs/adr/0008-trang-viec-lam-cong-khai.md`).
 - Trang muốn được index (như `/salary/*`) render nội dung trong Server Component, khai `metadata`/`generateMetadata`, gọi `notFound()` khi không có dữ liệu để trả 404 thật.
 - JobPosting JSON-LD và bỏ `noindex` trang tin chỉ làm khi chủ dự án quyết.
 
@@ -94,4 +95,4 @@ Lý do và nguồn của từng quy tắc dưới đây (docs Next.js 16, react.
 
 - Chữ hiển thị cho người dùng: tiếng Việt.
 - Comment: chỉ một dòng `/** ... */` ngắn trên hàm/component có logic đáng giải thích. Không comment cho hằng, kiểu, JSX.
-- Đọc DOM trong iframe thì không dùng `instanceof` (khác realm) — xem `../ai-job-search/CLAUDE.md`, mục bản xem trước CV.
+- Đọc DOM trong iframe thì không dùng `instanceof` (khác realm) — xem `../ai-job-search/docs/adr/0003-nguoi-dung-sua-cv.md`.

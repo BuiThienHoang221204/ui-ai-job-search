@@ -159,7 +159,7 @@ Hiện trạng: không có `robots.ts`, `sitemap.ts`, `metadataBase`, ảnh OG, 
 2. **(Cao, rẻ) Thêm `app/robots.ts` + `app/sitemap.ts`** cho phần công khai thật sự: `/salary`, `/salary/[slug]` (lấy danh sách slug từ `salaryService.positions()` đã có). Thêm `metadataBase` ở `app/layout.tsx` (cần biến môi trường URL site, ví dụ `NEXT_PUBLIC_SITE_URL`) và `alternates.canonical` cho `/salary/*` vì cùng nội dung có ở `/dashboard/salary/*` (`SalaryList basePath`).
 3. **(Trung bình) Ảnh OG mặc định** (`app/opengraph-image.png` tĩnh là đủ) — link tin dán vào Zalo/Facebook hiện chỉ có tiêu đề + mô tả.
 4. **(Quyết định của chủ dự án — CHƯA làm) JobPosting JSON-LD và index trang tin.** Về kỹ thuật cần: trang tin render nội dung trên server, không qua `SessionProvider` (mục 2.b.2), không `noindex`, mô tả đầy đủ hiển thị không cần đăng nhập, ẩn/404 tin hết hạn, `validThrough`. Nhưng có hai lực cản không phải kỹ thuật:
-   - **Điều khoản portal**: `../ai-job-search/CLAUDE.md` mục "Điều khoản sử dụng của các portal — rà 2026-10-13" ghi gần như mọi portal cấm *hiển thị/sao chép* nội dung, và bước giảm rủi ro số (3) khi thương mại hoá là *không* hiển thị toàn văn mô tả. Đưa toàn văn tin quét được lên Google qua JobPosting là khuếch đại đúng tầng rủi ro đó. Trong khi đó Google lại *đòi* mô tả đầy đủ — hai yêu cầu đối nghịch.
+   - **Điều khoản portal**: `../ai-job-search/docs/adr/0006-dieu-khoan-portal.md` ghi gần như mọi portal cấm *hiển thị/sao chép* nội dung, và bước giảm rủi ro số (3) khi thương mại hoá là *không* hiển thị toàn văn mô tả. Đưa toàn văn tin quét được lên Google qua JobPosting là khuếch đại đúng tầng rủi ro đó. Trong khi đó Google lại *đòi* mô tả đầy đủ — hai yêu cầu đối nghịch.
    - **Hướng dẫn Google cho trang bên thứ ba**: không được tự cung cấp `baseSalary` (chỉ nhà tuyển dụng), giữ nguyên tiêu đề, và tin trùng giữa portal (`duplicateOfId` ở backend) cần một URL chuẩn.
    - `noindex` hiện tại là lựa chọn an toàn; giữ nó cho tới khi chủ dự án quyết.
 5. **(Thấp) `notFound()` ở `/salary/[slug]`** (đã nêu ở mục 2) — tránh soft 404 ngay trên trang đang được index.
@@ -211,7 +211,7 @@ Quy ước hiện tại ("truyền ít props nhất — lý tưởng chỉ một
 
 ## Câu hỏi mở cho chủ dự án
 
-1. **Trang tin có nên được Google index không?** `noindex` hiện tại có phải vì ToS portal (theo `../ai-job-search/CLAUDE.md`)? Nếu vẫn `noindex`, việc #10 chỉ còn lợi ích chia sẻ link/hiệu năng, có thể hạ ưu tiên.
+1. **Trang tin có nên được Google index không?** `noindex` hiện tại có phải vì ToS portal (theo `../ai-job-search/docs/adr/0006-dieu-khoan-portal.md`)? Nếu vẫn `noindex`, việc #10 chỉ còn lợi ích chia sẻ link/hiệu năng, có thể hạ ưu tiên.
 2. **`NEXT_PUBLIC_API_URL` ở production trỏ tới đâu** — cùng origin qua `rewrites` `/api` của `next.config.ts`, hay thẳng domain backend? Câu trả lời quyết định cookie có đi cùng request server-side/SSR được không, và có cần `SameSite=None` không.
 3. **URL công khai chính thức của trang tin**: giữ `/dashboard/jobs/[id]` (route khách trong khu dashboard) hay chuyển ra `/jobs/[id]` như `/salary`? Cần cho canonical, sitemap và việc tách khỏi `SessionProvider`.
 4. **Có ngân sách/nơi để gửi Web Vitals** (endpoint backend, GA, Vercel Analytics) không? Không có field data thì các việc tối ưu hiệu năng chỉ dựa vào lab.
