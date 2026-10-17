@@ -3,6 +3,7 @@ import type { RequirementCheck } from "@/types";
 import { Card } from "@/components/ui/card";
 import { useJobDetail } from "@/hooks/use-job-detail";
 import { cn } from "@/lib/cn";
+import { capitalize } from "@/lib/text";
 import { useSession } from "@/hooks/use-session";
 
 const GROUPS = [
@@ -35,7 +36,7 @@ function CheckChip({
   location: string | null;
 }) {
   const { user } = useSession();
-  const label = check.label.replace(/^Địa điểm:\s*/, "");
+  const label = capitalize(check.label.replace(/^Địa điểm:\s*/, ""));
   const met = user ? check.met : false;
   const extra = user ? chipExtra(check, location) : null;
 
