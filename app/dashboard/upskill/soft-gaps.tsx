@@ -13,7 +13,7 @@ import { formatDate } from "@/lib/date";
 
 /** Khoảng trống không lộ ra qua danh sách kỹ năng — phần DUY NHẤT của trang còn do AI viết, chỉ chạy khi người dùng bấm. */
 export function SoftGaps() {
-  const { report, loaded, error, generating, step, generate } = useUpskillReport();
+  const { report, loaded, error, generating, step, since, generate } = useUpskillReport();
   const { data: learning } = useLearning();
   const gaps = report ? parseSynthesisedGaps(report.synthesisedGaps) : [];
   const stale =
@@ -55,7 +55,7 @@ export function SoftGaps() {
           Hồ sơ của bạn đã đổi sau lần phân tích này, nội dung bên dưới có thể đã cũ.
         </Alert>
       )}
-      {generating && report && <UpskillProgress report={report} step={step} />}
+      {generating && report && <UpskillProgress report={report} step={step} since={since} />}
 
       {gaps.length > 0 ? (
         <div className="space-y-3">

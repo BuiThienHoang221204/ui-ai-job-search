@@ -144,12 +144,16 @@ export function JobsView() {
         typeof window !== "undefined" &&
         window.matchMedia("(min-width: 1280px)").matches;
       if (wide) {
-        push(filter, offset, jobId);
+        window.history.pushState(
+          null,
+          "",
+          `/dashboard/jobs?${writeFilter(filter, offset, scored, jobId)}`,
+        );
         return;
       }
       router.push(`/dashboard/jobs/${jobId}`);
     },
-    [filter, offset, push, router],
+    [filter, offset, scored, router],
   );
 
   const handleSavedChange = useCallback(

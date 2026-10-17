@@ -26,6 +26,7 @@ export function useUpskillReport() {
   const [error, setError] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [step, setStep] = useState(0);
+  const [since, setSince] = useState<number | undefined>();
 
   const mounted = useRef(true);
   useEffect(() => {
@@ -83,10 +84,25 @@ export function useUpskillReport() {
       });
   };
 
+  useEffect(() => {
+    upskillService
+      .inFlight()
+      .then((running) => {
+        if (!running || !mounted.current) return;
+        setGenerating(true);
+        setSince(Date.parse(running.createdAt));
+        setStep(running.jobsAnalysed > 0 ? 2 : 1);
+        poll(running.id, 0);
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const generate = async () => {
     setGenerating(true);
     setError(null);
     setStep(0);
+    setSince(undefined);
 
     try {
       const done = await streamModel<UpskillReportRecord, UpskillPartial>({
@@ -117,6 +133,7 @@ export function useUpskillReport() {
     error: error ?? query.error,
     generating,
     step,
+    since,
     generate,
   };
 }

@@ -8,12 +8,14 @@ import { useElapsedSeconds } from "@/hooks/use-elapsed";
 /** Đồng hồ đếm thời gian cho một tác vụ gọi model, so với thời gian dự kiến. */
 export function ModelElapsed({
   expected = 10,
+  since,
   className,
 }: {
   expected?: number;
+  since?: number;
   className?: string;
 }) {
-  const elapsed = useElapsedSeconds();
+  const elapsed = useElapsedSeconds(since);
 
   return (
     <div className={cn("mb-3", className)}>

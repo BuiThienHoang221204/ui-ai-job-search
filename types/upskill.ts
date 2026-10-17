@@ -21,3 +21,5 @@ export interface UpskillReportRecord {
   failureKind: AiFailureKind | null;
   createdAt: string;
 }
+
+export type UpskillInFlight = Pick<UpskillReportRecord, "id" | "createdAt" | "jobsAnalysed">;

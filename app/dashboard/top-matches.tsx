@@ -101,13 +101,13 @@ export function TopMatchRow({
   );
 }
 
-/** "Việc đang chờ bạn": 4 tin chấm điểm cao nhất mà người dùng chưa nộp đơn. */
+/** "Việc đang chờ bạn": 4 tin chấm gần nhất mà người dùng chưa nộp đơn. */
 export function TopMatches() {
   const { data } = useDashboard();
   if (!data) return null;
 
   const action = (
-    <Link href="/dashboard/matches?sort=score_desc" className="text-xs font-semibold text-primary-600 hover:text-primary-700">
+    <Link href="/dashboard/matches" className="text-xs font-semibold text-primary-600 hover:text-primary-700">
       Xem tất cả
     </Link>
   );

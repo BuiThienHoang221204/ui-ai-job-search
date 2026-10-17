@@ -26,16 +26,18 @@ function StepRow({ done, label }: { done: boolean; label: string }) {
 export function UpskillProgress({
   report,
   step = 0,
+  since,
 }: {
   report: UpskillReportRecord;
   step?: number;
+  since?: number;
 }) {
   const gaps = count(report.hardGaps) + count(report.synthesisedGaps);
   const step1Done = step >= 2 || gaps > 0;
 
   return (
     <Alert tone="info">
-      <ModelElapsed expected={EXPECTED_SECONDS} />
+      <ModelElapsed expected={EXPECTED_SECONDS} since={since} />
       <StepRow
         done={step1Done}
         label={`Bước 1/2 — tìm khoảng trống kỹ năng${
