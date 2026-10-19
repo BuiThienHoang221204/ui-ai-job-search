@@ -36,7 +36,7 @@ export async function streamModel<T, P = unknown>({
   });
 
   if (!response.ok) {
-    throw new ModelStreamError(
+    throw new ModelServerError(
       response.status === 401
         ? "Phiên đăng nhập đã hết hạn."
         : `Máy chủ trả về HTTP ${response.status}`,

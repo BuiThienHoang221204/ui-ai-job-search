@@ -1,7 +1,7 @@
 "use client";
 
 import { BriefLiveProgress } from "./brief-live-progress";
-import { streamModel } from "@/lib/model-stream";
+import { ModelServerError, streamModel } from "@/lib/model-stream";
 import { BriefBody, Signals } from "./company-brief-body";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,6 @@ import { companiesService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 import { isBriefPending } from "@/lib/company-brief";
-import { apiErrorMessage } from "@/lib/axios";
 
 import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/ui/section-card";
@@ -85,14 +84,13 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
       setPendingSince(undefined);
       reload();
     } catch (err: unknown) {
-      try {
-        await companiesService.refreshForJob(jobId, force);
-        setQueued(true);
-        reload();
-      } catch {
+      if (err instanceof ModelServerError) {
         setPendingSince(undefined);
-        toast.danger(apiErrorMessage(err, "Không xếp được lượt tìm hiểu"));
+        toast.danger(err.message);
+        return;
       }
+      setQueued(true);
+      reload();
     } finally {
       setPartial(null);
     }

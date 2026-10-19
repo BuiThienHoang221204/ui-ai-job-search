@@ -13,11 +13,6 @@ export interface QueuedDocument extends QueuedResult {
   documentId: string;
 }
 
-export interface QueuedReport extends QueuedResult {
-  reportId: string;
-  mode: "AGGREGATE" | "TARGETED";
-}
-
 export type WorkStatus = "PENDING" | "RUNNING" | "DONE" | "FAILED";
 
 export interface Paginated<T> {

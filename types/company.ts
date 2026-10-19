@@ -38,9 +38,3 @@ export interface CompanyBriefView {
   brief: CompanyBriefRecord | null;
   stale: boolean;
 }
-
-export interface BriefQueued {
-  queued: boolean;
-  company?: string;
-  reason?: string;
-}

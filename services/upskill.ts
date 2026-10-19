@@ -1,5 +1,5 @@
 import { api } from "@/lib/axios";
-import type { QueuedReport, UpskillInFlight, UpskillReportRecord } from "@/types";
+import type { UpskillInFlight, UpskillReportRecord } from "@/types";
 
 export const upskillService = {
   latest: () => api.get<UpskillReportRecord>("/upskill").then((r) => r.data),
@@ -10,8 +10,4 @@ export const upskillService = {
 
   get: (id: string) =>
     api.get<UpskillReportRecord>(`/upskill/${id}`).then((r) => r.data),
-
-  /** Tạo báo cáo nâng cấp kỹ năng: có jobId thì TARGETED, không thì AGGREGATE. */
-  generate: (jobId?: string) =>
-    api.post<QueuedReport>("/upskill/generate", { jobId }).then((r) => r.data),
 };

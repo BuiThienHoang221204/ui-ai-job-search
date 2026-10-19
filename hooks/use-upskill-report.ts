@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { streamModel } from "@/lib/model-stream";
+import { ModelServerError, streamModel } from "@/lib/model-stream";
 import { failureMessage } from "@/lib/failure-message";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { useApiQuery } from "@/hooks/use-api-query";
@@ -19,7 +19,7 @@ interface UpskillPartial {
   step?: number;
 }
 
-/** Báo cáo AI (khoảng trống mềm): đọc bản mới nhất, tạo lại bằng stream, hỏng stream thì xếp hàng rồi hỏi lại tới khi xong. */
+/** Báo cáo AI (khoảng trống mềm): đọc bản mới nhất, tạo lại bằng stream, đứt stream thì nối lại báo cáo đang chạy rồi hỏi lại tới khi xong. */
 export function useUpskillReport() {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -104,6 +104,7 @@ export function useUpskillReport() {
     setStep(0);
     setSince(undefined);
 
+    let streamError: unknown;
     try {
       const done = await streamModel<UpskillReportRecord, UpskillPartial>({
         path: "/upskill/generate-stream",
@@ -115,15 +116,27 @@ export function useUpskillReport() {
       putReport(done);
       setGenerating(false);
       return;
-    } catch {
-      setStep(0);
+    } catch (err) {
+      streamError = err;
+    }
+    if (!mounted.current) return;
+
+    if (streamError instanceof ModelServerError) {
+      setGenerating(false);
+      setError(streamError.message);
+      return;
     }
 
     try {
-      const receipt = await upskillService.generate();
-      poll(receipt.reportId, 0);
+      const running = await upskillService.inFlight();
+      if (running) {
+        poll(running.id, 0);
+        return;
+      }
+      setGenerating(false);
+      setError("Mất kết nối trước khi phân tích bắt đầu. Hãy thử lại.");
     } catch (err) {
-      fail(err, "Không chạy được phân tích");
+      fail(err, "Không đọc được trạng thái phân tích");
     }
   };
 
