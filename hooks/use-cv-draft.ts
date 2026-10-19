@@ -276,7 +276,7 @@ export function useCvActions(recordId: string) {
   const download = useCallback(async () => {
     setError(null);
     try {
-      openBlobInNewTab(await documentsService.pdf(recordId, "html"));
+      openBlobInNewTab(await documentsService.pdf(recordId));
     } catch (cause: unknown) {
       setError(apiErrorMessage(cause, "Không tạo được PDF"));
     }

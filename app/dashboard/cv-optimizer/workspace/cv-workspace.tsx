@@ -41,7 +41,7 @@ export function CvWorkspace({ documentId }: { documentId: string }) {
       <WorkspaceHeader documentId={documentId} />
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_34rem]">
         <PreviewStage documentId={documentId} />
-        <CvRail documentId={documentId} jobId={record.jobId} />
+        <CvRail jobId={record.jobId} />
       </div>
       {record.jobId && (
         <JobActionCards

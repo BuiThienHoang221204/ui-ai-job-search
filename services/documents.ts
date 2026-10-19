@@ -37,23 +37,10 @@ export const documentsService = {
   get: (id: string) =>
     api.get<DocumentRecord>(`/documents/${id}`).then((r) => r.data),
 
-  /** Tải file .tex thô của tài liệu dưới dạng text. */
-  source: async (id: string) => {
-    try {
-      const response = await api.get<string>(`/documents/${id}/source`, {
-        responseType: "text",
-      });
-      return response.data;
-    } catch (error) {
-      throw textErrorToError(error);
-    }
-  },
-
   /** Compile tài liệu ra PDF và trả về Blob, đọc lỗi Blob thành câu thông báo. */
-  pdf: async (id: string, engine?: "latex" | "html"): Promise<Blob> => {
+  pdf: async (id: string): Promise<Blob> => {
     try {
       const response = await api.get<Blob>(`/documents/${id}/pdf`, {
-        params: engine ? { engine } : undefined,
         responseType: "blob",
       });
       return response.data;

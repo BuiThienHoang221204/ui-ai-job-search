@@ -94,7 +94,6 @@ export interface DocumentRecord {
   status: WorkStatus;
   title: string;
   content: unknown;
-  storageKey: string | null;
   templateId: string;
   templateOptions: (CvTypography & { accent?: string }) | null;
   layout: CvLayout | null;
