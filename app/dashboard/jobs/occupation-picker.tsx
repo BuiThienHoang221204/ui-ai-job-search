@@ -1,14 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, MagnifyingGlass, X } from "@phosphor-icons/react/ssr";
+import { Check, MagnifyingGlass } from "@phosphor-icons/react/ssr";
 import type { OccupationOption } from "@/types";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/cn";
 import { fold } from "@/lib/text";
 
 interface OccupationPickerProps {
-  open: boolean;
   groups: OccupationOption[];
   selectedGroups: string[];
   selectedSubs: string[];
@@ -16,9 +16,35 @@ interface OccupationPickerProps {
   onClose: () => void;
 }
 
-/** Bộ chọn ngành nghề theo nhóm và nghề con. */
+const leavesOf = (group: OccupationOption) =>
+  group.subs?.length ? group.subs.map((sub) => sub.code) : [group.code];
+
+/** Mở mã nhóm đã chọn thành từng nghề, để mỗi ô chỉ cần hỏi "có trong tập không". */
+function expand(groups: OccupationOption[], selectedGroups: string[], selectedSubs: string[]) {
+  const picked = new Set(selectedSubs);
+  for (const group of groups) {
+    if (!selectedGroups.includes(group.code)) continue;
+    for (const code of leavesOf(group)) picked.add(code);
+  }
+  return picked;
+}
+
+/** Nhóm tích đủ mọi nghề thì gửi mã nhóm, còn lại gửi từng nghề, vì backend lọc nhóm AND nghề. */
+function collapse(groups: OccupationOption[], picked: Set<string>) {
+  const next = { groups: [] as string[], subs: [] as string[] };
+  for (const group of groups) {
+    const leaves = leavesOf(group);
+    if (leaves.every((code) => picked.has(code))) {
+      next.groups.push(group.code);
+      continue;
+    }
+    next.subs.push(...leaves.filter((code) => picked.has(code)));
+  }
+  return next;
+}
+
+/** Bộ chọn ngành nghề theo nhóm và nghề con; chỉ mount khi mở nên mỗi lần mở là một bản nháp mới. */
 export function OccupationPicker({
-  open,
   groups,
   selectedGroups,
   selectedSubs,
@@ -27,18 +53,14 @@ export function OccupationPicker({
 }: OccupationPickerProps) {
   const [needle, setNeedle] = useState("");
   const [activeGroup, setActiveGroup] = useState(groups[0]?.code ?? "");
-  const [draftGroups, setDraftGroups] = useState(selectedGroups);
-  const [draftSubs, setDraftSubs] = useState(selectedSubs);
+  const [picked, setPicked] = useState(() =>
+    expand(groups, selectedGroups, selectedSubs),
+  );
 
-  const [wasOpen, setWasOpen] = useState(open);
-  if (wasOpen !== open) {
-    setWasOpen(open);
-    if (open) {
-      setDraftGroups(selectedGroups);
-      setDraftSubs(selectedSubs);
-      setNeedle("");
-    }
-  }
+  const leavesByGroup = useMemo(
+    () => new Map(groups.map((group) => [group.code, leavesOf(group)])),
+    [groups],
+  );
 
   const matching = useMemo(() => {
     const term = fold(needle.trim());
@@ -58,71 +80,57 @@ export function OccupationPicker({
     visibleGroups.find((group) => group.code === activeGroup) ??
     visibleGroups[0];
 
-  const toggleGroup = (code: string) => {
-    const group = groups.find((row) => row.code === code);
-    const subs = group?.subs?.map((row) => row.code) ?? [];
+  const groupChecked = (code: string) =>
+    (leavesByGroup.get(code) ?? []).every((leaf) => picked.has(leaf));
 
-    if (draftGroups.includes(code)) {
-      setDraftGroups(draftGroups.filter((row) => row !== code));
-      setDraftSubs(draftSubs.filter((row) => !subs.includes(row)));
-      return;
+  const toggleGroup = (code: string) => {
+    const next = new Set(picked);
+    const checked = groupChecked(code);
+    for (const leaf of leavesByGroup.get(code) ?? []) {
+      if (checked) next.delete(leaf);
+      else next.add(leaf);
     }
-    // Không tự tích cả nghề con: backend AND occupation với subOccupation, tích hết nghề con sẽ loại mất tin chỉ khớp nhóm mà không khớp nghề con nào.
-    setDraftGroups([...draftGroups, code]);
+    setPicked(next);
   };
 
   const toggleSub = (code: string) => {
-    setDraftSubs(
-      draftSubs.includes(code)
-        ? draftSubs.filter((row) => row !== code)
-        : [...draftSubs, code],
-    );
+    const next = new Set(picked);
+    if (next.has(code)) next.delete(code);
+    else next.add(code);
+    setPicked(next);
   };
 
-  const total = draftGroups.length + draftSubs.length;
-
-  if (!open) return null;
+  const selection = collapse(groups, picked);
+  const total = selection.groups.length + selection.subs.length;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-slab/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      <div className="relative flex h-[min(36rem,90vh)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-          <h2 className="text-base font-semibold text-slate-900">
-            Chọn ngành nghề
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Đóng"
-            className="cursor-pointer rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100"
-          >
-            <X className="size-4.5" />
-          </button>
+    <Modal
+      open
+      onClose={onClose}
+      title="Chọn ngành nghề"
+      className="flex h-[min(36rem,90vh)] max-w-3xl flex-col overflow-hidden"
+      bodyClassName="flex min-h-0 flex-1 flex-col px-0 pb-0"
+    >
+      <div className="border-y border-slate-100 px-5 py-3">
+        <div className="relative">
+          <MagnifyingGlass className="pointer-events-none absolute top-1/2 left-3 size-4.5 -translate-y-1/2 text-slate-400" />
+          <input
+            value={needle}
+            onChange={(event) => setNeedle(event.target.value)}
+            placeholder="Tìm ngành nghề…"
+            className="focus:border-primary-400 focus:ring-primary-100 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 text-sm outline-none focus:bg-white focus:ring-2"
+          />
         </div>
+      </div>
 
-        <div className="border-b border-slate-100 px-5 py-3">
-          <div className="relative">
-            <MagnifyingGlass className="pointer-events-none absolute top-1/2 left-3 size-4.5 -translate-y-1/2 text-slate-400" />
-            <input
-              value={needle}
-              onChange={(event) => setNeedle(event.target.value)}
-              placeholder="Tìm ngành nghề…"
-              className="focus:border-primary-400 focus:ring-primary-100 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 text-sm outline-none focus:bg-white focus:ring-2"
-            />
-          </div>
-        </div>
-
-        <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-          <div className="scrollbar-thin overflow-y-auto border-r border-slate-100 py-2">
-            <p className="px-5 pb-1 text-2xs font-semibold tracking-wide text-slate-400 uppercase">
-              Nhóm ngành
-            </p>
-            {visibleGroups.map((group) => (
+      <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+        <div className="scrollbar-thin overflow-y-auto border-r border-slate-100 py-2">
+          <p className="px-5 pb-1 text-2xs font-semibold tracking-wide text-slate-400 uppercase">
+            Nhóm ngành
+          </p>
+          {visibleGroups.map((group) => {
+            const checked = groupChecked(group.code);
+            return (
               <button
                 key={group.code}
                 type="button"
@@ -137,7 +145,7 @@ export function OccupationPicker({
               >
                 <span
                   role="checkbox"
-                  aria-checked={draftGroups.includes(group.code)}
+                  aria-checked={checked}
                   tabIndex={0}
                   onClick={(event) => {
                     event.stopPropagation();
@@ -151,84 +159,72 @@ export function OccupationPicker({
                   }}
                   className={cn(
                     "flex size-4 shrink-0 items-center justify-center rounded border",
-                    draftGroups.includes(group.code)
+                    checked
                       ? "border-primary-600 bg-primary-600 text-white"
                       : "border-slate-300",
                   )}
                 >
-                  {draftGroups.includes(group.code) && (
-                    <Check className="size-3.5" />
-                  )}
+                  {checked && <Check className="size-3.5" />}
                 </span>
                 <span className="min-w-0 flex-1 truncate">{group.name}</span>
                 <span className="text-xs text-slate-400">{group.count}</span>
               </button>
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
-          <div className="scrollbar-thin overflow-y-auto py-2">
-            <p className="px-5 pb-1 text-2xs font-semibold tracking-wide text-slate-400 uppercase">
-              Nghề
-            </p>
-            {current?.subs?.length ? (
-              current.subs.map((sub) => (
+        <div className="scrollbar-thin overflow-y-auto py-2">
+          <p className="px-5 pb-1 text-2xs font-semibold tracking-wide text-slate-400 uppercase">
+            Nghề
+          </p>
+          {current?.subs?.length ? (
+            current.subs.map((sub) => {
+              const checked = picked.has(sub.code);
+              return (
                 <button
                   key={sub.code}
                   type="button"
                   onClick={() => toggleSub(sub.code)}
-                  aria-pressed={draftSubs.includes(sub.code)}
+                  aria-pressed={checked}
                   className="flex w-full cursor-pointer items-center gap-2.5 px-5 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50"
                 >
                   <span
                     className={cn(
                       "flex size-4 shrink-0 items-center justify-center rounded border",
-                      draftSubs.includes(sub.code)
+                      checked
                         ? "border-primary-600 bg-primary-600 text-white"
                         : "border-slate-300",
                     )}
                   >
-                    {draftSubs.includes(sub.code) && (
-                      <Check className="size-3.5" />
-                    )}
+                    {checked && <Check className="size-3.5" />}
                   </span>
                   <span className="min-w-0 flex-1 truncate">{sub.name}</span>
                   <span className="text-xs text-slate-400">{sub.count}</span>
                 </button>
-              ))
-            ) : (
-              <p className="px-5 py-3 text-sm text-slate-400">
-                Nhóm này chưa tách nghề chi tiết. Tích cả nhóm ở cột bên trái.
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between border-t border-slate-100 px-5 py-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setDraftGroups([]);
-              setDraftSubs([]);
-            }}
-          >
-            Bỏ chọn tất cả
-            {total > 0 && (
-              <span className="bg-primary-100 text-primary-700 ml-1.5 rounded-full px-1.5 text-xs font-semibold">
-                {total}
-              </span>
-            )}
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => onApply({ groups: draftGroups, subs: draftSubs })}
-          >
-            <Check className="size-4.5" />
-            Áp dụng
-          </Button>
+              );
+            })
+          ) : (
+            <p className="px-5 py-3 text-sm text-slate-400">
+              Nhóm này chưa tách nghề chi tiết. Tích cả nhóm ở cột bên trái.
+            </p>
+          )}
         </div>
       </div>
-    </div>
+
+      <div className="flex items-center justify-between border-t border-slate-100 px-5 py-3">
+        <Button variant="ghost" size="sm" onClick={() => setPicked(new Set())}>
+          Bỏ chọn tất cả
+          {total > 0 && (
+            <span className="bg-primary-100 text-primary-700 ml-1.5 rounded-full px-1.5 text-xs font-semibold">
+              {total}
+            </span>
+          )}
+        </Button>
+        <Button variant="primary" size="sm" onClick={() => onApply(selection)}>
+          <Check className="size-4.5" />
+          Áp dụng
+        </Button>
+      </div>
+    </Modal>
   );
 }

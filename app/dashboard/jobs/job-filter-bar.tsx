@@ -108,177 +108,180 @@ export function JobFilterBar({
   const [moreOpen, setMoreOpen] = useState(secondary > 0);
 
   return (
-    <div className="mb-4 space-y-2.5">
-      <OccupationPicker
-        open={pickerOpen}
-        groups={filters?.occupations ?? []}
-        selectedGroups={value.occupation}
-        selectedSubs={value.subOccupation}
-        onClose={() => setPickerOpen(false)}
-        onApply={(next) => {
-          setPickerOpen(false);
-          onChange({
-            ...value,
-            occupation: next.groups,
-            subOccupation: next.subs,
-          });
-        }}
-      />
-      <div className="flex flex-wrap items-center gap-2">
-        <SearchInput
-          className="min-w-72 flex-1"
-          value={value.q}
-          onChange={(next) => set("q", next)}
-          placeholder="Vị trí tuyển dụng, tên công ty…"
+    <>
+      {pickerOpen && filters && (
+        <OccupationPicker
+          groups={filters.occupations}
+          selectedGroups={value.occupation}
+          selectedSubs={value.subOccupation}
+          onClose={() => setPickerOpen(false)}
+          onApply={(next) => {
+            setPickerOpen(false);
+            onChange({
+              ...value,
+              occupation: next.groups,
+              subOccupation: next.subs,
+            });
+          }}
         />
+      )}
+      <div className="mb-4 space-y-2.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <SearchInput
+            className="min-w-72 flex-1"
+            value={value.q}
+            onChange={(next) => set("q", next)}
+            placeholder="Vị trí tuyển dụng, tên công ty…"
+          />
 
-        <MultiSelect
-          label="Địa điểm"
-          icon={MapPin}
-          align="right"
-          className="w-full sm:w-60"
-          options={provinceOptions}
-          selected={value.province}
-          onToggle={(code) => toggle("province", code)}
-          onClear={() => set("province", [])}
-          searchPlaceholder="Nhập Tỉnh/Thành phố"
-        />
+          <MultiSelect
+            label="Địa điểm"
+            icon={MapPin}
+            align="right"
+            className="w-full sm:w-60"
+            options={provinceOptions}
+            selected={value.province}
+            onToggle={(code) => toggle("province", code)}
+            onClear={() => set("province", [])}
+            searchPlaceholder="Nhập Tỉnh/Thành phố"
+          />
 
-        <TriggerButton
-          icon={Funnel}
-          label="Bộ lọc"
-          active={secondary > 0}
-          open={moreOpen}
-          onClick={() => setMoreOpen(!moreOpen)}
-        >
-          {secondary > 0 && (
-            <span className="bg-primary-100 text-primary-700 rounded-full px-1.5 text-xs font-semibold">
-              {secondary}
-            </span>
+          <TriggerButton
+            icon={Funnel}
+            label="Bộ lọc"
+            active={secondary > 0}
+            open={moreOpen}
+            onClick={() => setMoreOpen(!moreOpen)}
+          >
+            {secondary > 0 && (
+              <span className="bg-primary-100 text-primary-700 rounded-full px-1.5 text-xs font-semibold">
+                {secondary}
+              </span>
+            )}
+          </TriggerButton>
+        </div>
+
+        <div
+          className={cn(
+            "flex-wrap items-center gap-2",
+            moreOpen ? "flex" : "hidden",
           )}
-        </TriggerButton>
-      </div>
-
-      <div
-        className={cn(
-          "flex-wrap items-center gap-2",
-          moreOpen ? "flex" : "hidden",
-        )}
-      >
-        {user && (
-          <>
-            <Toggle
-              label="Đã lưu"
-              icon={Bookmark}
-              active={value.saved}
-              onClick={() => set("saved", !value.saved)}
-            />
-            <Toggle
-              label="Đã ứng tuyển"
-              icon={PaperPlaneRight}
-              active={value.applied}
-              onClick={() => set("applied", !value.applied)}
-            />
-          </>
-        )}
-
-        <TriggerButton
-          icon={Briefcase}
-          label="Ngành nghề"
-          active={value.occupation.length + value.subOccupation.length > 0}
-          open={pickerOpen}
-          onClick={() => setPickerOpen(true)}
         >
-          {value.occupation.length + value.subOccupation.length > 0 && (
-            <span className="bg-primary-100 text-primary-700 rounded-full px-1.5 text-xs font-semibold">
-              {value.occupation.length + value.subOccupation.length}
-            </span>
+          {user && (
+            <>
+              <Toggle
+                label="Đã lưu"
+                icon={Bookmark}
+                active={value.saved}
+                onClick={() => set("saved", !value.saved)}
+              />
+              <Toggle
+                label="Đã ứng tuyển"
+                icon={PaperPlaneRight}
+                active={value.applied}
+                onClick={() => set("applied", !value.applied)}
+              />
+            </>
           )}
-        </TriggerButton>
-        {user && (
+
+          <TriggerButton
+            icon={Briefcase}
+            label="Ngành nghề"
+            active={value.occupation.length + value.subOccupation.length > 0}
+            open={pickerOpen}
+            onClick={() => setPickerOpen(true)}
+          >
+            {value.occupation.length + value.subOccupation.length > 0 && (
+              <span className="bg-primary-100 text-primary-700 rounded-full px-1.5 text-xs font-semibold">
+                {value.occupation.length + value.subOccupation.length}
+              </span>
+            )}
+          </TriggerButton>
+          {user && (
+            <SelectMenu
+              label="Mọi mức lương"
+              icon={Money}
+              value={value.salaryMin}
+              onChange={(next) => set("salaryMin", next)}
+              options={[
+                { value: 0, label: "Mọi mức lương" },
+                ...SALARY_STEPS.map((step) => ({
+                  value: step * 1_000_000,
+                  label: `Từ ${step} triệu`,
+                })),
+              ]}
+            />
+          )}
+
           <SelectMenu
-            label="Mọi mức lương"
-            icon={Money}
-            value={value.salaryMin}
-            onChange={(next) => set("salaryMin", next)}
+            label="Mọi thời điểm"
+            icon={CalendarDots}
+            value={value.postedWithin}
+            onChange={(next) => set("postedWithin", next)}
             options={[
-              { value: 0, label: "Mọi mức lương" },
-              ...SALARY_STEPS.map((step) => ({
-                value: step * 1_000_000,
-                label: `Từ ${step} triệu`,
+              { value: 0, label: "Mọi thời điểm" },
+              ...POSTED_STEPS.map((step) => ({
+                value: step.value,
+                label: step.label,
               })),
             ]}
           />
-        )}
-
-        <SelectMenu
-          label="Mọi thời điểm"
-          icon={CalendarDots}
-          value={value.postedWithin}
-          onChange={(next) => set("postedWithin", next)}
-          options={[
-            { value: 0, label: "Mọi thời điểm" },
-            ...POSTED_STEPS.map((step) => ({
-              value: step.value,
-              label: step.label,
-            })),
-          ]}
-        />
-      </div>
-
-      {active > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          {value.province.map((code) => (
-            <FilterChip
-              key={`province-${code}`}
-              label={labelOf(provinceOptions, code)}
-              onRemove={() => toggle("province", code)}
-            />
-          ))}
-          {value.occupation.map((code) => (
-            <FilterChip
-              key={`occupation-${code}`}
-              label={labelOf(filters?.occupations ?? [], code)}
-              onRemove={() => toggle("occupation", code)}
-            />
-          ))}
-          {value.subOccupation.map((code) => (
-            <FilterChip
-              key={`sub-${code}`}
-              label={subLabelOf(filters?.occupations ?? [], code)}
-              onRemove={() => toggle("subOccupation", code)}
-            />
-          ))}
-          {value.saved && (
-            <FilterChip label="Đã lưu" onRemove={() => set("saved", false)} />
-          )}
-          {value.applied && (
-            <FilterChip label="Đã ứng tuyển" onRemove={() => set("applied", false)} />
-          )}
-          {value.salaryMin > 0 && (
-            <FilterChip
-              label={`Từ ${value.salaryMin / 1_000_000} triệu`}
-              onRemove={() => set("salaryMin", 0)}
-            />
-          )}
-          {value.postedWithin > 0 && (
-            <FilterChip
-              label={`Đăng trong ${value.postedWithin} ngày`}
-              onRemove={() => set("postedWithin", 0)}
-            />
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              onChange({ ...EMPTY_FILTER, q: value.q, sort: value.sort })
-            }
-          >
-            Bỏ chọn tất cả
-          </Button>
         </div>
-      )}
-    </div>
+
+        {active > 0 && (
+          <div className="flex flex-wrap items-center gap-2">
+            {value.province.map((code) => (
+              <FilterChip
+                key={`province-${code}`}
+                label={labelOf(provinceOptions, code)}
+                onRemove={() => toggle("province", code)}
+              />
+            ))}
+            {value.occupation.map((code) => (
+              <FilterChip
+                key={`occupation-${code}`}
+                label={labelOf(filters?.occupations ?? [], code)}
+                onRemove={() => toggle("occupation", code)}
+              />
+            ))}
+            {value.subOccupation.map((code) => (
+              <FilterChip
+                key={`sub-${code}`}
+                label={subLabelOf(filters?.occupations ?? [], code)}
+                onRemove={() => toggle("subOccupation", code)}
+              />
+            ))}
+            {value.saved && (
+              <FilterChip label="Đã lưu" onRemove={() => set("saved", false)} />
+            )}
+            {value.applied && (
+              <FilterChip label="Đã ứng tuyển" onRemove={() => set("applied", false)} />
+            )}
+            {value.salaryMin > 0 && (
+              <FilterChip
+                label={`Từ ${value.salaryMin / 1_000_000} triệu`}
+                onRemove={() => set("salaryMin", 0)}
+              />
+            )}
+            {value.postedWithin > 0 && (
+              <FilterChip
+                label={`Đăng trong ${value.postedWithin} ngày`}
+                onRemove={() => set("postedWithin", 0)}
+              />
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() =>
+                onChange({ ...EMPTY_FILTER, q: value.q, sort: value.sort })
+              }
+            >
+              Bỏ chọn tất cả
+            </Button>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 /** Nút bật/tắt một bộ lọc dạng boolean. */
