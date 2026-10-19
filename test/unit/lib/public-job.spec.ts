@@ -7,10 +7,10 @@ describe("isGuestPath", () => {
     expect(isGuestPath("/dashboard/jobs/abc123")).toBe(true);
   });
 
-  test("tra cứu lương mở cho khách, cả danh sách lẫn từng vị trí", () => {
-    expect(isGuestPath("/dashboard/salary")).toBe(true);
+  test("tra cứu lương cần đăng nhập, cả danh sách lẫn từng vị trí", () => {
+    expect(isGuestPath("/dashboard/salary")).toBe(false);
     expect(isGuestPath("/dashboard/salary/it-software-backend-developer")).toBe(
-      true,
+      false,
     );
   });
 

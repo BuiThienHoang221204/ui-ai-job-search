@@ -85,7 +85,7 @@ test("khach bam sang trang khac cua dashboard thi bi dua ve dang nhap", async ({
   });
 });
 
-test("khach bam Tra cuu luong o thanh ben thi xem duoc, khong bi dua ve dang nhap", async ({
+test("khach bam Tra cuu luong o thanh ben thi bi dua ve dang nhap", async ({
   page,
 }) => {
   await page.goto("/dashboard/jobs");
@@ -95,10 +95,7 @@ test("khach bam Tra cuu luong o thanh ben thi xem duoc, khong bi dua ve dang nha
 
   await page.getByRole("link", { name: "Tra cứu lương" }).first().click();
 
-  await expect(page).toHaveURL(/\/dashboard\/salary$/);
-  await expect(
-    page.getByRole("heading", { name: "Tra cứu lương" }),
-  ).toBeVisible({ timeout: 15_000 });
+  await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
 });
 
 test("nguoi da dang nhap thay ban day du cua tin", async ({

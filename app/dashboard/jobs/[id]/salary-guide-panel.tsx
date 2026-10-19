@@ -126,7 +126,7 @@ export function SalaryGuidePanel({ guide }: { guide: SalaryGuide | null }) {
       {guide.positionSlug && (
         <p className="mt-3 border-t border-slate-100 pt-2.5 text-2xs text-slate-400">
           <Link
-            href={`/salary/${guide.positionSlug}`}
+            href={`/dashboard/salary/${guide.positionSlug}`}
             className="underline hover:text-slate-600"
           >
             Xem bảng lương vị trí này
