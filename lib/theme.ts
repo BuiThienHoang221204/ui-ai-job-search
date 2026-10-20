@@ -6,7 +6,7 @@ export const THEMES = [
 
 export type ThemeId = (typeof THEMES)[number]["id"];
 
-export const DEFAULT_THEME: ThemeId = "system";
+export const DEFAULT_THEME: ThemeId = "light";
 export const THEME_KEY = "aijob:theme";
 
 /** Giá trị có phải một id giao diện hợp lệ hay không. */
@@ -64,7 +64,7 @@ export const serverTheme = (): ThemeId => DEFAULT_THEME;
 export const THEME_BOOTSTRAP = `
 (function(){
   try {
-    var saved = localStorage.getItem(${JSON.stringify(THEME_KEY)}) || 'system';
+    var saved = localStorage.getItem(${JSON.stringify(THEME_KEY)}) || ${JSON.stringify(DEFAULT_THEME)};
     var mq = window.matchMedia('(prefers-color-scheme: dark)');
     var paint = function(){
       var dark = saved === 'dark' || (saved === 'system' && mq.matches);
@@ -73,7 +73,7 @@ export const THEME_BOOTSTRAP = `
     };
     paint();
     mq.addEventListener('change', function(){
-      if ((localStorage.getItem(${JSON.stringify(THEME_KEY)}) || 'system') === 'system') paint();
+      if ((localStorage.getItem(${JSON.stringify(THEME_KEY)}) || ${JSON.stringify(DEFAULT_THEME)}) === 'system') paint();
     });
   } catch (e) {}
 })();
