@@ -1,3 +1,6 @@
+import { cn } from "@/lib/cn";
+import { displayLocation } from "@/lib/location";
+
 /** Địa điểm tin tuyển dụng trong ô bảng: cắt ngắn, giữ nguyên văn ở `title`. */
 export function LocationText({
   location,
@@ -17,5 +20,4 @@ export function LocationText({
     </span>
   );
 }
-import { displayLocation } from "@/lib/location";
-import { cn } from "@/lib/cn";
+

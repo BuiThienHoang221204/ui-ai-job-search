@@ -1,3 +1,4 @@
+import type { CompanyVerdict } from "@/types";
 
 export type VerdictTone =
   | "success"
@@ -24,4 +25,4 @@ export function isBriefPending(
 ): boolean {
   return pendingSince !== undefined && updatedAt === pendingSince;
 }
-import type { CompanyVerdict } from "@/types";
+

@@ -78,8 +78,6 @@ export function JobCard({ job, onSavedChange }: JobCardProps) {
     <Card className="flex h-full min-w-0 flex-col gap-3 p-4 transition-all duration-150 hover:border-slate-300 hover:shadow-xs">
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
         <CompanyLogo
-          initials={job.companyInitials}
-          color={job.companyColor}
           src={job.companyLogo}
           size="sm"
         />

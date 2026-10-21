@@ -1,3 +1,4 @@
+import type { Item, ProfileProposal, ProfileRecord } from "@/types";
 
 const TEXT_FIELDS = [
   "headline",
@@ -166,4 +167,3 @@ export function reviewValues(
 
   return values;
 }
-import type { Item, ProfileProposal, ProfileRecord } from "@/types";

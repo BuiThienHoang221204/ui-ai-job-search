@@ -22,7 +22,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AddPositionModal } from "./add-position-modal";
 import { PrepDetail, STATUS_LABEL, STATUS_VARIANT } from "./prep-detail";
 import { cn } from "@/lib/cn";
-import { companyColor, companyInitials } from "@/lib/company";
 import { formatDate } from "@/lib/date";
 import { isPrepBusy } from "@/lib/interview-status";
 import type { InterviewPrepSummary } from "@/types";
@@ -175,8 +174,6 @@ export function InterviewView() {
                         )}
                       >
                         <CompanyLogo
-                          initials={companyInitials(prep.job.company)}
-                          color={companyColor(prep.job.company)}
                           src={prep.job.companyLogo}
                           size="sm"
                           className="size-10 text-xs"

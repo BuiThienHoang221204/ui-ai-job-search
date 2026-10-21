@@ -11,7 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { CvGenerate } from "@/types";
 import { CV_PAGE_SIZE } from "./cv-list";
 import { cn } from "@/lib/cn";
-import { companyColor, companyInitials } from "@/lib/company";
 import { matchTone } from "@/lib/score";
 
 const SUGGESTION_LIMIT = 8;
@@ -69,8 +68,6 @@ export function SuggestedJobs({ onGenerate }: { onGenerate: CvGenerate }) {
             >
               <CompanyLogo
                 size="sm"
-                initials={companyInitials(match.job.company)}
-                color={companyColor(match.job.company)}
                 src={match.job.companyLogo}
               />
               <span className="min-w-0">

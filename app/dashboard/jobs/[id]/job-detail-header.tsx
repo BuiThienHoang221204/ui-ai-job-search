@@ -16,6 +16,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { loginPathForJob } from "@/lib/public-job";
 import { VERDICT_META } from "@/lib/match-labels";
+import { cn } from "@/lib/cn";
+import { formatJobSalary } from "@/lib/salary";
+import { useSession } from "@/hooks/use-session";
 
 interface JobDetailHeaderProps {
   card: Job;
@@ -43,8 +46,6 @@ export function JobDetailHeader({
     <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-start gap-4">
         <CompanyLogo
-          initials={card.companyInitials}
-          color={card.companyColor}
           src={card.companyLogo}
           size="lg"
         />
@@ -131,6 +132,3 @@ export function JobDetailHeader({
     </div>
   );
 }
-import { cn } from "@/lib/cn";
-import { formatJobSalary } from "@/lib/salary";
-import { useSession } from "@/hooks/use-session";

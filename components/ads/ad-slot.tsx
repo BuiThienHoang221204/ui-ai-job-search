@@ -15,6 +15,12 @@ const BANNER_SRC: Record<BannerSize, string | null> = {
 
 export type AdAlign = "start" | "center" | "end";
 
+const alignClasses: Record<AdAlign, string> = {
+  start: "justify-start",
+  center: "justify-center",
+  end: "justify-end",
+};
+
 let bannerQueue: Promise<void> = Promise.resolve();
 
 /** Khung chung cho mọi ô quảng cáo: nhãn "Quảng cáo" và nút đóng */
@@ -33,13 +39,7 @@ function AdFrame({
   if (closed) return null;
 
   return (
-    <div
-      className={cn(
-        "flex",
-        align === "center" ? "justify-center" : align === "end" ? "justify-end" : "justify-start",
-        className,
-      )}
-    >
+    <div className={cn("flex", alignClasses[align], className)}>
       <div className="flex max-w-full flex-col gap-1">
         <div className="flex items-center justify-between">
           <span className="text-[10px] tracking-wide text-slate-400 uppercase">Quảng cáo</span>

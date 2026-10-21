@@ -11,6 +11,8 @@ Frontend Next.js (App Router) + Tailwind v4 + TanStack Query + zustand + react-h
 - **Không ternary lồng**, kể cả trong biến hiển thị: gán bằng `if` trước `return`.
 - **Chỉ tách hàm/component khi có lý do** (dùng ≥ 2 nơi, hoặc là một khái niệm có tên rõ). Hàm không dùng state của component thì đưa ra `lib/`, đừng khai trong thân component.
 - **Không dùng mẹo để code ngắn hơn** (`flatMap` trả `[]`/`[x]`, ghép chuỗi rồi lọc theo hậu tố…): viết `filter` + `map` hoặc vòng lặp thường.
+- **Tận dụng cơ chế nguyên bản của HTML/DOM thay vì dựng state React phức tạp.** Ví dụ: fallback ảnh lỗi dùng thẳng `onError={(e) => { e.currentTarget.src = DEFAULT_LOGO; }}` và `src={src || DEFAULT_LOGO}`, KHÔNG tạo `useState` lưu `failed`/`failedSrc` để theo dõi trạng thái tải ảnh.
+- **Tuyệt đối không over-engineer hay viết code phòng thủ thừa.** Không khai báo state, effect, biến trung gian hay cờ thừa cho những thứ giải quyết được bằng toán tử logic trực tiếp (`||`, `??`, `if`). Component chỉ nhận và xử lý đúng những gì nó thực sự cần, không nhận prop thừa rồi `void` hay viết wrapper vòng vèo.
 
 **2. Truyền ÍT props nhất có thể — lý tưởng là chỉ một `id`.** Component tự lấy dữ liệu nó cần qua custom hook thay vì nhận cả object từ cha rồi chuyền tiếp xuống.
 

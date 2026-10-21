@@ -10,7 +10,6 @@ import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCvByJob, useRecentDocuments } from "@/hooks/use-letters";
 import type { LetterKind, DocumentRecord } from "@/types";
-import { companyColor, companyInitials } from "@/lib/company";
 import { relativeTime } from "@/lib/date";
 
 const KIND_META = {
@@ -93,8 +92,6 @@ export function LetterList() {
               >
                 <CompanyLogo
                   size="sm"
-                  initials={companyInitials(company)}
-                  color={companyColor(company)}
                   src={first.job?.companyLogo}
                 />
                 <div className="min-w-0">

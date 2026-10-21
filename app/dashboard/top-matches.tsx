@@ -62,8 +62,6 @@ export function TopMatchRow({
   return (
     <li className="grid grid-cols-[2.75rem_minmax(0,1fr)] items-center gap-x-4 gap-y-2.5 border-t border-slate-100 py-3.5 first:border-t-0 first:pt-0 md:grid-cols-[2.75rem_minmax(0,1fr)_9.5rem_auto]">
       <CompanyLogo
-        initials={job.companyInitials}
-        color={job.companyColor}
         src={job.companyLogo}
         size="sm"
         className="rounded-xl text-xs"

@@ -35,7 +35,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { companyColor, companyInitials } from "@/lib/company";
 import { formatDate } from "@/lib/date";
 import { openBlobInNewTab } from "@/lib/blob";
 import { useToast } from "@/hooks/use-toast";
@@ -176,8 +175,6 @@ export function ApplicationsView() {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <CompanyLogo
-                        initials={companyInitials(application.job.company)}
-                        color={companyColor(application.job.company)}
                         src={application.job.companyLogo}
                         size="sm"
                       />

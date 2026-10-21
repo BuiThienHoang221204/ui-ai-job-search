@@ -90,6 +90,10 @@ export function PracticeQuestion({
   else if (dirty) status = "Chưa lưu — tự lưu khi bạn rời ô nhập";
   else if (draft.trim()) status = "Đã lưu";
 
+  let answerLabel = "Tự trả lời";
+  if (answering) answerLabel = "Đóng";
+  else if (answer) answerLabel = "Sửa câu trả lời";
+
   return (
     <article className="rounded-xl border border-slate-200/80 p-4">
       <div className="mb-2 flex flex-wrap items-center gap-1.5 empty:hidden">
@@ -108,7 +112,7 @@ export function PracticeQuestion({
           onClick={() => setAnswering((open) => !open)}
         >
           <PencilSimpleLine className="size-4" />
-          {answering ? "Đóng" : answer ? "Sửa câu trả lời" : "Tự trả lời"}
+          {answerLabel}
         </Button>
         <Button
           size="sm"

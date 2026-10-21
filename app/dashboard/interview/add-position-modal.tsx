@@ -13,7 +13,6 @@ import { Modal } from "@/components/ui/modal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs } from "@/components/ui/tabs";
 import { cn } from "@/lib/cn";
-import { companyColor, companyInitials } from "@/lib/company";
 
 type Source = "applied" | "saved";
 
@@ -152,8 +151,6 @@ export function AddPositionModal({
                     )}
                   >
                     <CompanyLogo
-                      initials={companyInitials(option.company)}
-                      color={companyColor(option.company)}
                       src={option.companyLogo}
                       size="sm"
                       className="size-9 text-xs"

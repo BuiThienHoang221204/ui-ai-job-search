@@ -6,7 +6,6 @@ import { CompanyLogo } from "@/components/jobs/company-logo";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRecentDocuments } from "@/hooks/use-letters";
-import { companyColor, companyInitials } from "@/lib/company";
 
 const LIMIT = 3;
 
@@ -53,8 +52,6 @@ export function LetterSuggestions() {
             >
               <CompanyLogo
                 size="sm"
-                initials={companyInitials(cv.job?.company ?? "")}
-                color={companyColor(cv.job?.company ?? "")}
                 src={cv.job?.companyLogo}
               />
               <span className="min-w-0">

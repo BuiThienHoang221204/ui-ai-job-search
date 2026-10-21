@@ -28,7 +28,6 @@ import { Tabs } from "@/components/ui/tabs";
 import { InterviewDate } from "./interview-date";
 import { JobMockSessions } from "./job-mock-sessions";
 import { PracticeQuestion } from "./practice-question";
-import { companyColor, companyInitials } from "@/lib/company";
 import { relativeDay } from "@/lib/date";
 import { useToast } from "@/hooks/use-toast";
 import { isPrepBusy } from "@/lib/interview-status";
@@ -132,6 +131,14 @@ function RegenerateButton({
     }
   };
 
+  const handleRecreate = () => {
+    if (prep.practiced > 0) {
+      setConfirming(true);
+    } else {
+      void run();
+    }
+  };
+
   return (
     <>
       <Button
@@ -139,7 +146,7 @@ function RegenerateButton({
         variant={variant}
         loading={queueing}
         title="Soạn lại theo hồ sơ hiện tại"
-        onClick={() => (prep.practiced > 0 ? setConfirming(true) : void run())}
+        onClick={handleRecreate}
       >
         {!queueing && <ArrowsClockwise className="size-4" />}
         Soạn lại
@@ -176,8 +183,6 @@ function PrepHeader({ prep }: { prep: InterviewPrepRecord }) {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
         <div className="flex min-w-0 flex-1 items-start gap-3">
           <CompanyLogo
-            initials={companyInitials(prep.job.company)}
-            color={companyColor(prep.job.company)}
             src={prep.job.companyLogo}
             size="sm"
           />

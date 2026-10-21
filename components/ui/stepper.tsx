@@ -13,12 +13,21 @@ interface StepperProps {
   className?: string;
 }
 
+const labelColors = {
+  active: "text-primary-700",
+  done: "text-slate-700",
+  todo: "text-slate-400",
+};
+
 /** Thanh các bước tiến trình, bấm được để quay lại bước đã qua. */
 export function Stepper({ steps, current, onStepClick, className }: StepperProps) {
   return (
     <ol className={cn("flex items-start w-full", className)}>
       {steps.map((step, index) => {
-        const state = index < current ? "done" : index === current ? "active" : "todo";
+        let state: "done" | "active" | "todo" = "todo";
+        if (index < current) state = "done";
+        else if (index === current) state = "active";
+
         return (
           <li key={step.label} className={cn("flex flex-1 items-start", index < steps.length - 1 && "")}>
             <div className="flex flex-col items-center">
@@ -45,7 +54,7 @@ export function Stepper({ steps, current, onStepClick, className }: StepperProps
               <span
                 className={cn(
                   "mt-2 hidden text-center text-xs font-medium sm:block",
-                  state === "active" ? "text-primary-700" : state === "done" ? "text-slate-700" : "text-slate-400",
+                  labelColors[state],
                 )}
               >
                 {step.label}

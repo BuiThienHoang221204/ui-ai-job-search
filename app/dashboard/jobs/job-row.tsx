@@ -50,8 +50,6 @@ export function JobRow({
 
       <div className="flex gap-3 p-3.5">
         <CompanyLogo
-          initials={job.companyInitials}
-          color={job.companyColor}
           src={job.companyLogo}
           size="sm"
           className="mt-0.5 self-start"
