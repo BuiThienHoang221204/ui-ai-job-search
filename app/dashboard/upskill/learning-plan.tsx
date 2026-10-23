@@ -3,6 +3,7 @@
 import { useLearning } from "@/hooks/use-learning";
 import { Card } from "@/components/ui/card";
 import { LearningPlanItem } from "./learning-plan-item";
+import { StudyReminder } from "./study-reminder";
 
 const MAX_LEARNING = 3;
 
@@ -25,6 +26,8 @@ export function LearningPlan() {
           Tập trung tối đa {MAX_LEARNING} kỹ năng cùng lúc. Xong mốc cuối thì kỹ năng tự vào hồ sơ.
         </p>
       </div>
+
+      <StudyReminder />
 
       {data.plan.length ? (
         data.plan.map((item) => <LearningPlanItem key={item.skillKey} item={item} />)

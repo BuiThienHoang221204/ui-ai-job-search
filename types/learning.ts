@@ -32,6 +32,7 @@ export interface LearningOverview {
   jobsAnalysed: number;
   profileUpdatedAt: string | null;
   gaps: SkillGapItem[];
+  studyTime: string;
   plan: LearningItem[];
   skipped: LearningItem[];
 }
@@ -41,4 +42,9 @@ export interface SaveLearningInput {
   status: "LEARNING" | "SKIPPED";
   steps?: boolean[];
   days?: WeekDay[];
+}
+
+export interface PushSubscriptionInput {
+  endpoint: string;
+  keys: { p256dh: string; auth: string };
 }

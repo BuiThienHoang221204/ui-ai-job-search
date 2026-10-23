@@ -1,11 +1,10 @@
 "use client";
 
-import { ArrowSquareOut, CalendarPlus, Check, X } from "@phosphor-icons/react/ssr";
-import { useLearningActions } from "@/hooks/use-learning";
-import { WEEK_DAYS, downloadIcs, googleCalendarUrl } from "@/lib/learning-calendar";
+import { ArrowSquareOut, Check, X } from "@phosphor-icons/react/ssr";
+import { useLearning, useLearningActions } from "@/hooks/use-learning";
+import { WEEK_DAYS } from "@/lib/study-schedule";
 import { hostOf, resourcesFor } from "@/lib/learning-resources";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import type { LearningItem, WeekDay } from "@/types";
 import { cn } from "@/lib/cn";
@@ -16,9 +15,10 @@ const milestones = (skill: string) => [
   `Thêm ${skill} vào hồ sơ và CV`,
 ];
 
-/** Một kỹ năng trong kế hoạch: ba mốc đánh dấu được, ngày học trong tuần, thêm vào lịch, tài liệu chính thức. */
+/** Một kỹ năng trong kế hoạch: ba mốc đánh dấu được, ngày học trong tuần, tài liệu chính thức. */
 export function LearningPlanItem({ item }: { item: LearningItem }) {
   const { busyKey, update, remove } = useLearningActions();
+  const studyTime = useLearning().data?.studyTime;
   const busy = busyKey === item.skillKey;
   const done = item.status === "DONE";
   const doneCount = item.steps.filter(Boolean).length;
@@ -114,32 +114,15 @@ export function LearningPlanItem({ item }: { item: LearningItem }) {
           </div>
 
           {item.days.length > 0 ? (
-            <div className="space-y-2 rounded-lg bg-slate-50 p-2.5 text-xs text-slate-600">
-              <p>
-                Học {item.skillName} vào{" "}
-                {WEEK_DAYS.filter((day) => item.days.includes(day.value))
-                  .map((day) => day.label)
-                  .join(", ")}{" "}
-                hằng tuần, lúc 20:00
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                <a
-                  href={googleCalendarUrl(item.skillName, item.days, new Date())}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button size="sm" variant="outline">
-                    <CalendarPlus className="size-4" />
-                    Google Calendar
-                  </Button>
-                </a>
-                <Button size="sm" variant="ghost" onClick={() => downloadIcs(item.skillName, item.days)}>
-                  Tải file .ics
-                </Button>
-              </div>
-            </div>
+            <p className="rounded-lg bg-slate-50 p-2.5 text-xs text-slate-600">
+              Học {item.skillName} vào{" "}
+              {WEEK_DAYS.filter((day) => item.days.includes(day.value))
+                .map((day) => day.label)
+                .join(", ")}{" "}
+              hằng tuần, lúc {studyTime}
+            </p>
           ) : (
-            <p className="text-xs text-slate-500">Chọn ngày để thêm buổi học vào lịch của bạn.</p>
+            <p className="text-xs text-slate-500">Chọn ngày học để được nhắc vào những ngày đó.</p>
           )}
 
           <div className="space-y-1 text-xs">

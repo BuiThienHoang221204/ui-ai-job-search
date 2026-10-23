@@ -40,6 +40,7 @@ export const keys = {
 
   upskill: () => ["upskill", "latest"] as const,
   learning: () => ["learning"] as const,
+  pushStatus: () => ["push-status"] as const,
 
   questionPage: (filters: unknown, offset: number) =>
     ["question-bank", "page", filters, offset] as const,

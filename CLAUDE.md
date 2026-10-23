@@ -91,6 +91,7 @@ Lý do và nguồn của từng quy tắc dưới đây (docs Next.js 16, react.
 - **Đổi giao diện: làm mockup HTML trước** trong `mockups/` (thư mục bị gitignore), mở cho người dùng xem, và **chỉ code khi được duyệt rõ ràng** ("ok triển khai", "làm đi").
 - **Không commit / push** khi người dùng chưa yêu cầu.
 - Trước khi coi là xong: `pnpm exec tsc --noEmit -p .`, `pnpm exec eslint <thư mục đã sửa>`, `pnpm exec vitest run`.
+- **Tự rà diff trước khi báo xong** theo ba câu hỏi, sửa ngay những gì vướng rồi mới báo, và báo kèm kết quả rà: (1) có over-engineer không — state/effect/props/helper thừa, component bọc mỏng, làm trước cho nhu cầu chưa có; (2) có vi phạm quy tắc ở file này không — mục "Quy tắc bắt buộc khi viết component", vị trí file, import một chiều, dữ liệu qua `services/` + TanStack; (3) logic có thẳng và đơn giản không — không ternary lồng, không mẹo, chỉ tách hàm/component khi có lý do.
 - **Chỉ chạy prettier trên file mình sửa.** Chạy cả thư mục sẽ định dạng lại (kể cả đổi xuống dòng CRLF) những file không liên quan — xem `git status` và `git checkout` các file đó.
 
 ## Cách viết

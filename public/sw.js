@@ -1,6 +1,6 @@
 // Service worker Careelot: chỉ cache tệp tĩnh, KHÔNG BAO GIỜ đụng /api (dữ liệu phải mới và đúng phiên đăng nhập).
 // Đổi VERSION mỗi khi sửa file này hoặc offline.html để máy người dùng bỏ cache cũ.
-const VERSION = "careelot-v2";
+const VERSION = "careelot-v4";
 const OFFLINE_URL = "/offline.html";
 const PRECACHE = [OFFLINE_URL, "/Careelot_Square.svg"];
 
@@ -53,4 +53,30 @@ self.addEventListener("fetch", (event) => {
       ),
     );
   }
+});
+
+// Nhắc học (ADR 0018 ở backend): máy chủ gửi { title, body, url }; bấm thông báo thì mở hoặc chuyển tới đúng trang.
+self.addEventListener("push", (event) => {
+  const data = event.data ? event.data.json() : {};
+  event.waitUntil(
+    self.registration.showNotification(data.title || "Careelot", {
+      body: data.body || "",
+      icon: "/icons/notification-192.png",
+      badge: "/icons/notification-192.png",
+      tag: "study-reminder",
+      data: { url: data.url || "/dashboard/upskill" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = new URL(event.notification.data?.url || "/", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
+      const open = windows.find((client) => client.url === target);
+      if (open) return open.focus();
+      return self.clients.openWindow(target);
+    }),
+  );
 });

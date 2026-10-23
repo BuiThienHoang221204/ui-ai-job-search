@@ -52,6 +52,8 @@ export function useLearningActions() {
         `Đã thêm ${gap.name} vào hồ sơ.`,
       ),
     remove: (key: string) => run(key, () => learningService.remove(key)),
+    setStudyTime: (studyTime: string) =>
+      run("study-time", () => learningService.updateSettings(studyTime)),
     update: (item: LearningItem, patch: Partial<SaveLearningInput>) =>
       save(
         item.skillKey,

@@ -9,5 +9,6 @@ export { interviewService } from "./interview";
 export { upskillService } from "./upskill";
 export { profileService } from "./profile";
 export { learningService } from "./learning";
+export { pushService } from "./push";
 export { profileDraftService } from "./profile-draft";
 export { companiesService } from "./companies";

@@ -13,6 +13,9 @@ export const learningService = {
   save: (key: string, input: SaveLearningInput) =>
     api.put<LearningItem>(path(key), input).then((r) => r.data),
 
+  updateSettings: (studyTime: string) =>
+    api.patch<{ studyTime: string }>("/learning", { studyTime }).then((r) => r.data),
+
   remove: (key: string) =>
     api.delete<{ removed: number }>(path(key)).then((r) => r.data),
 };
