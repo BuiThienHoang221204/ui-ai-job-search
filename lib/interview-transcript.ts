@@ -1,6 +1,7 @@
 import type { MockInterviewRecord, InterviewStep } from "@/types";
 
 const ASK_USER = "ask_user";
+const QUESTION_MARK = /@{1,3}\s*H[OÔỎ]I\s*@{1,3}/i;
 
 export interface InterviewTurn {
   index: number;
@@ -41,14 +42,21 @@ export function buildTranscript(run: MockInterviewRecord): InterviewTranscript {
   let intro: string | null = null;
 
   for (const step of run.steps ?? []) {
-    const said = text(step.text);
+    let question = questionOf(step);
+    const parts = [text(step.text)];
+    const mark = question ? QUESTION_MARK.exec(question) : null;
+    if (question && mark) {
+      parts.push(text(question.slice(0, mark.index)));
+      question = text(question.slice(mark.index + mark[0].length));
+    }
+
+    const said = parts.filter((part) => part !== null).join("\n\n");
     if (said) {
       const last = turns.at(-1);
       if (last) last.feedback = last.feedback ? `${last.feedback}\n\n${said}` : said;
       else intro = intro ? `${intro}\n\n${said}` : said;
     }
 
-    const question = questionOf(step);
     if (!question) continue;
 
     turns.push({

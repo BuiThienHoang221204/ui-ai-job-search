@@ -69,6 +69,18 @@ describe("buildTranscript", () => {
     expect(transcript.turns[1].feedback).toBeNull();
   });
 
+  it("tách nhận xét bị lưu lẫn vào câu hỏi khi model gõ lệch vạch ngăn", () => {
+    const transcript = buildTranscript(
+      run([
+        ask("Giới thiệu bản thân?", "Em là backend developer 4 năm."),
+        ask("Trình bày rõ ràng.\n\n@@HOI@\n\nBạn dùng Azure chưa?"),
+      ]),
+    );
+
+    expect(transcript.turns[0].feedback).toBe("Trình bày rõ ràng.");
+    expect(transcript.turns[1].question).toBe("Bạn dùng Azure chưa?");
+  });
+
   it("đọc câu trả lời từ toolResults của chính bước đã hỏi", () => {
     const transcript = buildTranscript(
       run([ask("Giới thiệu bản thân?", "Em là backend developer 4 năm.")]),

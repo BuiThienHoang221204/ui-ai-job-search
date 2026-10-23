@@ -1,9 +1,11 @@
-import { Lightbulb } from "@phosphor-icons/react/ssr";
+import { ChatCircleDots, Lightbulb } from "@phosphor-icons/react/ssr";
 import { Markdown } from "@/components/ui/markdown";
 import type { InterviewTurn } from "@/lib/interview-transcript";
 import { cn } from "@/lib/cn";
+import { AnswerBubble } from "./answer-bubble";
+import { InterviewerAvatar } from "./interviewer-avatar";
 
-/** Một lượt hỏi - đáp - nhận xét, dựng như một trang biên bản. */
+/** Một lượt hỏi - đáp - nhận xét dạng hội thoại: câu hỏi bên trái, câu trả lời bên phải, nhận xét gắn ngay dưới. */
 export function InterviewTurnBlock({
   turn,
   waiting,
@@ -12,48 +14,52 @@ export function InterviewTurnBlock({
   waiting?: boolean;
 }) {
   return (
-    <li className="grid grid-cols-[2.25rem_1fr] gap-x-3 gap-y-2">
-      <span
-        className={cn(
-          "mt-0.5 flex size-7 items-center justify-center rounded-full font-mono text-xs font-medium tabular-nums",
-          waiting
-            ? "bg-amber-100 text-amber-900 ring-1 ring-amber-300"
-            : "bg-slate-100 text-slate-600",
-        )}
-        aria-hidden
-      >
-        {turn.index}
-      </span>
+    <li id={`turn-${turn.index}`} className="scroll-mt-4 space-y-4">
+      <p className="flex items-center gap-2.5 font-mono text-[11.5px] font-semibold tracking-wide text-slate-400 before:h-px before:flex-1 before:bg-slate-100 after:h-px after:flex-1 after:bg-slate-100">
+        CÂU {turn.index}
+      </p>
 
-      <div className="min-w-0 space-y-3">
-        <div>
-          <p className="text-[0.6875rem] font-medium tracking-wide text-slate-500 uppercase">
-            Người phỏng vấn
-          </p>
+      <div
+        className={cn(
+          "grid grid-cols-[2.125rem_minmax(0,1fr)] gap-3",
+          waiting &&
+            "border-primary-200 from-primary-50 rounded-2xl border bg-linear-to-b to-white to-70% p-4",
+        )}
+      >
+        <InterviewerAvatar active={waiting} />
+        <div className="min-w-0">
+          {waiting ? (
+            <p className="text-primary-700 mb-1 flex items-center gap-1.5 text-[13px] font-semibold">
+              <ChatCircleDots className="size-4" weight="fill" />
+              Đến lượt bạn
+            </p>
+          ) : (
+            <p className="mb-0.5 text-[13px] text-slate-500">Người phỏng vấn</p>
+          )}
           <Markdown
             text={turn.question}
-            className="mt-1 text-[0.9375rem] font-medium text-slate-900"
+            className={cn(
+              "leading-normal font-semibold text-slate-900",
+              waiting ? "text-[17px]" : "text-base",
+            )}
           />
         </div>
-
-        {turn.answer && (
-          <div className="rounded-lg border border-slate-200/80 bg-slate-50/70 px-3.5 py-3">
-            <p className="text-[0.6875rem] font-medium tracking-wide text-slate-500 uppercase">
-              Bạn trả lời
-            </p>
-            <p className="mt-1 text-sm leading-relaxed whitespace-pre-wrap text-slate-700">
-              {turn.answer}
-            </p>
-          </div>
-        )}
-
-        {turn.feedback && (
-          <div className="border-primary-300 flex gap-2.5 border-l-2 py-0.5 pl-3">
-            <Lightbulb className="text-primary-600 mt-0.5 size-4.5 shrink-0" />
-            <Markdown text={turn.feedback} className="min-w-0 text-slate-600" />
-          </div>
-        )}
       </div>
+
+      {turn.answer && <AnswerBubble text={turn.answer} />}
+
+      {turn.feedback && (
+        <div className="ml-11.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-3">
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-700">
+            <Lightbulb className="size-4" weight="fill" />
+            Nhận xét
+          </p>
+          <Markdown
+            text={turn.feedback}
+            className="mt-1 text-[15px] text-slate-700"
+          />
+        </div>
+      )}
     </li>
   );
 }
