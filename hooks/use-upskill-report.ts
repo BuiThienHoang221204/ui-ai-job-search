@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ModelServerError, streamModel } from "@/lib/model-stream";
 import { failureMessage } from "@/lib/failure-message";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
@@ -11,7 +10,6 @@ import { keys } from "@/lib/query-keys";
 import { upskillService } from "@/services";
 import type { UpskillReportRecord } from "@/types";
 
-const LOGIN_NEXT = "/login?next=/dashboard/upskill";
 const POLL_INTERVAL_MS = 2000;
 const MAX_POLLS = 80;
 
@@ -19,24 +17,17 @@ interface UpskillPartial {
   step?: number;
 }
 
-/** Báo cáo AI (khoảng trống mềm): đọc bản mới nhất, tạo lại bằng stream, đứt stream thì nối lại báo cáo đang chạy rồi hỏi lại tới khi xong. */
+const finished = (report: UpskillReportRecord | undefined) =>
+  report?.status === "DONE" || report?.status === "FAILED";
+
+/** Báo cáo AI (khoảng trống mềm): đọc bản mới nhất, tạo lại bằng stream, có lượt đang chạy (vào lại trang hoặc đứt stream) thì hỏi lại tới khi xong. */
 export function useUpskillReport() {
-  const router = useRouter();
   const queryClient = useQueryClient();
-  const [error, setError] = useState<string | null>(null);
-  const [generating, setGenerating] = useState(false);
-  const [step, setStep] = useState(0);
-  const [since, setSince] = useState<number | undefined>();
+  const [streaming, setStreaming] = useState(false);
+  const [streamStep, setStreamStep] = useState(0);
+  const [streamError, setStreamError] = useState<string | null>(null);
 
-  const mounted = useRef(true);
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
-  const query = useApiQuery(
+  const latest = useApiQuery(
     keys.upskill(),
     () =>
       upskillService.latest().catch((err: unknown) => {
@@ -46,105 +37,80 @@ export function useUpskillReport() {
     { errorMessage: "Không tải được báo cáo" },
   );
 
-  const putReport = useCallback(
-    (next: UpskillReportRecord) => queryClient.setQueryData(keys.upskill(), next),
-    [queryClient],
-  );
+  const inFlight = useQuery({
+    queryKey: keys.upskillInFlight(),
+    queryFn: () => upskillService.inFlight(),
+  });
+  const running = inFlight.data ?? null;
 
-  const fail = (err: unknown, fallback: string) => {
-    setGenerating(false);
-    if (apiErrorStatus(err) === 401) {
-      router.replace(LOGIN_NEXT);
-      return;
-    }
-    setError(apiErrorMessage(err, fallback));
-  };
+  const progress = useQuery({
+    queryKey: keys.upskillRun(running?.id ?? null),
+    queryFn: async () => {
+      const current = await upskillService.get(running!.id);
+      if (finished(current)) {
+        queryClient.setQueryData(keys.upskill(), current);
+        queryClient.setQueryData(keys.upskillInFlight(), null);
+      }
+      return current;
+    },
+    enabled: running !== null,
+    refetchInterval: (query) =>
+      finished(query.state.data) || query.state.dataUpdateCount >= MAX_POLLS
+        ? false
+        : POLL_INTERVAL_MS,
+  });
 
-  const poll = (reportId: string, polls: number) => {
-    if (!mounted.current) return;
-    upskillService
-      .get(reportId)
-      .then((current) => {
-        if (!mounted.current) return;
-        if (current.status === "DONE" || current.status === "FAILED") {
-          putReport(current);
-          setGenerating(false);
-          if (current.status === "FAILED") setError(failureMessage(current.failureKind));
-          return;
-        }
-        if (polls + 1 >= MAX_POLLS) {
-          setGenerating(false);
-          setError("Phân tích chạy quá lâu. Tải lại trang sau ít phút để xem kết quả.");
-          return;
-        }
-        setTimeout(() => poll(reportId, polls + 1), POLL_INTERVAL_MS);
-      })
-      .catch((err: unknown) => {
-        if (mounted.current) fail(err, "Không đọc được trạng thái phân tích");
-      });
-  };
-
-  useEffect(() => {
-    upskillService
-      .inFlight()
-      .then((running) => {
-        if (!running || !mounted.current) return;
-        setGenerating(true);
-        setSince(Date.parse(running.createdAt));
-        setStep(running.jobsAnalysed > 0 ? 2 : 1);
-        poll(running.id, 0);
-      })
-      .catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const polls = queryClient.getQueryState(keys.upskillRun(running?.id ?? null))?.dataUpdateCount ?? 0;
+  const polling =
+    running !== null && !finished(progress.data) && !progress.isError && polls < MAX_POLLS;
 
   const generate = async () => {
-    setGenerating(true);
-    setError(null);
-    setStep(0);
-    setSince(undefined);
-
-    let streamError: unknown;
+    setStreaming(true);
+    setStreamError(null);
+    setStreamStep(0);
     try {
       const done = await streamModel<UpskillReportRecord, UpskillPartial>({
         path: "/upskill/generate-stream",
         onPartial: (partial) => {
-          if (mounted.current && typeof partial.step === "number") setStep(partial.step);
+          if (typeof partial.step === "number") setStreamStep(partial.step);
         },
       });
-      if (!mounted.current) return;
-      putReport(done);
-      setGenerating(false);
-      return;
+      queryClient.setQueryData(keys.upskill(), done);
     } catch (err) {
-      streamError = err;
-    }
-    if (!mounted.current) return;
-
-    if (streamError instanceof ModelServerError) {
-      setGenerating(false);
-      setError(streamError.message);
-      return;
-    }
-
-    try {
-      const running = await upskillService.inFlight();
-      if (running) {
-        poll(running.id, 0);
-        return;
+      if (err instanceof ModelServerError) {
+        setStreamError(err.message);
+      } else {
+        const resumed = await queryClient.fetchQuery({
+          queryKey: keys.upskillInFlight(),
+          queryFn: () => upskillService.inFlight(),
+          staleTime: 0,
+        });
+        if (!resumed) setStreamError("Mất kết nối trước khi phân tích bắt đầu. Hãy thử lại.");
       }
-      setGenerating(false);
-      setError("Mất kết nối trước khi phân tích bắt đầu. Hãy thử lại.");
-    } catch (err) {
-      fail(err, "Không đọc được trạng thái phân tích");
+    } finally {
+      setStreaming(false);
     }
   };
 
+  let error = streamError ?? latest.error;
+  if (progress.isError) error = apiErrorMessage(progress.error, "Không đọc được trạng thái phân tích");
+  if (running && polls >= MAX_POLLS && !finished(progress.data)) {
+    error = "Phân tích chạy quá lâu. Tải lại trang sau ít phút để xem kết quả.";
+  }
+  if (latest.data?.status === "FAILED") error = failureMessage(latest.data.failureKind);
+
+  let step = streamStep;
+  let since: number | undefined;
+  if (!streaming && running && streamStep === 0) {
+    step = running.jobsAnalysed > 0 ? 2 : 1;
+    since = Date.parse(running.createdAt);
+  }
+
   return {
-    report: query.data ?? null,
-    loaded: query.data !== null || !query.loading,
-    error: error ?? query.error,
-    generating,
+    report: latest.data ?? null,
+    loaded: latest.data !== null || !latest.loading,
+    error,
+    generating: streaming || polling,
     step,
     since,
     generate,

@@ -39,11 +39,14 @@ export const keys = {
   interviewPrep: (jobId: string) => ["interview", "prep", jobId] as const,
 
   upskill: () => ["upskill", "latest"] as const,
+  upskillInFlight: () => ["upskill", "in-flight"] as const,
+  upskillRun: (id: string | null) => ["upskill", "run", id] as const,
   learning: () => ["learning"] as const,
   pushStatus: () => ["push-status"] as const,
 
   questionPage: (filters: unknown, offset: number) =>
     ["question-bank", "page", filters, offset] as const,
+  questionAnswer: (id: string) => ["question-bank", "answer", id] as const,
   questionFacets: (filters: unknown) =>
     ["question-bank", "facets", filters] as const,
 

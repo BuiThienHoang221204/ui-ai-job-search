@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Briefcase, CaretDown, ChatCircleDots, TrendUp } from "@phosphor-icons/react/ssr";
+import { Briefcase, ChatCircleDots, TrendUp } from "@phosphor-icons/react/ssr";
 import { QUESTION_PAGE_SIZE, useQuestionBank } from "@/hooks/use-question-bank";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FilterChip } from "@/components/ui/filter-chip";
 import { SelectMenu } from "@/components/ui/select-menu";
@@ -14,14 +13,11 @@ import { SearchInput } from "@/components/ui/search-input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SponsoredRailCard } from "@/components/ads/affiliate-inline";
 import { AFFILIATE_OFFERS, pickOffer } from "@/lib/affiliate";
-import {
-  QuestionAnswer,
-} from "./question-answer";
+import { QuestionRow } from "./question-row";
 import { cn } from "@/lib/cn";
 import type {
   QuestionFacets,
   QuestionPage,
-  QuestionSummary,
   QuestionFilterOption,
 } from "@/types";
 
@@ -40,49 +36,6 @@ function menuOptions(options: QuestionFilterOption[], allLabel: string) {
 /** Tìm tên hiển thị của một mã trong danh sách lựa chọn. */
 function labelOf(options: QuestionFilterOption[], code: string | null): string {
   return options.find((o) => o.code === code)?.name ?? code ?? "";
-}
-
-/** Một dòng câu hỏi, bấm để mở phần đáp án. */
-function QuestionRow({ question }: { question: QuestionSummary }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <Card className="p-4">
-      <button
-        type="button"
-        onClick={() => setOpen((was) => !was)}
-        className="flex w-full items-start gap-3 text-left"
-        aria-expanded={open}
-      >
-        <div className="flex-1 space-y-2">
-          <p className="font-medium leading-snug">{question.text}</p>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {question.industryName && (
-              <Badge variant="info">{question.industryName}</Badge>
-            )}
-            {question.typeName && <Badge variant="outline">{question.typeName}</Badge>}
-            {question.difficulty && (
-              <span className="text-xs text-slate-500">
-                {question.difficulty}
-              </span>
-            )}
-          </div>
-        </div>
-        <CaretDown
-          className={[
-            "mt-1 size-4 shrink-0 text-slate-500 transition-transform",
-            open ? "rotate-180" : "",
-          ].join(" ")}
-        />
-      </button>
-
-      {open && (
-        <div className="mt-4 border-t pt-4">
-          <QuestionAnswer question={question} />
-        </div>
-      )}
-    </Card>
-  );
 }
 
 /** Trình duyệt ngân hàng câu hỏi: bộ lọc full width, bên dưới là danh sách và cột quảng cáo bên phải. */
@@ -180,8 +133,8 @@ export function QuestionBankBrowser({
             />
           ) : (
             <div className="space-y-3">
-              {bank.page.items.map((question) => (
-                <QuestionRow key={question.id} question={question} />
+              {bank.page.items.map((question, index) => (
+                <QuestionRow key={question.id} question={question} number={bank.offset + index + 1} />
               ))}
             </div>
           )}
