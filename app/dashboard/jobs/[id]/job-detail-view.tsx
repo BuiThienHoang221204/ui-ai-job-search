@@ -24,7 +24,7 @@ import { JobActionCards } from "@/components/jobs/job-action-cards";
 import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
 import { SkillResources } from "@/components/ads/affiliate-inline";
 import { missingSkillsOf } from "@/lib/affiliate";
-import { loginPathForJob } from "@/lib/public-job";
+import { useLoginModal } from "@/hooks/use-login-modal";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "@/hooks/use-session";
 import { afterSaveJob, updateJobDetail } from "@/lib/job-cache";
@@ -41,6 +41,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
   const [savePending, setSavePending] = useState<boolean | null>(null);
   const toast = useToast();
   const { user } = useSession();
+  const openLogin = useLoginModal((s) => s.open);
   const { data, error } = useJobDetail(jobId);
 
   const job = data?.job ?? null;
@@ -48,7 +49,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
   const saved = savePending ?? job?.saved ?? false;
   const toggleSave = () => {
     if (!user) {
-      router.push(loginPathForJob(jobId));
+      openLogin({ reason: "Đăng nhập để lưu tin và theo dõi đơn ứng tuyển." });
       return;
     }
     const next = !saved;
@@ -73,7 +74,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
 
   const handleApply = async () => {
     if (!user) {
-      router.push(loginPathForJob(jobId));
+      openLogin({ reason: "Đăng nhập để ứng tuyển và lưu tin vào lịch sử ứng tuyển." });
       return;
     }
     if (job?.application) {

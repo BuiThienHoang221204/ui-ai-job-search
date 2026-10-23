@@ -8,6 +8,10 @@ import { pageTitle } from "@/components/layout/nav-items";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/form";
 import { useSession } from "@/hooks/use-session";
+import { useLoginModal } from "@/hooks/use-login-modal";
+import { isAdmin } from "@/lib/auth";
+
+const CV_OPTIMIZER_PATH = "/dashboard/cv-optimizer";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -16,6 +20,7 @@ interface HeaderProps {
 /** Thanh đầu trang dashboard: nút mở menu, tiêu đề trang, ô tìm việc và người dùng. */
 export function Header({ onMenuClick }: HeaderProps) {
   const { user } = useSession();
+  const openLogin = useLoginModal((s) => s.open);
   const pathname = usePathname();
   const router = useRouter();
   const [term, setTerm] = useState("");
@@ -76,13 +81,23 @@ export function Header({ onMenuClick }: HeaderProps) {
       </form>
 
       <div className="ml-auto flex shrink-0 items-center gap-2.5">
-        {user?.role === "ADMIN" && (
+        {isAdmin(user) && (
           <span className="hidden rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-2xs font-semibold text-amber-900 sm:inline">
             Quản trị viên
           </span>
         )}
 
-        <Link href="/dashboard/cv-optimizer">
+        <Link
+          href={CV_OPTIMIZER_PATH}
+          onClick={(event) => {
+            if (user) return;
+            event.preventDefault();
+            openLogin({
+              reason: "Đăng nhập để tối ưu CV theo từng tin tuyển dụng.",
+              next: CV_OPTIMIZER_PATH,
+            });
+          }}
+        >
           <Button size="sm">
             <Sparkle className="size-4.5" />
             <span className="hidden sm:inline">Tối ưu CV với AI</span>

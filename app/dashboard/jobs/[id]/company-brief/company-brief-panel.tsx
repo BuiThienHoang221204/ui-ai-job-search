@@ -4,8 +4,6 @@ import { BriefLiveProgress } from "./brief-live-progress";
 import { ModelServerError, streamModel } from "@/lib/model-stream";
 import { BriefBody, Signals } from "./company-brief-body";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { loginPathForJob } from "@/lib/public-job";
 import { ArrowsClockwise, Buildings } from "@phosphor-icons/react/ssr";
 import { companiesService } from "@/services";
 
@@ -16,6 +14,7 @@ import { isBriefPending } from "@/lib/company-brief";
 import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/ui/section-card";
 import { useSession } from "@/hooks/use-session";
+import { useLoginModal } from "@/hooks/use-login-modal";
 import { useToast } from "@/hooks/use-toast";
 import type { PartialBrief } from "@/types";
 
@@ -29,7 +28,7 @@ interface CompanyBriefPanelProps {
 /** Thẻ "Về công ty này" trên trang chi tiết tin, có query riêng. */
 export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
   const toast = useToast();
-  const router = useRouter();
+  const openLogin = useLoginModal((s) => s.open);
   const { user } = useSession();
   const [pendingSince, setPendingSince] = useState<string | null | undefined>(
     undefined,
@@ -69,7 +68,7 @@ export function CompanyBriefPanel({ jobId }: CompanyBriefPanelProps) {
 
   async function research(force: boolean) {
     if (!user) {
-      router.push(loginPathForJob(jobId));
+      openLogin({ reason: "Đăng nhập để xem phân tích về công ty tuyển dụng." });
       return;
     }
     setPendingSince(brief?.updatedAt ?? null);

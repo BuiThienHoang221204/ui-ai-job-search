@@ -10,6 +10,9 @@ import { BrandLogo } from "@/components/layout/brand-logo";
 import { cn } from "@/lib/cn";
 import { personInitials } from "@/lib/company";
 import { useSession } from "@/hooks/use-session";
+import { useLoginModal } from "@/hooks/use-login-modal";
+import { isGuestPath } from "@/lib/public-job";
+import { isAdmin } from "@/lib/auth";
 
 const ADMIN_APP_URL = process.env.NEXT_PUBLIC_ADMIN_URL ?? "http://localhost:3001";
 
@@ -18,6 +21,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, logout } = useSession();
+  const openLogin = useLoginModal((s) => s.open);
 
   const activeHref = useMemo(() => {
     const query = searchParams.toString();
@@ -58,6 +62,11 @@ export function Sidebar() {
               key={href}
               href={href}
               title={label}
+              onClick={(event) => {
+                if (user || isGuestPath(href)) return;
+                event.preventDefault();
+                openLogin({ reason: `Đăng nhập để mở mục "${label}".`, next: href });
+              }}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-150",
                 active
@@ -78,7 +87,7 @@ export function Sidebar() {
           );
         })}
 
-        {user?.role === "ADMIN" && (
+        {isAdmin(user) && (
           <div className="!mt-4 border-t border-slate-100/90 pt-3">
             <a
               href={ADMIN_APP_URL}
@@ -96,18 +105,20 @@ export function Sidebar() {
 
       {!user && (
         <div className="flex shrink-0 flex-col gap-2 border-t border-slate-100 px-4 py-3 collapsed:hidden">
-          <Link
-            href="/register?next=/dashboard/jobs"
+          <button
+            type="button"
+            onClick={() => openLogin({ mode: "register" })}
             className="flex h-9 items-center justify-center rounded-lg bg-primary-600 text-sm font-semibold text-white hover:bg-primary-700"
           >
             Tạo tài khoản
-          </Link>
-          <Link
-            href="/login?next=/dashboard/jobs"
+          </button>
+          <button
+            type="button"
+            onClick={() => openLogin()}
             className="flex h-9 items-center justify-center rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             Đăng nhập
-          </Link>
+          </button>
         </div>
       )}
 

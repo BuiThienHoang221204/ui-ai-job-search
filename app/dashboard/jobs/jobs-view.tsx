@@ -23,6 +23,7 @@ import { JobDetailView } from "./[id]/job-detail-view";
 import { JobList } from "./job-list";
 import { cn } from "@/lib/cn";
 import { useSession } from "@/hooks/use-session";
+import { useLoginModal } from "@/hooks/use-login-modal";
 import { afterSaveJob } from "@/lib/job-cache";
 
 const SORT_OPTIONS: { value: JobSort; label: string }[] = [
@@ -39,6 +40,7 @@ export function JobsView() {
   const queryClient = useQueryClient();
   const params = useSearchParams();
   const { user } = useSession();
+  const openLogin = useLoginModal((s) => s.open);
   const scored = params.get("scored") === "1";
   const filter = useMemo(() => {
     const read = readFilter(new URLSearchParams(params.toString()));
@@ -55,9 +57,10 @@ export function JobsView() {
   const selected = params.get("job");
   const [draftQuery, setDraftQuery] = useState(filter.q);
   const [syncedQuery, setSyncedQuery] = useState(filter.q);
+  const debouncedQuery = useDebounce(draftQuery, SEARCH_DEBOUNCE_MS);
   if (syncedQuery !== filter.q) {
     setSyncedQuery(filter.q);
-    setDraftQuery(filter.q);
+    if (filter.q !== debouncedQuery) setDraftQuery(filter.q);
   }
 
   const push = useCallback(
@@ -71,13 +74,15 @@ export function JobsView() {
   );
   const handleFilterChange = useCallback(
     (next: JobFilterValue) => {
-      setDraftQuery(next.q);
+      if (next.q !== draftQuery) {
+        setDraftQuery(next.q);
+        return;
+      }
       push(next, 0, null);
     },
-    [push],
+    [push, draftQuery],
   );
 
-  const debouncedQuery = useDebounce(draftQuery, SEARCH_DEBOUNCE_MS);
   useEffect(() => {
     if (debouncedQuery !== draftQuery) return;
     if (debouncedQuery === filter.q) return;
@@ -186,12 +191,17 @@ export function JobsView() {
         title="Đăng nhập để xem việc làm phù hợp"
         description="Trang này lọc việc làm theo ngành và kinh nghiệm trong hồ sơ của bạn. Bạn vẫn xem được mọi tin ở Tất cả việc làm mà không cần đăng nhập."
         action={
-          <Link
-            href="/login?next=%2Fdashboard%2Fjobs%3Fscored%3D1"
+          <button
+            type="button"
+            onClick={() =>
+              openLogin({
+                reason: "Đăng nhập để xem việc làm đúng ngành và kinh nghiệm của bạn.",
+              })
+            }
             className="text-primary-600 hover:text-primary-700 text-sm font-semibold"
           >
             Đăng nhập
-          </Link>
+          </button>
         }
       />
     );

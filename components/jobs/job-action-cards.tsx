@@ -1,7 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, PaperPlaneTilt } from "@phosphor-icons/react/ssr";
 import type { JobActionKey } from "@/types";
+import { useSession } from "@/hooks/use-session";
+import { useLoginModal } from "@/hooks/use-login-modal";
 
 const ACTIONS = {
   cv: {
@@ -40,6 +44,9 @@ export function JobActionCards({
   actions: JobActionKey[];
   id?: string;
 }) {
+  const { user } = useSession();
+  const openLogin = useLoginModal((s) => s.open);
+
   return (
     <div id={id} className="grid scroll-mt-20 gap-3 md:grid-cols-3">
       {actions.map((key) => {
@@ -48,6 +55,14 @@ export function JobActionCards({
           <Link
             key={key}
             href={action.href(jobId)}
+            onClick={(event) => {
+              if (user) return;
+              event.preventDefault();
+              openLogin({
+                reason: `Đăng nhập để dùng "${action.title}".`,
+                next: action.href(jobId),
+              });
+            }}
             className="group grid grid-cols-[2.5rem_minmax(0,1fr)_1.125rem] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 transition hover:-translate-y-px hover:border-primary-200 hover:shadow-md hover:shadow-primary-600/5"
           >
             <span className="flex size-10 items-center justify-center">

@@ -13,12 +13,11 @@ import { CompanyLogo } from "@/components/jobs/company-logo";
 import { JobTime } from "@/components/jobs/job-time";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { loginPathForJob } from "@/lib/public-job";
 import { VERDICT_META } from "@/lib/match-labels";
 import { cn } from "@/lib/cn";
 import { formatJobSalary } from "@/lib/salary";
 import { useSession } from "@/hooks/use-session";
+import { useLoginModal } from "@/hooks/use-login-modal";
 
 interface JobDetailHeaderProps {
   card: Job;
@@ -39,6 +38,7 @@ export function JobDetailHeader({
   onApply,
 }: JobDetailHeaderProps) {
   const { user } = useSession();
+  const openLogin = useLoginModal((s) => s.open);
   const verdict = match?.verdict ? VERDICT_META[match.verdict] : null;
   const submitted = job.application?.status === "APPLIED";
 
@@ -73,13 +73,16 @@ export function JobDetailHeader({
               </span>
             )}
             {!user && (
-              <Link
-                href={loginPathForJob(job.id)}
+              <button
+                type="button"
+                onClick={() =>
+                  openLogin({ reason: "Đăng nhập để xem mức lương của tin này." })
+                }
                 className="inline-flex items-center gap-1.5 font-semibold text-primary-600 hover:text-primary-700"
               >
                 <Wallet className="size-4.5" />
                 Đăng nhập để xem lương
-              </Link>
+              </button>
             )}
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="size-4.5" />

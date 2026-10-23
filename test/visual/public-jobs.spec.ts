@@ -21,7 +21,7 @@ test("khach vao thang trang viec lam, khong thay luong va nut luu", async ({
   await expect(list.getByRole("button", { name: "Lưu việc làm" })).toHaveCount(
     0,
   );
-  await expect(page.getByRole("link", { name: "Tạo tài khoản" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Tạo tài khoản" })).toBeVisible();
 
   await list.locator("li button").first().click();
 
@@ -31,7 +31,7 @@ test("khach vao thang trang viec lam, khong thay luong va nut luu", async ({
   ).toBeVisible();
 });
 
-test("khach mo link tin dang chon thi thay du cac khoi, bam nut thi sang dang nhap", async ({
+test("khach mo link tin dang chon thi thay du cac khoi, bam nut thi mo modal dang nhap", async ({
   page,
   request,
 }) => {
@@ -54,9 +54,35 @@ test("khach mo link tin dang chon thi thay du cac khoi, bam nut thi sang dang nh
 
   await detail.getByRole("button", { name: "Ứng tuyển ngay" }).click();
 
-  await expect(page).toHaveURL(
-    `/login?next=${encodeURIComponent(`/dashboard/jobs/${id}`)}`,
-  );
+  await expect(
+    page.getByRole("heading", { name: "Đăng nhập để tiếp tục" }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`/dashboard/jobs\\?job=${id}$`));
+});
+
+test("khach dang nhap trong modal thi o lai dung tin dang xem", async ({
+  page,
+  request,
+}) => {
+  const id = await firstJobId(request);
+
+  await page.goto(`/dashboard/jobs/${id}`);
+  await page
+    .getByRole("button", { name: "Đăng nhập để xem lương" })
+    .click({ timeout: 15_000 });
+
+  await page.getByLabel("Email").fill("ketoan@aijob.local");
+  await page.getByLabel("Mật khẩu").fill("Demo@12345");
+  await page
+    .locator("form")
+    .getByRole("button", { name: "Đăng nhập", exact: true })
+    .click();
+
+  await expect(
+    page.getByRole("button", { name: "Ứng tuyển ngay" }),
+  ).toBeVisible({ timeout: 15_000 });
+  await expect(page).toHaveURL(new RegExp(`/dashboard/jobs/${id}$`));
+  await expect(page.getByText("Đăng nhập để xem lương")).toHaveCount(0);
 });
 
 test("khach mo trang chi tiet rieng cua tin", async ({ page, request }) => {
@@ -70,22 +96,7 @@ test("khach mo trang chi tiet rieng cua tin", async ({ page, request }) => {
   await expect(page).toHaveURL(new RegExp(`/dashboard/jobs/${id}$`));
 });
 
-test("khach bam sang trang khac cua dashboard thi bi dua ve dang nhap", async ({
-  page,
-}) => {
-  await page.goto("/dashboard/jobs");
-  await expect(page.getByTestId("job-list-pane")).toBeVisible({
-    timeout: 15_000,
-  });
-
-  await page.getByRole("link", { name: "Tối ưu CV" }).first().click();
-
-  await expect(page).toHaveURL(/\/login\?next=%2Fdashboard%2Fcv-optimizer/, {
-    timeout: 15_000,
-  });
-});
-
-test("khach bam Tra cuu luong o thanh ben thi bi dua ve dang nhap", async ({
+test("khach bam muc can dang nhap o thanh ben thi mo modal, khong roi trang", async ({
   page,
 }) => {
   await page.goto("/dashboard/jobs");
@@ -95,7 +106,10 @@ test("khach bam Tra cuu luong o thanh ben thi bi dua ve dang nhap", async ({
 
   await page.getByRole("link", { name: "Tra cứu lương" }).first().click();
 
-  await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
+  await expect(
+    page.getByRole("heading", { name: "Đăng nhập để tiếp tục" }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/dashboard\/jobs$/);
 });
 
 test("nguoi da dang nhap thay ban day du cua tin", async ({

@@ -21,8 +21,3 @@ export function portalName(source: string): string {
 export function isGuestPath(pathname: string): boolean {
   return GUEST_PATH.test(pathname);
 }
-
-/** Trang đăng nhập, xong thì quay về đúng tin đang xem. */
-export function loginPathForJob(jobId: string): string {
-  return `/login?next=${encodeURIComponent(`/dashboard/jobs/${jobId}`)}`;
-}

@@ -15,6 +15,7 @@ import { SectionCard } from "@/components/ui/section-card";
 import { DisplayCard } from "./display-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/hooks/use-session";
+import { isAdmin } from "@/lib/auth";
 
 /** Trang tài khoản; chỉ hiện những gì backend thật sự có. */
 export function SettingsView() {
@@ -50,7 +51,7 @@ export function SettingsView() {
               <div>
                 <dt className="text-xs font-medium text-slate-400">Vai trò</dt>
                 <dd className="mt-0.5 text-sm text-slate-900">
-                  {user?.role === "ADMIN" ? "Quản trị viên" : "Người dùng"}
+                  {isAdmin(user) ? "Quản trị viên" : "Người dùng"}
                 </dd>
               </div>
             </dl>
