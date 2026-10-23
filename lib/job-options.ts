@@ -1,4 +1,10 @@
-import type { JobMatchWithJob, JobOption, JobRecord } from "@/types";
+import type {
+  FilterOption,
+  JobMatchWithJob,
+  JobOption,
+  JobRecord,
+  OccupationOption,
+} from "@/types";
 
 /** Danh sách tin cho ô chọn: khi tin đã cố định chỉ cần đúng tin đó, ngược lại là các tin đã chấm điểm. */
 export function jobOptionsOf(
@@ -17,3 +23,7 @@ export function jobOptionsOf(
     company: match.job.company,
   }));
 }
+
+/** Nghề thật của một nhóm ngành để người dùng tick chọn: bỏ mục ảo "Khác" (`<NHÓM>_OTHER`) mà bộ lọc dùng cho tin chưa rõ nghề. */
+export const pickableSubs = (group: OccupationOption | undefined): FilterOption[] =>
+  (group?.subs ?? []).filter((sub) => sub.code !== `${group?.code}_OTHER`);

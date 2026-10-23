@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   Bookmark,
   Briefcase,
@@ -27,6 +27,7 @@ import { OccupationPicker } from "./occupation-picker";
 import { cn } from "@/lib/cn";
 import { formatCount } from "@/lib/number";
 import { useSession } from "@/hooks/use-session";
+import { useDropdown } from "@/hooks/use-dropdown";
 
 const EMPTY_FILTER: JobFilterValue = {
   q: "",
@@ -328,22 +329,6 @@ const subLabelOf = (groups: OccupationOption[], code: string) =>
   groups.flatMap((group) => group.subs ?? []).find((sub) => sub.code === code)
     ?.name ?? code;
 
-/** Trạng thái mở/đóng của dropdown, tự đóng khi bấm ra ngoài. */
-function useDropdown() {
-  const [open, setOpen] = useState(false);
-  const root = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onDocumentClick = (event: MouseEvent) => {
-      if (!root.current?.contains(event.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDocumentClick);
-    return () => document.removeEventListener("mousedown", onDocumentClick);
-  }, [open]);
-
-  return { open, setOpen, root };
-}
 /** Nút bấm mở một dropdown bộ lọc. */
 function TriggerButton({
   icon: Icon,

@@ -7,14 +7,16 @@ import { keys } from "@/lib/query-keys";
 import { jobsService } from "@/services";
 import { Card } from "@/components/ui/card";
 import { SelectMenu } from "@/components/ui/select-menu";
+import { MultiPickField } from "@/components/ui/multi-pick-field";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { EXPERIENCE_LEVELS } from "@/lib/profile-form";
+import { pickableSubs } from "@/lib/job-options";
 import { useProfile, useProfileUi, useSaveProfile } from "@/hooks/use-profile";
 import { cn } from "@/lib/cn";
 import { personInitials } from "@/lib/company";
 import { useSession } from "@/hooks/use-session";
 
-/** Đầu trang hồ sơ: tên, chức danh và hai ô Ngành / Cấp bậc quyết định "Việc làm phù hợp". */
+/** Đầu trang hồ sơ: tên, chức danh và bốn ô Ngành / Nghề / Cấp bậc / Nơi làm việc quyết định "Việc làm phù hợp". */
 export function ProfileHeader() {
   const { user } = useSession();
   const { data: profile } = useProfile();
@@ -34,6 +36,15 @@ export function ProfileHeader() {
   const occupation = profile.occupationCode ?? "";
   const level =
     profile.experienceLevel === "UNKNOWN" ? "" : profile.experienceLevel;
+  const search = {
+    occupationCode: occupation,
+    subOccupationCodes: profile.subOccupationCodes,
+    experienceLevel: level || undefined,
+    preferredProvinces: profile.preferredProvinces,
+  };
+  const subs = pickableSubs(
+    filters.data?.occupations.find((item) => item.code === occupation),
+  );
 
   return (
     <Card className="p-5 sm:p-6">
@@ -66,8 +77,8 @@ export function ProfileHeader() {
               Hệ thống đang tìm việc cho bạn theo
             </p>
             <p className="text-xs text-slate-500">
-              “Việc làm phù hợp” chỉ hiện tin đúng ngành này, cấp bậc lệch tối
-              đa một bậc.
+              “Việc làm phù hợp” chỉ hiện tin đúng ngành, các nghề và nơi làm
+              việc đã chọn, cấp bậc lệch tối đa một bậc.
             </p>
           </div>
           <p className="text-sm text-slate-600">
@@ -98,11 +109,29 @@ export function ProfileHeader() {
                 label: group.name,
               }))}
               onChange={(next) =>
-                saveSearch({
-                  occupationCode: next,
-                  experienceLevel: level || undefined,
-                })
+                saveSearch({ ...search, occupationCode: next, subOccupationCodes: [] })
               }
+            />
+          </div>
+          <div>
+            <p
+              className={cn(
+                "mb-1 text-2xs",
+                search.subOccupationCodes.length ? "text-slate-500" : "text-amber-600",
+              )}
+            >
+              Nghề
+              {search.subOccupationCodes.length
+                ? ""
+                : " · chưa chọn, đang hiện mọi tin của ngành"}
+            </p>
+            <MultiPickField
+              title="Nghề (chọn nhiều)"
+              emptyLabel="Chưa chọn"
+              options={subs}
+              selected={search.subOccupationCodes}
+              disabled={saving || !occupation}
+              onSave={(codes) => saveSearch({ ...search, subOccupationCodes: codes })}
             />
           </div>
           <div>
@@ -120,12 +149,29 @@ export function ProfileHeader() {
               value={level}
               disabled={saving || !occupation}
               options={EXPERIENCE_LEVELS}
-              onChange={(next) =>
-                saveSearch({
-                  occupationCode: occupation,
-                  experienceLevel: next,
-                })
-              }
+              onChange={(next) => saveSearch({ ...search, experienceLevel: next })}
+            />
+          </div>
+          <div>
+            <p
+              className={cn(
+                "mb-1 text-2xs",
+                search.preferredProvinces.length ? "text-slate-500" : "text-amber-600",
+              )}
+            >
+              Nơi làm việc
+              {search.preferredProvinces.length
+                ? ""
+                : " · chưa chọn, đang hiện tin mọi tỉnh"}
+            </p>
+            <MultiPickField
+              title="Tỉnh/thành (chọn nhiều)"
+              emptyLabel="Mọi nơi"
+              options={filters.data?.provinces ?? []}
+              selected={search.preferredProvinces}
+              searchPlaceholder="Tìm tỉnh/thành…"
+              disabled={saving || !occupation}
+              onSave={(codes) => saveSearch({ ...search, preferredProvinces: codes })}
             />
           </div>
         </div>

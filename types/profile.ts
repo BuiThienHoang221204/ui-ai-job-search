@@ -27,7 +27,8 @@ export interface ProfileRecord {
   targetSectors: string[];
   dealBreakers: string[];
   occupationCode: string | null;
-  subOccupationCode: string | null;
+  subOccupationCodes: string[];
+  preferredProvinces: string[];
   experienceLevel: string;
   experiences: unknown;
   projects: unknown;
@@ -40,6 +41,7 @@ export interface ProfileRecord {
 
 export interface QuickStartInput {
   occupationCode: string;
-  subOccupationCode?: string;
+  subOccupationCodes: string[];
+  preferredProvinces: string[];
   experienceLevel?: string;
 }
