@@ -89,9 +89,8 @@ export function useVoiceInterview(jobId: string, handlers: VoiceHandlers) {
       });
   };
 
-  const end = async (finish: boolean) => {
-    const state = live.current;
-    if (!state || state.closing) return;
+  const end = async (state: LiveState, finish: boolean) => {
+    if (state.closing) return;
     state.closing = true;
     clearTimeout(state.timer);
     clearTimeout(state.warning);
@@ -100,6 +99,7 @@ export function useVoiceInterview(jobId: string, handlers: VoiceHandlers) {
     state.audio.close();
     if (state.pending?.answer.trim()) save(state, state.pending);
     await state.saving;
+    if (live.current !== state) return;
 
     live.current = null;
     setStatus("idle");
@@ -143,7 +143,9 @@ export function useVoiceInterview(jobId: string, handlers: VoiceHandlers) {
     if (content?.interrupted) state.audio.interrupt();
 
     if (content?.turnComplete) {
-      if (state.ending) void state.audio.whenIdle().then(() => end(true));
+      if (state.ending) {
+        void state.audio.whenIdle().then(() => end(state, true));
+      }
       else setStatus("listening");
     }
 
@@ -181,10 +183,12 @@ export function useVoiceInterview(jobId: string, handlers: VoiceHandlers) {
       },
       callbacks: {
         onmessage: (message) => {
-          if (generation === state.generation) onMessage(state, message);
+          if (generation === state.generation && !state.closing) {
+            onMessage(state, message);
+          }
         },
         onclose: () => {
-          if (generation === state.generation) void end(false);
+          if (generation === state.generation) void end(state, false);
         },
       },
     });
@@ -198,7 +202,7 @@ export function useVoiceInterview(jobId: string, handlers: VoiceHandlers) {
       state.session = await connect(state);
       previous?.close();
     } catch {
-      void end(false);
+      void end(state, false);
     } finally {
       state.reconnecting = false;
     }
@@ -274,7 +278,7 @@ export function useVoiceInterview(jobId: string, handlers: VoiceHandlers) {
       latest.current.onRun(opened.runId);
       setExpiresAt(opened.expiresAt);
       const left = new Date(opened.expiresAt).getTime() - Date.now();
-      state.timer = setTimeout(() => void end(true), left);
+      state.timer = setTimeout(() => void end(state, true), left);
       state.warning = setTimeout(
         () => setLastMinute(true),
         left - LAST_MINUTE_MS,
@@ -311,7 +315,7 @@ export function useVoiceInterview(jobId: string, handlers: VoiceHandlers) {
       return;
     }
 
-    state.offline = () => void end(false);
+    state.offline = () => void end(state, false);
     window.addEventListener("offline", state.offline);
     state.session.sendRealtimeInput({ text: KICKOFF });
     setStatus("ai");
@@ -350,7 +354,9 @@ export function useVoiceInterview(jobId: string, handlers: VoiceHandlers) {
     lastMinute,
     meter,
     start,
-    stop: () => void end(true),
+    stop: () => {
+      if (live.current) void end(live.current, true);
+    },
     dismiss: () => setProblem(null),
     changeMode,
     toggleMute,
