@@ -119,5 +119,9 @@ export function useMockInterview(jobId: string, chosenRunId?: string) {
     start,
     answer: (text: string) => send(text),
     finish: () => send(null),
+    adopt: (id: string) => {
+      setStartedId(id);
+      invalidateAfter(queryClient, "mockInterview");
+    },
   };
 }

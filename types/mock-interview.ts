@@ -19,6 +19,7 @@ export interface MockInterviewRecord {
   status: MockInterviewStatus;
   jobId: string | null;
   result: { text?: string } | null;
+  input: { mode?: string } | null;
   question: string | null;
   answer: string | null;
   modelId: string | null;
@@ -49,3 +50,17 @@ export type MockInterviewListQuery = {
   jobId?: string;
   workflow?: string;
 };
+
+export type MicFailure = "blocked" | "missing" | "busy" | "other";
+
+export interface VoiceTurnDraft {
+  question: string;
+  answer: string;
+}
+
+export interface VoiceSession {
+  runId: string;
+  token: string;
+  model: string;
+  expiresAt: string;
+}

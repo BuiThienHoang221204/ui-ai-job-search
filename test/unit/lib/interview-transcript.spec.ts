@@ -34,6 +34,7 @@ function run(steps: InterviewStep[], partial: Partial<MockInterviewRecord> = {})
     jobId: "job_1",
     status: "WAITING_USER",
     result: null,
+    input: null,
     question: null,
     answer: null,
     modelId: "mimo-v2.5-free",

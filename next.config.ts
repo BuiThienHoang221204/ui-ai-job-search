@@ -18,7 +18,7 @@ const SECURITY_HEADERS = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=()",
+    value: "camera=(), microphone=(self), geolocation=()",
   },
   // HSTS chỉ ở production: đặt trên localhost là trình duyệt ép https cho mọi cổng localhost suốt một năm.
   ...(process.env.NODE_ENV === "production"

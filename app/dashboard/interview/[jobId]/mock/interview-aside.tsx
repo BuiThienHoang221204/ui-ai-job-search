@@ -1,6 +1,6 @@
 "use client";
 
-import { Check } from "@phosphor-icons/react/ssr";
+import { Check, Headphones } from "@phosphor-icons/react/ssr";
 import { CompanyLogo } from "@/components/jobs/company-logo";
 import { useJobDetail } from "@/hooks/use-job-detail";
 import {
@@ -16,13 +16,21 @@ const STAR_STEPS = [
   { letter: "R", title: "Kết quả", hint: "Một con số nếu có." },
 ];
 
+const VOICE_TIPS = [
+  "Đeo tai nghe để AI không nghe lại chính nó.",
+  "Kể theo STAR: bối cảnh, nhiệm vụ, hành động, kết quả có con số.",
+  "Chỗ ồn hoặc có người nói chuyện bên cạnh thì chuyển sang Giữ để nói.",
+];
+
 /** Cột phải của buổi luyện: vị trí và thanh tiến độ, dòng thời gian các câu đã hỏi, khung STAR. */
 export function InterviewAside({
   jobId,
   transcript,
+  spoken,
 }: {
   jobId: string;
   transcript: InterviewTranscript | null;
+  spoken: boolean;
 }) {
   const job = useJobDetail(jobId).data?.job;
   const turns = transcript?.turns ?? [];
@@ -118,26 +126,43 @@ export function InterviewAside({
         </section>
       )}
 
-      <section className="rounded-2xl border border-slate-200 bg-white">
-        <h3 className="px-4 pt-3.5 pb-1.5 text-[15px] font-semibold text-slate-900">
-          Khung trả lời STAR
-        </h3>
-        <ol className="grid grid-cols-2 gap-2 px-4 pt-1 pb-4">
-          {STAR_STEPS.map((step) => (
-            <li key={step.letter} className="rounded-xl bg-slate-50 p-2.5">
-              <p className="flex items-center gap-2 text-[13.5px] font-semibold whitespace-nowrap text-slate-900">
-                <span className="text-primary-700 ring-primary-100 flex size-5.5 items-center justify-center rounded-md bg-white font-mono text-xs font-bold ring-1 ring-inset">
-                  {step.letter}
-                </span>
-                {step.title}
-              </p>
-              <p className="mt-1 text-[12.5px] leading-snug text-slate-500">
-                {step.hint}
-              </p>
-            </li>
-          ))}
-        </ol>
-      </section>
+      {spoken ? (
+        <section className="rounded-2xl border border-slate-200 bg-white px-4 py-3.5">
+          <h3 className="flex items-center gap-1.5 text-[15px] font-semibold text-slate-900">
+            <Headphones className="text-primary-600 size-4.5" weight="duotone" />
+            Mẹo khi nói
+          </h3>
+          <ul className="mt-2 space-y-2 text-[13.5px] text-slate-600">
+            {VOICE_TIPS.map((tip) => (
+              <li key={tip} className="grid grid-cols-[1.125rem_1fr] gap-1.5">
+                <Check className="mt-1 size-3.5 text-slate-400" />
+                {tip}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : (
+        <section className="rounded-2xl border border-slate-200 bg-white">
+          <h3 className="px-4 pt-3.5 pb-1.5 text-[15px] font-semibold text-slate-900">
+            Khung trả lời STAR
+          </h3>
+          <ol className="grid grid-cols-2 gap-2 px-4 pt-1 pb-4">
+            {STAR_STEPS.map((step) => (
+              <li key={step.letter} className="rounded-xl bg-slate-50 p-2.5">
+                <p className="flex items-center gap-2 text-[13.5px] font-semibold whitespace-nowrap text-slate-900">
+                  <span className="text-primary-700 ring-primary-100 flex size-5.5 items-center justify-center rounded-md bg-white font-mono text-xs font-bold ring-1 ring-inset">
+                    {step.letter}
+                  </span>
+                  {step.title}
+                </p>
+                <p className="mt-1 text-[12.5px] leading-snug text-slate-500">
+                  {step.hint}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
     </aside>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMockInterview } from "@/hooks/use-mock-interview";
+import { useVoiceInterview } from "@/hooks/use-voice-interview";
 import { useFollowLatest } from "@/hooks/use-follow-latest";
 
 import Link from "next/link";
@@ -9,6 +10,7 @@ import {
   ArrowCounterClockwise,
   ArrowLeft,
   ChatsCircle,
+  Microphone,
   Sparkle,
   StopCircle,
 } from "@phosphor-icons/react/ssr";
@@ -19,15 +21,18 @@ import { InterviewStatusBadge } from "../../interview-status-badge";
 import { PageHeader } from "@/components/ui/page-header";
 import { Alert, PageError } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
 import { Markdown } from "@/components/ui/markdown";
-import { SectionCard } from "@/components/ui/section-card";
 import { Modal } from "@/components/ui/modal";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { AnswerBox } from "./answer-box";
 import { InterviewAside } from "./interview-aside";
 import { InterviewerAvatar } from "./interviewer-avatar";
 import { InterviewTurnBlock } from "./interview-turns";
+import { ModeChoice } from "./mode-choice";
+import { VoiceDropped } from "./voice/voice-dropped";
+import { VoiceHeader } from "./voice/voice-header";
+import { VoiceProblemModal } from "./voice/voice-problem-modal";
+import { VoiceStage } from "./voice/voice-stage";
 import { failureMessage } from "@/lib/failure-message";
 import { isClosed } from "@/lib/interview-status";
 
@@ -53,7 +58,13 @@ export function MockInterviewView({
     start,
     answer,
     finish,
+    adopt,
   } = useMockInterview(jobId, runId);
+  const voice = useVoiceInterview(jobId, {
+    onRun: adopt,
+    onSaved: refresh,
+    onEnded: finish,
+  });
   const { anchor, follow } = useFollowLatest(streaming ?? run);
   const [confirmFinish, setConfirmFinish] = useState(false);
 
@@ -75,6 +86,16 @@ export function MockInterviewView({
     streaming !== null ||
     run?.status === "PENDING" ||
     run?.status === "RUNNING";
+  const live = voice.status !== "idle";
+  const spoken = run?.input?.mode === "voice";
+  const answered =
+    transcript?.turns.filter((turn) => turn.answer !== null).length ?? 0;
+  const dropped =
+    spoken &&
+    run.status === "WAITING_USER" &&
+    !live &&
+    !busy &&
+    !voice.problem;
 
   return (
     <div className="space-y-6">
@@ -131,27 +152,12 @@ export function MockInterviewView({
       )}
 
       {!run ? (
-        <SectionCard
-          icon={ChatsCircle}
-          title="Bắt đầu một buổi luyện"
-          description="Một người phỏng vấn ảo sẽ hỏi bạn từng câu một, nghe bạn trả lời, rồi nhận xét ngay trước khi hỏi tiếp."
-        >
-          <EmptyState
-            icon={ChatsCircle}
-            title="Chưa có buổi luyện nào cho vị trí này"
-            description={
-              question
-                ? `Người phỏng vấn ảo sẽ hỏi đúng câu bạn chọn trước: «${question}»`
-                : "Buổi luyện bám theo đúng tin tuyển dụng, hồ sơ và bộ đề chuẩn bị bạn đã có, nên câu hỏi sẽ đào vào những chỗ nhà tuyển dụng nhiều khả năng đào."
-            }
-            action={
-              <Button onClick={() => start(question)} disabled={busy}>
-                <Sparkle className="size-4" />
-                {busy ? "Đang chuẩn bị" : "Bắt đầu phỏng vấn thử"}
-              </Button>
-            }
-          />
-        </SectionCard>
+        <ModeChoice
+          busy={busy || live}
+          question={question}
+          onText={() => start(question)}
+          onVoice={voice.start}
+        />
       ) : (
         <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_18.75rem]">
           <section className="rounded-2xl border border-slate-200 bg-white">
@@ -163,26 +169,47 @@ export function MockInterviewView({
                     Người phỏng vấn ảo
                   </p>
                   <p className="text-[13px] text-slate-500">
-                    {transcript?.turns.length
-                      ? "Bám theo tin tuyển dụng và hồ sơ của bạn"
-                      : "Đang soạn câu hỏi đầu tiên"}
+                    {spoken
+                      ? "Buổi luyện bằng giọng nói"
+                      : "Bám theo tin tuyển dụng và hồ sơ của bạn"}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <InterviewStatusBadge status={run.status} />
-                {waiting && !busy && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setConfirmFinish(true)}
-                  >
-                    <StopCircle className="size-4" />
-                    Kết thúc buổi luyện
-                  </Button>
-                )}
-              </div>
+              {live ? (
+                <VoiceHeader voice={voice} />
+              ) : (
+                <div className="flex items-center gap-2">
+                  {dropped && (
+                    <span className="inline-flex h-6.5 items-center gap-1.5 rounded-full bg-amber-50 px-2.5 text-[12.5px] font-semibold text-amber-700 ring-1 ring-amber-200 ring-inset before:size-1.75 before:rounded-full before:bg-current">
+                      Mất kết nối
+                    </span>
+                  )}
+                  {!dropped && <InterviewStatusBadge status={run.status} />}
+                  {waiting && !busy && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setConfirmFinish(true)}
+                    >
+                      <StopCircle className="size-4" />
+                      Kết thúc buổi luyện
+                    </Button>
+                  )}
+                </div>
+              )}
             </header>
+
+            {live && <VoiceStage voice={voice} />}
+            {dropped && (
+              <VoiceDropped
+                answered={answered}
+                onFinish={() => {
+                  follow();
+                  finish();
+                }}
+                onRestart={voice.start}
+              />
+            )}
 
             <div className="space-y-5 px-5 pt-5 pb-4">
               {transcript?.intro && (
@@ -196,6 +223,7 @@ export function MockInterviewView({
                       key={turn.index}
                       turn={turn}
                       waiting={waiting?.index === turn.index}
+                      spoken={spoken}
                     />
                   ))}
                 </ol>
@@ -241,14 +269,24 @@ export function MockInterviewView({
               )}
 
               {isClosed(run.status) && (
-                <Button
-                  variant="outline"
-                  onClick={() => start()}
-                  disabled={busy}
-                >
-                  <ArrowCounterClockwise className="size-4" />
-                  Luyện lại từ đầu
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={voice.start}
+                    disabled={busy || live}
+                  >
+                    <Microphone className="size-4" />
+                    Luyện lại bằng giọng nói
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => start()}
+                    disabled={busy || live}
+                  >
+                    <ChatsCircle className="size-4" />
+                    Luyện lại bằng chữ
+                  </Button>
+                </div>
               )}
 
               <div ref={anchor} className="scroll-mb-32" />
@@ -265,9 +303,15 @@ export function MockInterviewView({
             )}
           </section>
 
-          <InterviewAside jobId={jobId} transcript={transcript} />
+          <InterviewAside
+            jobId={jobId}
+            transcript={transcript}
+            spoken={spoken || live}
+          />
         </div>
       )}
+
+      <VoiceProblemModal voice={voice} onText={() => start(question)} />
 
       <Modal
         open={confirmFinish}
@@ -276,7 +320,7 @@ export function MockInterviewView({
       >
         <p className="text-sm text-slate-600">
           Bạn sẽ nhận lời tổng kết cho{" "}
-          {transcript?.turns.filter((turn) => turn.answer !== null).length ?? 0}{" "}
+          {answered}{" "}
           câu đã trả lời. Câu đang hỏi sẽ được bỏ qua, và không thể tiếp tục
           buổi này nữa.
         </p>

@@ -13,6 +13,7 @@
     "test:visual": "playwright test"
   },
   "dependencies": {
+    "@google/genai": "^2.31.0",
     "@phosphor-icons/react": "^2.1.10",
     "@react-oauth/google": "^0.13.5",
     "@tanstack/react-query": "^5.101.4",

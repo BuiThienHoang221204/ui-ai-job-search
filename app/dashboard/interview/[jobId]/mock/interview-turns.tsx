@@ -1,4 +1,8 @@
-import { ChatCircleDots, Lightbulb } from "@phosphor-icons/react/ssr";
+import {
+  ChatCircleDots,
+  Lightbulb,
+  Microphone,
+} from "@phosphor-icons/react/ssr";
 import { Markdown } from "@/components/ui/markdown";
 import type { InterviewTurn } from "@/lib/interview-transcript";
 import { cn } from "@/lib/cn";
@@ -9,9 +13,11 @@ import { InterviewerAvatar } from "./interviewer-avatar";
 export function InterviewTurnBlock({
   turn,
   waiting,
+  spoken,
 }: {
   turn: InterviewTurn;
   waiting?: boolean;
+  spoken?: boolean;
 }) {
   return (
     <li id={`turn-${turn.index}`} className="scroll-mt-18 space-y-4 lg:scroll-mt-4">
@@ -47,6 +53,12 @@ export function InterviewTurnBlock({
       </div>
 
       {turn.answer && <AnswerBubble text={turn.answer} />}
+      {turn.answer && spoken && (
+        <p className="-mt-3 flex items-center justify-end gap-1 text-xs text-slate-400">
+          <Microphone className="size-3.5" />
+          Ghi tự động từ giọng nói
+        </p>
+      )}
 
       {turn.feedback && (
         <div className="ml-11.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-3">

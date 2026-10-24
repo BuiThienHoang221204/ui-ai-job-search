@@ -4,6 +4,7 @@ import type {
   MockInterviewRecord,
   MockInterviewSummary,
   Paginated,
+  VoiceSession,
 } from "@/types";
 
 export const mockInterviewService = {
@@ -13,5 +14,15 @@ export const mockInterviewService = {
   list: (query?: MockInterviewListQuery) =>
     api
       .get<Paginated<MockInterviewSummary>>("/mock-interviews", { params: query })
+      .then((r) => r.data),
+
+  openVoice: (jobId: string) =>
+    api
+      .post<VoiceSession>("/mock-interviews/voice", { jobId })
+      .then((r) => r.data),
+
+  saveVoiceTurn: (runId: string, turn: { question: string; answer: string }) =>
+    api
+      .post<{ answered: number }>(`/mock-interviews/${runId}/voice-turns`, turn)
       .then((r) => r.data),
 };
