@@ -1,4 +1,5 @@
 import { failureMessage } from "@/lib/failure-message";
+import { responseErrorMessage } from "@/lib/axios";
 import type { AiFailureKind } from "@/types";
 
 export class ModelStreamError extends Error {}
@@ -36,11 +37,7 @@ export async function streamModel<T, P = unknown>({
   });
 
   if (!response.ok) {
-    throw new ModelServerError(
-      response.status === 401
-        ? "Phiên đăng nhập đã hết hạn."
-        : `Máy chủ trả về HTTP ${response.status}`,
-    );
+    throw new ModelServerError(await responseErrorMessage(response));
   }
   if (!response.body) {
     throw new ModelStreamError("Trình duyệt không đọc được luồng dữ liệu.");

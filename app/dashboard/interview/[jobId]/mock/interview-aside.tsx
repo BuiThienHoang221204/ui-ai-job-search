@@ -87,6 +87,12 @@ export function InterviewAside({
                 >
                   <a
                     href={`#turn-${turn.index}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      document
+                        .getElementById(`turn-${turn.index}`)
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
                     className={cn(
                       "grid grid-cols-[1.625rem_minmax(0,1fr)] gap-2.5 rounded-xl px-1.5 py-2 text-sm leading-snug",
                       now

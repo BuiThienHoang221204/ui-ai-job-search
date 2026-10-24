@@ -9,6 +9,7 @@ import { useApiQuery } from "@/hooks/use-api-query";
 import { useJobDetail } from "@/hooks/use-job-detail";
 import { invalidateAfter, keys } from "@/lib/query-keys";
 import {
+  InterviewServerError,
   InterviewStreamError,
   streamInterviewOpen,
   streamInterviewTurn,
@@ -67,8 +68,8 @@ export function useMockInterview(jobId: string, chosenRunId?: string) {
       .finally(() => setSending(false));
   };
 
-  /** Gửi câu trả lời rồi đọc câu hỏi tiếp theo chảy dần từ stream. */
-  const answer = (text: string) => {
+  /** Gửi câu trả lời (hoặc `null` để kết thúc sớm) rồi đọc lượt tiếp theo chảy dần từ stream. */
+  const send = (text: string | null) => {
     setSending(true);
     setStreaming("");
 
@@ -84,10 +85,23 @@ export function useMockInterview(jobId: string, chosenRunId?: string) {
       })
       .catch((cause: unknown) => {
         setStreaming(null);
+        if (!(cause instanceof InterviewStreamError)) {
+          toast.danger(
+            apiErrorMessage(
+              cause,
+              text === null
+                ? "Không kết thúc được buổi luyện"
+                : "Không gửi được câu trả lời",
+            ),
+          );
+          return;
+        }
+        if (text === null || cause instanceof InterviewServerError) {
+          toast.danger(cause.message);
+          return;
+        }
         toast.danger(
-          cause instanceof InterviewStreamError
-            ? `${cause.message} Câu trả lời của bạn chưa được ghi nhận, gửi lại giúp nhé.`
-            : apiErrorMessage(cause, "Không gửi được câu trả lời"),
+          `${cause.message} Câu trả lời của bạn chưa được ghi nhận, gửi lại giúp nhé.`,
         );
       })
       .finally(() => setSending(false));
@@ -103,6 +117,7 @@ export function useMockInterview(jobId: string, chosenRunId?: string) {
     sending,
     streaming,
     start,
-    answer,
+    answer: (text: string) => send(text),
+    finish: () => send(null),
   };
 }

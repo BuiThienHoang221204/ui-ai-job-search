@@ -130,6 +130,19 @@ describe("buildTranscript", () => {
     ).toBe("Nhận xét cuối");
   });
 
+  /* Model có lúc gửi lời tổng kết qua `ask_user` rồi lượt chạy DONE: không coi đó là câu hỏi chờ trả lời. */
+  it("lượt DONE mà câu cuối chưa trả lời thì câu đó là tổng kết", () => {
+    const transcript = buildTranscript(
+      run([ask("Câu 1", "Trả lời 1"), ask("Chúc mừng bạn đã hoàn thành.")], {
+        status: "DONE",
+      }),
+    );
+
+    expect(transcript.turns).toHaveLength(1);
+    expect(transcript.closing).toBe("Chúc mừng bạn đã hoàn thành.");
+    expect(pendingTurn(transcript)).toBeNull();
+  });
+
   it("không vỡ khi lượt chạy chưa có bước nào", () => {
     const transcript = buildTranscript(run([], { status: "RUNNING" }));
 

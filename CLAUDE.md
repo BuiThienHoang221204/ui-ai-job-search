@@ -60,6 +60,7 @@ Lý do và nguồn của từng quy tắc dưới đây (docs Next.js 16, react.
 **Truyền dữ liệu và cache**
 
 - **Mọi lời gọi API đi qua `services/`** (axios `api` ở `lib/axios.ts`, gửi cookie). Component, hook chỉ gọi `xxxService`; từ `lib/axios` chỉ lấy `apiErrorMessage`/`apiErrorStatus`.
+- **Lỗi API hiện đúng câu backend soạn:** axios qua `apiErrorMessage`, `fetch` của đường stream qua `responseErrorMessage` (`lib/axios.ts`). Chữ hiển thị cho người dùng nói họ làm gì tiếp, không mang mã HTTP — đã sửa 2026-10-24 ba hàm stream từng hiện "Máy chủ trả về HTTP 400".
 - **Dữ liệu cần đăng nhập lấy ở client** bằng TanStack Query bọc trong hook ở `hooks/`. Giữ nó ở client: Server Component không ghi được cookie nên không làm mới được access token — fetch trên server với cookie người dùng là một lớp phức tạp không đáng.
 - **Dữ liệu công khai lấy trong Server Component** bằng `fetch` tới `BACKEND_URL` kèm `next: { revalidate }` — mẫu: `services/salary.ts`, `lib/job-metadata.ts`. `BACKEND_URL` chỉ đọc ở server; client chỉ thấy biến `NEXT_PUBLIC_*`.
 - **Query key chỉ lấy từ `lib/query-keys.ts`.** Ghi xong: API trả object mới thì `setQueryData`, không thì `invalidateAfter(action)`. Hai trạng thái đăng nhập dùng hai key khác nhau (`keys.job` / `keys.publicJob`) — cache sống qua điều hướng client, chung key thì đăng nhập xong vẫn thấy bản khách.

@@ -67,7 +67,12 @@ export function buildTranscript(run: MockInterviewRecord): InterviewTranscript {
     });
   }
 
-  const closing = run.status === "DONE" ? text(run.result?.text) : null;
+  let closing = run.status === "DONE" ? text(run.result?.text) : null;
+  const last = turns.at(-1);
+  if (run.status === "DONE" && !closing && last?.answer === null) {
+    turns.pop();
+    closing = last.question;
+  }
 
   return { intro, turns, closing };
 }

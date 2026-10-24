@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useMockInterview } from "@/hooks/use-mock-interview";
+import { useFollowLatest } from "@/hooks/use-follow-latest";
 
 import Link from "next/link";
 import {
@@ -8,6 +10,7 @@ import {
   ArrowLeft,
   ChatsCircle,
   Sparkle,
+  StopCircle,
 } from "@phosphor-icons/react/ssr";
 
 import { buildTranscript, pendingTurn } from "@/lib/interview-transcript";
@@ -19,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Markdown } from "@/components/ui/markdown";
 import { SectionCard } from "@/components/ui/section-card";
+import { Modal } from "@/components/ui/modal";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { AnswerBox } from "./answer-box";
 import { InterviewAside } from "./interview-aside";
@@ -48,7 +52,10 @@ export function MockInterviewView({
     streaming,
     start,
     answer,
+    finish,
   } = useMockInterview(jobId, runId);
+  const { anchor, follow } = useFollowLatest(streaming ?? run);
+  const [confirmFinish, setConfirmFinish] = useState(false);
 
   if (job.error)
     return <PageError title="Không tải được dữ liệu" message={job.error} />;
@@ -61,7 +68,8 @@ export function MockInterviewView({
     );
 
   const transcript = run ? buildTranscript(run) : null;
-  const waiting = transcript ? pendingTurn(transcript) : null;
+  const waiting =
+    run && transcript && !isClosed(run.status) ? pendingTurn(transcript) : null;
   const busy =
     sending ||
     streaming !== null ||
@@ -161,7 +169,19 @@ export function MockInterviewView({
                   </p>
                 </div>
               </div>
-              <InterviewStatusBadge status={run.status} />
+              <div className="flex items-center gap-2">
+                <InterviewStatusBadge status={run.status} />
+                {waiting && !busy && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setConfirmFinish(true)}
+                  >
+                    <StopCircle className="size-4" />
+                    Kết thúc buổi luyện
+                  </Button>
+                )}
+              </div>
             </header>
 
             <div className="space-y-5 px-5 pt-5 pb-4">
@@ -230,16 +250,51 @@ export function MockInterviewView({
                   Luyện lại từ đầu
                 </Button>
               )}
+
+              <div ref={anchor} className="scroll-mb-32" />
             </div>
 
             {waiting && !busy && (
-              <AnswerBox sending={sending} onSend={answer} />
+              <AnswerBox
+                sending={sending}
+                onSend={(text) => {
+                  follow();
+                  answer(text);
+                }}
+              />
             )}
           </section>
 
           <InterviewAside jobId={jobId} transcript={transcript} />
         </div>
       )}
+
+      <Modal
+        open={confirmFinish}
+        onClose={() => setConfirmFinish(false)}
+        title="Kết thúc buổi luyện?"
+      >
+        <p className="text-sm text-slate-600">
+          Bạn sẽ nhận lời tổng kết cho{" "}
+          {transcript?.turns.filter((turn) => turn.answer !== null).length ?? 0}{" "}
+          câu đã trả lời. Câu đang hỏi sẽ được bỏ qua, và không thể tiếp tục
+          buổi này nữa.
+        </p>
+        <div className="mt-5 flex justify-end gap-2">
+          <Button variant="ghost" onClick={() => setConfirmFinish(false)}>
+            Tiếp tục luyện
+          </Button>
+          <Button
+            onClick={() => {
+              setConfirmFinish(false);
+              follow();
+              finish();
+            }}
+          >
+            Kết thúc và xem tổng kết
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

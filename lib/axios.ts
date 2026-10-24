@@ -78,6 +78,16 @@ export function apiErrorMessage(error: unknown, fallback: string): string {
   return fallback;
 }
 
+/** Thông điệp lỗi trong body của một `Response` (đường stream gọi `fetch`), cùng cách đọc với `apiErrorMessage`; lỗi 5xx backend đã thay bằng câu chung nên hiện thẳng được. */
+export async function responseErrorMessage(response: Response): Promise<string> {
+  if (response.status === 401) return "Phiên đăng nhập đã hết hạn.";
+  const body: unknown = await response.json().catch(() => null);
+  const message = (body as { message?: unknown } | null)?.message;
+  if (typeof message === "string") return message;
+  if (Array.isArray(message)) return message.join(", ");
+  return "Máy chủ đang gặp sự cố, thử lại sau ít phút.";
+}
+
 /** Trạng thái HTTP, để giao diện phân biệt "sai mật khẩu" với "máy chủ hỏng". */
 export const apiErrorStatus = (error: unknown): number | undefined =>
   error instanceof AxiosError ? error.response?.status : undefined;

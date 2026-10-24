@@ -14,7 +14,7 @@ export function InterviewTurnBlock({
   waiting?: boolean;
 }) {
   return (
-    <li id={`turn-${turn.index}`} className="scroll-mt-4 space-y-4">
+    <li id={`turn-${turn.index}`} className="scroll-mt-18 space-y-4 lg:scroll-mt-4">
       <p className="flex items-center gap-2.5 font-mono text-[11.5px] font-semibold tracking-wide text-slate-400 before:h-px before:flex-1 before:bg-slate-100 after:h-px after:flex-1 after:bg-slate-100">
         CÂU {turn.index}
       </p>
