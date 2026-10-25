@@ -148,7 +148,13 @@ export type JobRecord = Omit<JobListItem, "match" | "systemMatch"> & {
   application: { id: string; status: ApplicationStatus } | null;
   profileLocation: string | null;
   companyKey: string | null;
+  reposts: JobReposts | null;
 };
+export interface JobReposts {
+  count: number;
+  firstAt: string;
+  dates: string[];
+}
 export type JobSort = "newest" | "salary" | "match";
 export interface JobListParams {
   limit?: number;

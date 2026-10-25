@@ -19,6 +19,7 @@ import { MatchPanel } from "./match/match-panel";
 import { SystemMatchCard } from "./match/system-match-card";
 import { JobSectionNav } from "./job-section-nav";
 import { useJobDetail } from "@/hooks/use-job-detail";
+import { RepostCard } from "./repost-card";
 import { SalaryGuidePanel } from "./salary-guide-panel";
 import { JobActionCards } from "@/components/jobs/job-action-cards";
 import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
@@ -188,7 +189,8 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
 
         <div className="space-y-6">
           <SalaryGuidePanel guide={job.salaryGuide} />
-          <div id="cong-ty" className="scroll-mt-20">
+          <div id="cong-ty" className="scroll-mt-20 space-y-6">
+            {job.reposts && <RepostCard reposts={job.reposts} />}
             <CompanyBriefPanel jobId={jobId} />
           </div>
         </div>
