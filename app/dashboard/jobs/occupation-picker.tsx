@@ -167,7 +167,6 @@ export function OccupationPicker({
                   {checked && <Check className="size-3.5" />}
                 </span>
                 <span className="min-w-0 flex-1 truncate">{group.name}</span>
-                <span className="text-xs text-slate-400">{group.count}</span>
               </button>
             );
           })}
@@ -199,7 +198,6 @@ export function OccupationPicker({
                     {checked && <Check className="size-3.5" />}
                   </span>
                   <span className="min-w-0 flex-1 truncate">{sub.name}</span>
-                  <span className="text-xs text-slate-400">{sub.count}</span>
                 </button>
               );
             })

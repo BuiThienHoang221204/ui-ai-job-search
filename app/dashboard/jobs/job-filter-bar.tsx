@@ -26,7 +26,6 @@ import { SearchInput } from "@/components/ui/search-input";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { OccupationPicker } from "./occupation-picker";
 import { cn } from "@/lib/cn";
-import { formatCount } from "@/lib/number";
 import { useSession } from "@/hooks/use-session";
 import { useDropdown } from "@/hooks/use-dropdown";
 
@@ -470,9 +469,6 @@ function MultiSelect({
                     </span>
                     <span className="flex-1 truncate text-slate-700">
                       {option.name}
-                    </span>
-                    <span className="font-mono text-xs text-slate-400">
-                      {formatCount(option.count)}
                     </span>
                   </button>
                 </li>
