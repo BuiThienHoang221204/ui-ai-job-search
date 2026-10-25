@@ -13,10 +13,15 @@ const MIN_PASSWORD_LENGTH = 8;
 interface RegisterFormProps {
   onSuccess: () => void;
   onLoginInstead: () => void;
+  referral?: string;
 }
 
 /** Form tạo tài khoản, dùng chung cho trang /register và modal đăng nhập. */
-export function RegisterForm({ onSuccess, onLoginInstead }: RegisterFormProps) {
+export function RegisterForm({
+  onSuccess,
+  onLoginInstead,
+  referral,
+}: RegisterFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +47,7 @@ export function RegisterForm({ onSuccess, onLoginInstead }: RegisterFormProps) {
 
     setLoading(true);
     try {
-      await authService.register(email, password, name);
+      await authService.register(email, password, name, referral);
       onSuccess();
     } catch (err) {
       if (apiErrorStatus(err) === 409) {
@@ -152,6 +157,7 @@ export function RegisterForm({ onSuccess, onLoginInstead }: RegisterFormProps) {
         <GoogleSignInButton
           onSuccess={onSuccess}
           onError={(message) => setError(message)}
+          referral={referral}
         />
       </div>
     </form>

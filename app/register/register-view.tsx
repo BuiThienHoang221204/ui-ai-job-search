@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Gift } from "@phosphor-icons/react/ssr";
 import { RegisterForm } from "@/components/auth/register-form";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { safeNextPath } from "@/lib/redirect";
@@ -13,6 +14,7 @@ function RegisterPanel() {
   const params = useSearchParams();
   const next = safeNextPath(params.get("next"), "/dashboard");
   const loginHref = `/login?next=${encodeURIComponent(next)}`;
+  const referral = params.get("ref") ?? undefined;
 
   /** Điều hướng về `next` sau khi cookie đã được backend đặt xong. */
   function goToNext() {
@@ -21,10 +23,10 @@ function RegisterPanel() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <BrandLogo className="h-[40px] w-[160px]" />
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-6">
+      <div className="w-full max-w-sm space-y-4">
+        <div className="flex flex-col items-center gap-1.5 text-center">
+          <BrandLogo className="h-[32px] w-[128px]" />
           <h1 className="text-lg font-semibold tracking-tight text-slate-900">
             Tạo tài khoản
           </h1>
@@ -33,10 +35,19 @@ function RegisterPanel() {
           </p>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs">
+        {referral && (
+          <p className="border-primary-100 bg-primary-50 text-primary-800 flex gap-2 rounded-xl border px-3 py-2 text-xs">
+            <Gift className="size-4 shrink-0" weight="fill" />
+            Bạn được mời: đăng ký và chọn ngành nghề để cả bạn và người mời được
+            thêm 15 phút luyện phỏng vấn bằng giọng nói.
+          </p>
+        )}
+
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
           <RegisterForm
             onSuccess={goToNext}
             onLoginInstead={() => router.push(loginHref)}
+            referral={referral}
           />
         </div>
 

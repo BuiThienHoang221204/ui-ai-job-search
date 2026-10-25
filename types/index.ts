@@ -22,3 +22,4 @@ export type * from "./question-bank";
 export type * from "./salary";
 export type * from "./upskill";
 export type * from "./market";
+export type * from "./referral";

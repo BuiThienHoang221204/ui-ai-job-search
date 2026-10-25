@@ -6,6 +6,7 @@ import { authService } from "@/services";
 interface GoogleSignInButtonProps {
   onSuccess: () => void;
   onError: (message: string) => void;
+  referral?: string;
 }
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -14,6 +15,7 @@ const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 export function GoogleSignInButton({
   onSuccess,
   onError,
+  referral,
 }: GoogleSignInButtonProps) {
   if (!GOOGLE_CLIENT_ID) return null;
 
@@ -26,7 +28,7 @@ export function GoogleSignInButton({
             return;
           }
           authService
-            .googleLogin(credential.credential)
+            .googleLogin(credential.credential, referral)
             .then(onSuccess)
             .catch(() => onError("Đăng nhập bằng Google không thành công"));
         }}

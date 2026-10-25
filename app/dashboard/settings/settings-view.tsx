@@ -14,6 +14,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { SectionCard } from "@/components/ui/section-card";
 import { DisplayCard } from "./display-card";
 import { NotificationsCard } from "./notifications-card";
+import { ReferralCard } from "./referral-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/hooks/use-session";
 import { isAdmin } from "@/lib/auth";
@@ -33,6 +34,8 @@ export function SettingsView() {
         <DisplayCard />
 
         <NotificationsCard />
+
+        <ReferralCard />
 
         <SectionCard icon={UserGear} title="Thông tin đăng nhập">
           {loading ? (
