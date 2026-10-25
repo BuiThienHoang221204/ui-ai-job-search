@@ -147,6 +147,7 @@ export type JobRecord = Omit<JobListItem, "match" | "systemMatch"> & {
   salaryGuide: SalaryGuide | null;
   application: { id: string; status: ApplicationStatus } | null;
   profileLocation: string | null;
+  companyKey: string | null;
 };
 export type JobSort = "newest" | "salary" | "match";
 export interface JobListParams {
@@ -162,6 +163,7 @@ export interface JobListParams {
   scored?: boolean;
   saved?: boolean;
   applied?: boolean;
+  followed?: boolean;
   subOccupation?: string[];
   since?: string;
 }
@@ -226,6 +228,7 @@ export interface JobFilterValue {
   sort: JobSort;
   saved: boolean;
   applied: boolean;
+  followed: boolean;
   subOccupation: string[];
   since: string;
 }

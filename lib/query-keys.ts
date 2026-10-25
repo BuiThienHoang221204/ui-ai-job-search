@@ -44,6 +44,7 @@ export const keys = {
   learning: () => ["learning"] as const,
   pushStatus: () => ["push-status"] as const,
   pushPreferences: () => ["push-preferences"] as const,
+  companyFollows: () => ["company-follows"] as const,
 
   questionPage: (filters: unknown, offset: number) =>
     ["question-bank", "page", filters, offset] as const,

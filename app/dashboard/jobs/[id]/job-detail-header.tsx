@@ -18,6 +18,7 @@ import { cn } from "@/lib/cn";
 import { formatJobSalary } from "@/lib/salary";
 import { useSession } from "@/hooks/use-session";
 import { useLoginModal } from "@/hooks/use-login-modal";
+import { FollowCompanyButton } from "./follow-company-button";
 
 interface JobDetailHeaderProps {
   card: Job;
@@ -55,6 +56,9 @@ export function JobDetailHeader({
               <Buildings className="size-4.5" />
               {card.company}
             </span>
+            {user && job.companyKey && (
+              <FollowCompanyButton jobId={job.id} companyKey={job.companyKey} />
+            )}
             {match?.overallScore !== null && match?.overallScore !== undefined && (
               <Badge variant="success" className="font-mono">
                 AI chấm {match.overallScore}%

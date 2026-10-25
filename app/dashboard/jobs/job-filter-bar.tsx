@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   Bookmark,
   Briefcase,
+  Buildings,
   CalendarDots,
   CaretDown,
   Check,
@@ -38,6 +39,7 @@ const EMPTY_FILTER: JobFilterValue = {
   sort: "newest",
   saved: false,
   applied: false,
+  followed: false,
   subOccupation: [],
   since: "",
 };
@@ -95,7 +97,8 @@ export function JobFilterBar({
     (value.salaryMin ? 1 : 0) +
     (value.postedWithin ? 1 : 0) +
     (value.saved ? 1 : 0) +
-    (value.applied ? 1 : 0);
+    (value.applied ? 1 : 0) +
+    (value.followed ? 1 : 0);
 
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -105,7 +108,8 @@ export function JobFilterBar({
     (value.salaryMin ? 1 : 0) +
     (value.postedWithin ? 1 : 0) +
     (value.saved ? 1 : 0) +
-    (value.applied ? 1 : 0);
+    (value.applied ? 1 : 0) +
+    (value.followed ? 1 : 0);
 
   const [moreOpen, setMoreOpen] = useState(secondary > 0);
 
@@ -183,6 +187,12 @@ export function JobFilterBar({
                 active={value.applied}
                 onClick={() => set("applied", !value.applied)}
               />
+              <Toggle
+                label="Công ty theo dõi"
+                icon={Buildings}
+                active={value.followed}
+                onClick={() => set("followed", !value.followed)}
+              />
             </>
           )}
 
@@ -258,6 +268,9 @@ export function JobFilterBar({
             )}
             {value.applied && (
               <FilterChip label="Đã ứng tuyển" onRemove={() => set("applied", false)} />
+            )}
+            {value.followed && (
+              <FilterChip label="Công ty theo dõi" onRemove={() => set("followed", false)} />
             )}
             {value.salaryMin > 0 && (
               <FilterChip

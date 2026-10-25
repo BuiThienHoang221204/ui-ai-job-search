@@ -20,6 +20,7 @@ export function readFilter(
       : DEFAULT_SORT,
     saved: params.get("saved") === "1",
     applied: params.get("applied") === "1",
+    followed: params.get("followed") === "1",
     subOccupation: params.getAll("subOccupation"),
     since: params.get("since") ?? "",
   };
@@ -44,6 +45,7 @@ export function writeFilter(
     params.set("postedWithin", String(filter.postedWithin));
   if (filter.saved) params.set("saved", "1");
   if (filter.applied) params.set("applied", "1");
+  if (filter.followed) params.set("followed", "1");
   if (filter.sort !== DEFAULT_SORT) params.set("sort", filter.sort);
   if (filter.since) params.set("since", filter.since);
   if (offset) params.set("offset", String(offset));

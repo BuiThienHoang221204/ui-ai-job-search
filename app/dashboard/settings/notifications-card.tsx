@@ -19,6 +19,7 @@ import { usePushPreferences } from "@/hooks/use-push-preferences";
 import { usePushReminder } from "@/hooks/use-push-reminder";
 import { remindTime } from "@/lib/study-schedule";
 import { cn } from "@/lib/cn";
+import { FollowedCompanies } from "./followed-companies";
 
 /** Mục "Thông báo": bật thiết bị một lần, rồi bật/tắt riêng từng loại thông báo. */
 export function NotificationsCard() {
@@ -199,6 +200,7 @@ export function NotificationsCard() {
             onChange={() => void preferences.set({ jobNotifications: !jobsOn })}
           />
         </div>
+        <FollowedCompanies />
       </div>
     </SectionCard>
   );

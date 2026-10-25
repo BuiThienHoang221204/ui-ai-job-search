@@ -51,6 +51,7 @@ export function JobsView() {
       salaryMin: 0,
       saved: false,
       applied: false,
+      followed: false,
       sort: DEFAULT_SORT,
     };
   }, [params, user]);
@@ -112,6 +113,7 @@ export function JobsView() {
         ...(filter.postedWithin ? { postedWithin: filter.postedWithin } : {}),
         ...(filter.saved ? { saved: true } : {}),
         ...(filter.applied ? { applied: true } : {}),
+        ...(filter.followed ? { followed: true } : {}),
         sort: filter.sort,
         ...(scored ? { scored: true } : {}),
         ...(filter.since ? { since: filter.since } : {}),
@@ -278,7 +280,7 @@ export function JobsView() {
                 onClick={() => push({ ...filter, since: "" }, 0, null)}
                 className="hover:text-primary-800 ml-auto shrink-0 cursor-pointer font-semibold"
               >
-                Xem tất cả tin phù hợp →
+                {scored ? "Xem tất cả tin phù hợp →" : "Xem tất cả →"}
               </button>
             </div>
           )}

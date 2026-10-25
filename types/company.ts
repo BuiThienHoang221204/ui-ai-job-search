@@ -1,3 +1,9 @@
+export interface CompanyFollow {
+  id: string;
+  companyKey: string;
+  name: string;
+}
+
 export interface PartialBrief {
   verdict?: string;
   summary?: string;

@@ -138,5 +138,6 @@ export function toGuestJobRecord(job: PublicJobDetail): JobRecord {
     salaryGuide: null,
     application: null,
     profileLocation: null,
+    companyKey: null,
   };
 }

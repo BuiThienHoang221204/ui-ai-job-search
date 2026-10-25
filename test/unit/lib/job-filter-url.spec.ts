@@ -12,6 +12,7 @@ const empty = (): JobFilterValue => ({
   sort: DEFAULT_SORT,
   saved: false,
   applied: false,
+  followed: false,
   since: "",
 });
 
@@ -96,6 +97,7 @@ describe("khứ hồi", () => {
       sort: "salary",
       saved: true,
       applied: true,
+      followed: true,
       since: "2026-10-25T00:30:00.000Z",
     };
 
