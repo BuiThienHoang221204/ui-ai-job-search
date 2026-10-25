@@ -12,6 +12,7 @@ const empty = (): JobFilterValue => ({
   sort: DEFAULT_SORT,
   saved: false,
   applied: false,
+  since: "",
 });
 
 const roundTrip = (filter: JobFilterValue, scored = false): JobFilterValue =>
@@ -95,6 +96,7 @@ describe("khứ hồi", () => {
       sort: "salary",
       saved: true,
       applied: true,
+      since: "2026-10-25T00:30:00.000Z",
     };
 
     expect(roundTrip(full)).toEqual(full);

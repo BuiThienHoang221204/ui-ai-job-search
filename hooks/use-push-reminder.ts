@@ -23,7 +23,7 @@ async function saveSubscription(subscription: PushSubscription) {
   await pushService.subscribe({ endpoint: subscription.endpoint, keys: { p256dh, auth } });
 }
 
-/** Trạng thái nhắc học trên thiết bị này, đọc từ trình duyệt (iPhone chưa thêm app ra màn hình chính thì không có Web Push). Đang có đăng ký thì đồng bộ lại lên máy chủ: trình duyệt có thể cấp endpoint mới, hoặc tài khoản khác vừa đăng nhập. */
+/** Trạng thái nhận thông báo trên thiết bị này, đọc từ trình duyệt (iPhone chưa thêm app ra màn hình chính thì không có Web Push). Đang có đăng ký thì đồng bộ lại lên máy chủ: trình duyệt có thể cấp endpoint mới, hoặc tài khoản khác vừa đăng nhập. */
 async function readState(): Promise<{ state: PushState; endpoint: string | null }> {
   const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
   if (ios && !window.matchMedia("(display-mode: standalone)").matches) {
@@ -39,7 +39,7 @@ async function readState(): Promise<{ state: PushState; endpoint: string | null 
   return { state: "on", endpoint: subscription.endpoint };
 }
 
-/** Bật/tắt/gửi thử nhắc học trên thiết bị đang dùng; tự đăng ký service worker nên chạy được cả khi dev. */
+/** Bật/tắt/gửi thử thông báo trên thiết bị đang dùng; tự đăng ký service worker nên chạy được cả khi dev. */
 export function usePushReminder() {
   const client = useQueryClient();
   const toast = useToast();
@@ -73,8 +73,8 @@ export function usePushReminder() {
         await subscription.unsubscribe();
         throw cause;
       }
-      toast.success("Đã bật nhắc học trên thiết bị này");
-    }, "Không bật được nhắc học");
+      toast.success("Đã bật thông báo trên thiết bị này");
+    }, "Không bật được thông báo trên thiết bị này");
 
   const disable = () =>
     run(async () => {
@@ -82,14 +82,14 @@ export function usePushReminder() {
       if (!subscription) return;
       await pushService.unsubscribe(subscription.endpoint);
       await subscription.unsubscribe();
-    }, "Không tắt được nhắc học");
+    }, "Không tắt được thông báo trên thiết bị này");
 
   const sendTest = () =>
     run(async () => {
       if (!status.data?.endpoint) return;
       const { sent } = await pushService.test(status.data.endpoint);
       if (sent) toast.success("Đã gửi thông báo thử");
-      else toast.danger("Không gửi được tới thiết bị này. Tắt rồi bật lại nhắc học.");
+      else toast.danger("Không gửi được tới thiết bị này. Tắt rồi bật lại thông báo.");
     }, "Không gửi được thông báo thử");
 
   return { state: status.data?.state ?? null, busy, enable, disable, sendTest };

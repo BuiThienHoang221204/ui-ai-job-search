@@ -1,5 +1,5 @@
 import { api } from "@/lib/axios";
-import type { PushSubscriptionInput } from "@/types";
+import type { PushPreferences, PushSubscriptionInput } from "@/types";
 
 export const pushService = {
   publicKey: () =>
@@ -12,6 +12,12 @@ export const pushService = {
     api
       .delete<{ removed: number }>("/push/subscriptions", { data: { endpoint } })
       .then((r) => r.data),
+
+  preferences: () =>
+    api.get<PushPreferences>("/push/preferences").then((r) => r.data),
+
+  setPreferences: (patch: Partial<PushPreferences>) =>
+    api.patch<PushPreferences>("/push/preferences", patch).then((r) => r.data),
 
   test: (endpoint: string) =>
     api.post<{ sent: number }>("/push/test", { endpoint }).then((r) => r.data),

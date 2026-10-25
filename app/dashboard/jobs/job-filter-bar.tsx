@@ -39,6 +39,7 @@ const EMPTY_FILTER: JobFilterValue = {
   saved: false,
   applied: false,
   subOccupation: [],
+  since: "",
 };
 
 const SALARY_STEPS = [10, 15, 20, 30, 50];

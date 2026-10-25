@@ -13,6 +13,7 @@ import {
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionCard } from "@/components/ui/section-card";
 import { DisplayCard } from "./display-card";
+import { NotificationsCard } from "./notifications-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/hooks/use-session";
 import { isAdmin } from "@/lib/auth";
@@ -30,6 +31,8 @@ export function SettingsView() {
 
       <div className="space-y-4">
         <DisplayCard />
+
+        <NotificationsCard />
 
         <SectionCard icon={UserGear} title="Thông tin đăng nhập">
           {loading ? (

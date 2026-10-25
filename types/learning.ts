@@ -44,6 +44,11 @@ export interface SaveLearningInput {
   days?: WeekDay[];
 }
 
+export interface PushPreferences {
+  jobNotifications: boolean;
+  studyReminders: boolean;
+}
+
 export interface PushSubscriptionInput {
   endpoint: string;
   keys: { p256dh: string; auth: string };

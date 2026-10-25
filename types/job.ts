@@ -163,6 +163,7 @@ export interface JobListParams {
   saved?: boolean;
   applied?: boolean;
   subOccupation?: string[];
+  since?: string;
 }
 export interface FilterOption {
   code: string;
@@ -226,6 +227,7 @@ export interface JobFilterValue {
   saved: boolean;
   applied: boolean;
   subOccupation: string[];
+  since: string;
 }
 
 export interface PartialEvaluation {

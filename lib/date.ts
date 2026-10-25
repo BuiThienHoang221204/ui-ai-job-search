@@ -7,6 +7,20 @@ export function formatDate(date: string): string {
   }).format(new Date(date));
 }
 
+/** Giờ và ngày dạng ngắn theo giờ Việt Nam, ví dụ "07:30 24/10". */
+export function formatClock(iso: string): string {
+  const parts = new Intl.DateTimeFormat("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Ho_Chi_Minh",
+  }).formatToParts(new Date(iso));
+  const part = (type: string) => parts.find((item) => item.type === type)?.value;
+  return `${part("hour")}:${part("minute")} ${part("day")}/${part("month")}`;
+}
+
 const MINUTE_MS = 60_000;
 const HOUR_MS = 3_600_000;
 const DAY_MS = 86_400_000;

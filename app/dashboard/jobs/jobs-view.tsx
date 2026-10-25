@@ -12,7 +12,7 @@ import { keys } from "@/lib/query-keys";
 import { toJobCardFromPublic, toJobCardFromRecord } from "@/lib/adapters";
 import { squeezeSidebar } from "@/lib/sidebar";
 import { JobFilterBar } from "./job-filter-bar";
-import { SortDescending } from "@phosphor-icons/react/ssr";
+import { Sparkle, SortDescending } from "@phosphor-icons/react/ssr";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { Alert } from "@/components/ui/alert";
 import Link from "next/link";
@@ -25,6 +25,7 @@ import { cn } from "@/lib/cn";
 import { useSession } from "@/hooks/use-session";
 import { useLoginModal } from "@/hooks/use-login-modal";
 import { afterSaveJob } from "@/lib/job-cache";
+import { formatClock } from "@/lib/date";
 
 const SORT_OPTIONS: { value: JobSort; label: string }[] = [
   { value: "newest", label: "Mới nhất" },
@@ -113,6 +114,7 @@ export function JobsView() {
         ...(filter.applied ? { applied: true } : {}),
         sort: filter.sort,
         ...(scored ? { scored: true } : {}),
+        ...(filter.since ? { since: filter.since } : {}),
       }),
     {
       errorMessage: "Không tải được danh sách việc làm",
@@ -264,7 +266,22 @@ export function JobsView() {
           data-testid="job-list-pane"
           className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white xl:h-full"
         >
-          
+          {filter.since && (
+            <div className="border-primary-100 bg-primary-50 text-primary-700 flex shrink-0 items-center gap-2 border-b px-3.5 py-2.5 text-[13px]">
+              <Sparkle className="size-4 shrink-0" weight="fill" />
+              <span>
+                <span className="font-semibold text-slate-900">{list.total} tin mới</span>{" "}
+                kể từ {formatClock(filter.since)}
+              </span>
+              <button
+                type="button"
+                onClick={() => push({ ...filter, since: "" }, 0, null)}
+                className="hover:text-primary-800 ml-auto shrink-0 cursor-pointer font-semibold"
+              >
+                Xem tất cả tin phù hợp →
+              </button>
+            </div>
+          )}
           <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3.5 py-2">
             <span className="text-xs text-slate-500">
               {list.total} tin

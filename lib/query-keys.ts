@@ -43,6 +43,7 @@ export const keys = {
   upskillRun: (id: string | null) => ["upskill", "run", id] as const,
   learning: () => ["learning"] as const,
   pushStatus: () => ["push-status"] as const,
+  pushPreferences: () => ["push-preferences"] as const,
 
   questionPage: (filters: unknown, offset: number) =>
     ["question-bank", "page", filters, offset] as const,

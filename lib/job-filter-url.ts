@@ -21,6 +21,7 @@ export function readFilter(
     saved: params.get("saved") === "1",
     applied: params.get("applied") === "1",
     subOccupation: params.getAll("subOccupation"),
+    since: params.get("since") ?? "",
   };
 }
 
@@ -44,6 +45,7 @@ export function writeFilter(
   if (filter.saved) params.set("saved", "1");
   if (filter.applied) params.set("applied", "1");
   if (filter.sort !== DEFAULT_SORT) params.set("sort", filter.sort);
+  if (filter.since) params.set("since", filter.since);
   if (offset) params.set("offset", String(offset));
   return params.toString();
 }
