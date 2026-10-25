@@ -5,6 +5,8 @@ describe("isGuestPath", () => {
   test("danh sách việc làm và chi tiết một tin mở cho khách", () => {
     expect(isGuestPath("/dashboard/jobs")).toBe(true);
     expect(isGuestPath("/dashboard/jobs/abc123")).toBe(true);
+    expect(isGuestPath("/dashboard/market")).toBe(true);
+    expect(isGuestPath("/dashboard/market/cong-nghe-thong-tin")).toBe(true);
   });
 
   test("tra cứu lương cần đăng nhập, cả danh sách lẫn từng vị trí", () => {

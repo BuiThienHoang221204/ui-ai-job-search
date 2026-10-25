@@ -11,13 +11,13 @@ const PORTAL_NAMES: Record<string, string> = {
   "123job": "123job",
 };
 
-const GUEST_PATH = /^\/dashboard\/jobs(\/[^/]+)?$/;
+const GUEST_PATH = /^\/dashboard\/(jobs|market)(\/[^/]+)?$/;
 
 export function portalName(source: string): string {
   return PORTAL_NAMES[source] ?? source;
 }
 
-/** Trang khách chưa đăng nhập xem được: việc làm (danh sách, chi tiết một tin). */
+/** Trang khách chưa đăng nhập xem được: việc làm (danh sách, chi tiết một tin) và báo cáo thị trường. */
 export function isGuestPath(pathname: string): boolean {
   return GUEST_PATH.test(pathname);
 }

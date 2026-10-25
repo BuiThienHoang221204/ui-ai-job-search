@@ -1,5 +1,6 @@
 import {
   Briefcase,
+  ChartLineUp,
   ChatText,
   ClockCounterClockwise,
   CurrencyCircleDollar,
@@ -21,6 +22,7 @@ export const navItems = [
   { label: "Tất cả việc làm", href: "/dashboard/jobs", icon: Stack },
   { label: "Đã chấm bằng AI", href: "/dashboard/matches", icon: Sparkle },
   { label: "Tra cứu lương", href: "/dashboard/salary", icon: CurrencyCircleDollar },
+  { label: "Thị trường việc làm", href: "/dashboard/market", icon: ChartLineUp },
   { label: "Tối ưu CV", href: "/dashboard/cv-optimizer", icon: FileText },
   { label: "Thư xin việc", href: "/dashboard/cover-letter", icon: Envelope },
   { label: "Lịch sử ứng tuyển", href: "/dashboard/applications", icon: ClockCounterClockwise },

@@ -12,3 +12,4 @@ export { learningService } from "./learning";
 export { pushService } from "./push";
 export { profileDraftService } from "./profile-draft";
 export { companiesService } from "./companies";
+export { marketService } from "./market";
