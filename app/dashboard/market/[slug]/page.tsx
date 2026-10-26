@@ -34,10 +34,10 @@ export default async function MarketReportPage({ params }: Params) {
     medianSalary = formatMonthlyVnd(report.salary.median);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <PageHeader
         title={`Thị trường việc làm ${report.name}`}
-        subtitle={`30 ngày gần nhất (${formatDate(report.from)} – ${formatDate(report.to)}) · từ ${formatCount(report.total)} tin tuyển dụng trên 10 trang việc làm`}
+        subtitle={`30 ngày gần nhất (${formatDate(report.from)} – ${formatDate(report.to)}) · từ ${formatCount(report.total)} tin tuyển dụng trên 10 trang việc làm. Số liệu tổng hợp, không phải thống kê chính thức.`}
         actions={
           <Link
             href="/dashboard/market"
@@ -49,13 +49,13 @@ export default async function MarketReportPage({ params }: Params) {
       />
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
           <p className="text-xs text-slate-500">Tin tuyển dụng</p>
           <p className="font-display text-2xl font-semibold text-slate-900">
             {formatCount(report.total)}
           </p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
           <p className="text-xs text-slate-500">Lương trung vị / tháng</p>
           <p className="font-display text-2xl font-semibold text-slate-900">
             {medianSalary}
@@ -64,7 +64,7 @@ export default async function MarketReportPage({ params }: Params) {
             từ {report.salary.withSalaryPercent}% tin có ghi mức lương
           </p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
           <p className="text-xs text-slate-500">Công ty đang tuyển</p>
           <p className="font-display text-2xl font-semibold text-slate-900">
             {formatCount(report.companies)}
@@ -72,7 +72,7 @@ export default async function MarketReportPage({ params }: Params) {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2">
         <section className="rounded-xl border border-slate-200 bg-white p-4">
           <h2 className="flex items-center gap-2 font-semibold text-slate-900">
             <Code className="text-primary-600 size-5" />
@@ -99,7 +99,18 @@ export default async function MarketReportPage({ params }: Params) {
             <tbody>
               {report.subOccupations.map((row) => (
                 <tr key={row.name} className="border-t border-slate-100">
-                  <td className="py-1.5 text-slate-800">{row.name}</td>
+                  <td className="py-1.5 text-slate-800">
+                    {row.salarySlug ? (
+                      <Link
+                        href={`/dashboard/salary/${row.salarySlug}`}
+                        className="text-primary-700 hover:text-primary-800 hover:underline"
+                      >
+                        {row.name} →
+                      </Link>
+                    ) : (
+                      row.name
+                    )}
+                  </td>
                   <td className="py-1.5 text-slate-600 tabular-nums">
                     {formatCount(row.count)}
                   </td>
@@ -135,10 +146,6 @@ export default async function MarketReportPage({ params }: Params) {
       </div>
 
       <MarketCta />
-      <p className="text-xs text-slate-400">
-        Số liệu tổng hợp từ tin tuyển dụng công khai, không phải thống kê chính
-        thức.
-      </p>
     </div>
   );
 }

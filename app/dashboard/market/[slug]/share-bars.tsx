@@ -5,7 +5,7 @@ export function ShareBars({
   rows: { name: string; percent: number }[];
 }) {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1">
       {rows.map((row) => (
         <div
           key={row.name}

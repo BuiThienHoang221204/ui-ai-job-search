@@ -20,6 +20,7 @@ export interface MarketReport {
   skills: { analysed: number; top: MarketShare[] };
   subOccupations: {
     name: string;
+    salarySlug: string | null;
     count: number;
     medianSalary: number | null;
   }[];
