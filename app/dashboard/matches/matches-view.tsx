@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, SortDescending } from "@phosphor-icons/react/ssr";
 import { matchesService } from "@/services";
@@ -45,6 +45,45 @@ export function MatchesView() {
 
   const matches = page.data?.items ?? null;
 
+  let content: ReactNode;
+  if (!matches) {
+    content = <SkeletonGrid count={PAGE_SIZE} className={GRID} itemClassName="h-56" />;
+  } else if (matches.length === 0) {
+    content = (
+      <div className="space-y-3">
+        <EmptyHint>
+          Bạn chưa chấm điểm tin nào. Điểm AI chỉ chạy khi bạn bấm ở trang chi
+          tiết một tin.
+        </EmptyHint>
+        <Link
+          href="/dashboard/jobs?scored=1"
+          className="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 text-xs font-semibold transition-colors"
+        >
+          Xem việc làm phù hợp <ArrowRight className="size-4" />
+        </Link>
+      </div>
+    );
+  } else {
+    content = (
+      <>
+        <div className={GRID}>
+          {matches.map((match) => (
+            <JobCard key={match.jobId} job={toJobCard(match)} />
+          ))}
+        </div>
+
+        <Pagination
+          offset={page.data?.offset ?? offset}
+          limit={PAGE_SIZE}
+          total={page.data?.total ?? 0}
+          onOffsetChange={setOffset}
+          noun="tin đã chấm"
+          disabled={page.loading}
+        />
+      </>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -65,39 +104,7 @@ export function MatchesView() {
         }
       />
 
-      {!matches ? (
-        <SkeletonGrid count={PAGE_SIZE} className={GRID} itemClassName="h-56" />
-      ) : matches.length === 0 ? (
-        <div className="space-y-3">
-          <EmptyHint>
-            Bạn chưa chấm điểm tin nào. Điểm AI chỉ chạy khi bạn bấm ở trang chi
-            tiết một tin.
-          </EmptyHint>
-          <Link
-            href="/dashboard/jobs?scored=1"
-            className="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 text-xs font-semibold transition-colors"
-          >
-            Xem việc làm phù hợp <ArrowRight className="size-4" />
-          </Link>
-        </div>
-      ) : (
-        <>
-          <div className={GRID}>
-            {matches.map((match) => (
-              <JobCard key={match.jobId} job={toJobCard(match)} />
-            ))}
-          </div>
-
-          <Pagination
-            offset={page.data?.offset ?? offset}
-            limit={PAGE_SIZE}
-            total={page.data?.total ?? 0}
-            onOffsetChange={setOffset}
-            noun="tin đã chấm"
-            disabled={page.loading}
-          />
-        </>
-      )}
+      {content}
     </div>
   );
 }

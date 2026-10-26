@@ -81,15 +81,13 @@ export function letterChecklist(input: {
       : "Không có “[tên]”, “không cung cấp”…",
   });
 
+  let lengthTitle = "Độ dài vừa phải";
+  if (words < range[0]) lengthTitle = "Hơi ngắn";
+  else if (words > range[1]) lengthTitle = "Hơi dài";
   checks.push({
     id: "length",
     ok: words >= range[0] && words <= range[1],
-    title:
-      words < range[0]
-        ? "Hơi ngắn"
-        : words > range[1]
-          ? "Hơi dài"
-          : "Độ dài vừa phải",
+    title: lengthTitle,
     detail: `${words} chữ · nên ${range[0]}–${range[1]} chữ`,
   });
 

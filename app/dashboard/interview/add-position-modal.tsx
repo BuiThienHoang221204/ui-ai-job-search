@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { Sparkle } from "@phosphor-icons/react/ssr";
 import { applicationsService, interviewService, jobsService } from "@/services";
@@ -92,6 +92,65 @@ export function AddPositionModal({
     }
   };
 
+  let content: ReactNode;
+  if (current.error) {
+    content = <p className="py-6 text-center text-sm text-rose-600">{current.error}</p>;
+  } else if (!options) {
+    content = (
+      <div className="space-y-2 py-1">
+        <Skeleton className="h-12" />
+        <Skeleton className="h-12" />
+      </div>
+    );
+  } else if (options.length === 0) {
+    content = (
+      <p className="py-8 text-center text-sm text-slate-500">
+        {EMPTY[source].text}{" "}
+        <Link href={EMPTY[source].href} className="text-primary-700 hover:underline">
+          {EMPTY[source].link}
+        </Link>
+      </p>
+    );
+  } else {
+    content = (
+      <ul className="space-y-1" role="listbox" aria-label="Chọn tin">
+        {options.map((option) => {
+          const active = option.jobId === jobId;
+          return (
+            <li key={option.jobId}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => setJobId(option.jobId)}
+                className={cn(
+                  "flex w-full cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 text-left transition-colors",
+                  active
+                    ? "border-primary-300 bg-primary-50"
+                    : "border-transparent hover:bg-slate-50",
+                )}
+              >
+                <CompanyLogo
+                  src={option.companyLogo}
+                  size="sm"
+                  className="size-9 text-xs"
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-medium text-slate-900">
+                    {option.title}
+                  </span>
+                  <span className="block truncate text-xs text-slate-500">
+                    {option.company}
+                  </span>
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+
   return (
     <Modal
       open={open}
@@ -117,59 +176,7 @@ export function AddPositionModal({
         }}
       />
 
-      <div className="mt-3 max-h-80 min-h-40 overflow-y-auto">
-        {current.error ? (
-          <p className="py-6 text-center text-sm text-rose-600">{current.error}</p>
-        ) : !options ? (
-          <div className="space-y-2 py-1">
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-          </div>
-        ) : options.length === 0 ? (
-          <p className="py-8 text-center text-sm text-slate-500">
-            {EMPTY[source].text}{" "}
-            <Link href={EMPTY[source].href} className="text-primary-700 hover:underline">
-              {EMPTY[source].link}
-            </Link>
-          </p>
-        ) : (
-          <ul className="space-y-1" role="listbox" aria-label="Chọn tin">
-            {options.map((option) => {
-              const active = option.jobId === jobId;
-              return (
-                <li key={option.jobId}>
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={active}
-                    onClick={() => setJobId(option.jobId)}
-                    className={cn(
-                      "flex w-full cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 text-left transition-colors",
-                      active
-                        ? "border-primary-300 bg-primary-50"
-                        : "border-transparent hover:bg-slate-50",
-                    )}
-                  >
-                    <CompanyLogo
-                      src={option.companyLogo}
-                      size="sm"
-                      className="size-9 text-xs"
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-slate-900">
-                        {option.title}
-                      </span>
-                      <span className="block truncate text-xs text-slate-500">
-                        {option.company}
-                      </span>
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
+      <div className="mt-3 max-h-80 min-h-40 overflow-y-auto">{content}</div>
 
       {error && (
         <p className="mt-2 text-xs text-rose-600" role="alert">

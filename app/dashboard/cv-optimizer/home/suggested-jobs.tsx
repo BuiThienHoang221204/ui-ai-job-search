@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, Target } from "@phosphor-icons/react/ssr";
 import { documentsService, matchesService } from "@/services";
@@ -44,6 +45,62 @@ export function SuggestedJobs({ onGenerate }: { onGenerate: CvGenerate }) {
     .filter((match) => !withCv.has(match.jobId))
     .slice(0, 3);
 
+  let content: ReactNode;
+  if (!matches.data) {
+    content = <Skeleton className="h-40" />;
+  } else if (items.length === 0) {
+    content = (
+      <p className="py-4 text-sm text-slate-500">
+        Tin bạn hợp nhất đều đã có CV. Chấm thêm tin ở trang Việc làm phù hợp.
+      </p>
+    );
+  } else {
+    content = (
+      <ul>
+        {items.map((match) => (
+          <li
+            key={match.jobId}
+            className="grid grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 border-t border-slate-100 py-3 first:border-t-0"
+          >
+            <CompanyLogo
+              size="sm"
+              src={match.job.companyLogo}
+            />
+            <span className="min-w-0">
+              <span className="line-clamp-2 text-sm font-semibold text-slate-900">
+                {match.job.title}
+              </span>
+              <span className="block truncate text-xs text-slate-500">
+                {match.job.company}
+                {match.overallScore !== null && (
+                  <>
+                    {" · "}
+                    <b
+                      className={cn(
+                        "font-mono",
+                        SCORE_TONES[matchTone(match.overallScore)],
+                      )}
+                    >
+                      {match.overallScore}%
+                    </b>{" "}
+                    phù hợp
+                  </>
+                )}
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={() => onGenerate({ jobId: match.jobId }, "vi")}
+              className="h-8 cursor-pointer rounded-lg border border-dashed border-primary-200 px-2.5 text-xs font-semibold text-primary-600 hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              + Tạo CV
+            </button>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
   return (
     <Card className="p-6">
       <div className="mb-2 flex items-center gap-2.5">
@@ -53,56 +110,7 @@ export function SuggestedJobs({ onGenerate }: { onGenerate: CvGenerate }) {
         </h2>
       </div>
 
-      {!matches.data ? (
-        <Skeleton className="h-40" />
-      ) : items.length === 0 ? (
-        <p className="py-4 text-sm text-slate-500">
-          Tin bạn hợp nhất đều đã có CV. Chấm thêm tin ở trang Việc làm phù hợp.
-        </p>
-      ) : (
-        <ul>
-          {items.map((match) => (
-            <li
-              key={match.jobId}
-              className="grid grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 border-t border-slate-100 py-3 first:border-t-0"
-            >
-              <CompanyLogo
-                size="sm"
-                src={match.job.companyLogo}
-              />
-              <span className="min-w-0">
-                <span className="line-clamp-2 text-sm font-semibold text-slate-900">
-                  {match.job.title}
-                </span>
-                <span className="block truncate text-xs text-slate-500">
-                  {match.job.company}
-                  {match.overallScore !== null && (
-                    <>
-                      {" · "}
-                      <b
-                        className={cn(
-                          "font-mono",
-                          SCORE_TONES[matchTone(match.overallScore)],
-                        )}
-                      >
-                        {match.overallScore}%
-                      </b>{" "}
-                      phù hợp
-                    </>
-                  )}
-                </span>
-              </span>
-              <button
-                type="button"
-                onClick={() => onGenerate({ jobId: match.jobId }, "vi")}
-                className="h-8 cursor-pointer rounded-lg border border-dashed border-primary-200 px-2.5 text-xs font-semibold text-primary-600 hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                + Tạo CV
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      {content}
 
       <Link
         href="/dashboard/jobs?scored=1"

@@ -1,4 +1,4 @@
-import { api } from "@/lib/axios";
+import { api, apiErrorStatus } from "@/lib/axios";
 import type { CvUploadReceipt, ProfileDraftRecord } from "@/types";
 
 export const profileDraftService = {
@@ -16,6 +16,13 @@ export const profileDraftService = {
 
   latest: () =>
     api.get<ProfileDraftRecord>("/profile-drafts/latest").then((r) => r.data),
+
+  /** Bản đọc CV gần nhất; chưa tải CV nào (404) thì là `null`, lỗi khác vẫn ném ra. */
+  latestOrNull: () =>
+    profileDraftService.latest().catch((err: unknown) => {
+      if (apiErrorStatus(err) === 404) return null;
+      throw err;
+    }),
 
   get: (id: string) =>
     api.get<ProfileDraftRecord>(`/profile-drafts/${id}`).then((r) => r.data),

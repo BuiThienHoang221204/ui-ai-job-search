@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useJobDetail } from "@/hooks/use-job-detail";
 import { useJobScoring } from "@/hooks/use-job-scoring";
 import { LiveScoringCard } from "./live-scoring-card";
@@ -22,21 +23,26 @@ export function MatchPanel({ jobId }: { jobId: string }) {
           reason: "Đăng nhập để AI chấm mức độ phù hợp của tin này với hồ sơ của bạn.",
         });
 
+  let card: ReactNode;
+  if (match && overallScore !== null) {
+    card = (
+      <ScoreCard
+        match={match}
+        overallScore={overallScore}
+        onScore={onScore}
+        scoring={scoring}
+      />
+    );
+  } else if (match) {
+    card = <UnscoredCard match={match} onScore={onScore} scoring={scoring} />;
+  } else {
+    card = <NotScoredCard onScore={onScore} scoring={scoring} />;
+  }
+
   return (
     <div id="tong-quan" className="scroll-mt-20 space-y-6">
       {scoring && <LiveScoringCard partial={partial} />}
-      {match && overallScore !== null ? (
-        <ScoreCard
-          match={match}
-          overallScore={overallScore}
-          onScore={onScore}
-          scoring={scoring}
-        />
-      ) : match ? (
-        <UnscoredCard match={match} onScore={onScore} scoring={scoring} />
-      ) : (
-        <NotScoredCard onScore={onScore} scoring={scoring} />
-      )}
+      {card}
     </div>
   );
 }

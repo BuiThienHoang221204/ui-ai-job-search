@@ -10,34 +10,21 @@ import {
   Target,
   UploadSimple,
 } from "@phosphor-icons/react/ssr";
+import { useGoToImprovement } from "@/hooks/use-go-to-improvement";
 import { useLatestCv } from "@/hooks/use-latest-cv";
 import { profileDraftService } from "@/services";
 import { DashSection } from "@/components/ui/dash-section";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { improvements } from "@/lib/profile-form";
-import type { Improvement } from "@/types";
-import { useProfile, useProfileUi } from "@/hooks/use-profile";
+import { useProfile } from "@/hooks/use-profile";
 import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/date";
-
-/** Chuyển sang đúng tab rồi cuộn tới phần cần sửa. */
-function useGoTo() {
-  const setTab = useProfileUi((state) => state.setTab);
-  return (item: Improvement) => {
-    setTab(item.tab);
-    requestAnimationFrame(() =>
-      document
-        .getElementById(item.anchor)
-        ?.scrollIntoView({ behavior: "smooth", block: "center" }),
-    );
-  };
-}
 
 /** Cột phải trang hồ sơ: việc nên làm để AI hiểu đúng hơn, và tệp CV gốc. */
 export function ImprovePanel() {
   const { data: profile } = useProfile();
-  const goTo = useGoTo();
+  const goTo = useGoToImprovement();
   const cv = useLatestCv();
   if (!profile) return null;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Briefcase, ChatCircleDots, TrendUp } from "@phosphor-icons/react/ssr";
 import { QUESTION_PAGE_SIZE, useQuestionBank } from "@/hooks/use-question-bank";
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,32 @@ export function QuestionBankBrowser({
 }) {
   const bank = useQuestionBank(initialFacets, initial);
   const [railOpen, setRailOpen] = useState(() => pickOffer(AFFILIATE_OFFERS, "question-bank") !== null);
+
+  let results: ReactNode;
+  if (bank.pending) {
+    results = (
+      <div className="space-y-3">
+        {Array.from({ length: 5 }, (_, i) => (
+          <Skeleton key={i} className="h-24 w-full" />
+        ))}
+      </div>
+    );
+  } else if (bank.page.items.length === 0) {
+    results = (
+      <EmptyState
+        title="Không có câu hỏi nào khớp"
+        description="Thử bỏ bớt một bộ lọc, hoặc tìm bằng từ khoá ngắn hơn."
+      />
+    );
+  } else {
+    results = (
+      <div className="space-y-3">
+        {bank.page.items.map((question, index) => (
+          <QuestionRow key={question.id} question={question} number={bank.offset + index + 1} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
@@ -120,24 +146,7 @@ export function QuestionBankBrowser({
             {bank.page.total.toLocaleString("vi-VN")} câu hỏi khớp bộ lọc
           </p>
 
-          {bank.pending ? (
-            <div className="space-y-3">
-              {Array.from({ length: 5 }, (_, i) => (
-                <Skeleton key={i} className="h-24 w-full" />
-              ))}
-            </div>
-          ) : bank.page.items.length === 0 ? (
-            <EmptyState
-              title="Không có câu hỏi nào khớp"
-              description="Thử bỏ bớt một bộ lọc, hoặc tìm bằng từ khoá ngắn hơn."
-            />
-          ) : (
-            <div className="space-y-3">
-              {bank.page.items.map((question, index) => (
-                <QuestionRow key={question.id} question={question} number={bank.offset + index + 1} />
-              ))}
-            </div>
-          )}
+          {results}
 
           <Pagination
             total={bank.page.total}

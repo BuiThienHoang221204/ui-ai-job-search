@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore, useMemo } from "react";
+import { useState } from "react";
 import { ArrowSquareOut, ArrowUpRight, Gift } from "@phosphor-icons/react/ssr";
 import { DashSection } from "@/components/ui/dash-section";
 import { Card } from "@/components/ui/card";
@@ -12,23 +12,7 @@ import {
   type AffiliatePlacement,
 } from "@/lib/affiliate";
 import { cn } from "@/lib/cn";
-
-let clientSeed = 0;
-function getClientSeed(): number {
-  if (clientSeed === 0) clientSeed = Math.floor(Math.random() * 10_000) + 1;
-  return clientSeed;
-}
-
-/** Random rotation cho các tin để sản phẩm xoay tua đều, SSR trả về 0 để tránh lỗi hydration. */
-function useRotation(seed?: string | number | null): number {
-  const randomOffset = useSyncExternalStore(() => () => {}, getClientSeed, () => 0);
-  return useMemo(() => {
-    let hash = 0;
-    const str = String(seed ?? "");
-    for (let i = 0; i < str.length; i++) hash = (hash << 5) - hash + str.charCodeAt(i);
-    return Math.abs(hash) + randomOffset;
-  }, [randomOffset, seed]);
-}
+import { useRotation } from "@/hooks/use-rotation";
 
 /** Nhãn header "Tài trợ" */
 function Header({ label }: { label: string }) {

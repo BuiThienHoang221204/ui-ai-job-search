@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -132,6 +132,164 @@ export function ApplicationsView() {
     }
   };
 
+  let content: ReactNode;
+  if (error) {
+    content = <Alert tone="danger">{error}</Alert>;
+  } else if (!data) {
+    content = <Skeleton className="h-64 animate-pulse" />;
+  } else {
+    content = (
+      <Card className="overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead>Vị trí / Công ty</TableHead>
+              <TableHead className="hidden md:table-cell">CV đã nộp</TableHead>
+              <TableHead className="hidden md:table-cell">Ngày nộp</TableHead>
+              <TableHead className="hidden lg:table-cell">Địa điểm</TableHead>
+              <TableHead>Trạng thái</TableHead>
+              <TableHead>Cập nhật</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.items.map((application, index) => (
+              <TableRow key={application.id}>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <CompanyLogo
+                      src={application.job.companyLogo}
+                      size="sm"
+                    />
+                    <div className="min-w-0">
+                      <Link
+                        href={`/dashboard/jobs/${application.jobId}`}
+                        className="hover:text-primary-600 block truncate font-medium text-slate-900"
+                      >
+                        {application.job.title}
+                      </Link>
+                      <p className="text-xs text-slate-400">
+                        {application.job.company}
+                      </p>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="hidden whitespace-nowrap text-slate-500 md:table-cell">
+                  {(() => {
+                    const jobCvs = application.documents?.filter(
+                      (d) => d.kind === "CV",
+                    ) ?? [];
+                    const cvs = jobCvs.filter((d) => d.status === "DONE");
+                    if (!cvs.length) {
+                      if (
+                        jobCvs.some(
+                          (d) => d.status === "PENDING" || d.status === "RUNNING",
+                        )
+                      ) {
+                        return (
+                          <span className="text-xs text-slate-400">
+                            Đang viết CV…
+                          </span>
+                        );
+                      }
+                      return (
+                        <button
+                          type="button"
+                          disabled={creatingCvFor === application.jobId}
+                          onClick={() => void createCvFor(application.jobId)}
+                          className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-primary-600 hover:underline disabled:opacity-50"
+                        >
+                          <FileText className="size-3.5 shrink-0" />
+                          Tạo CV cho tin này
+                        </button>
+                      );
+                    }
+                    const cv = cvs[0];
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => void openCvPdf(cv.id)}
+                        disabled={pdfLoadingId === cv.id}
+                        className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 hover:underline disabled:opacity-50"
+                        title={cvs.map((c) => c.title).join(", ")}
+                      >
+                        <FileText className="size-3.5 shrink-0" />
+                        {pdfLoadingId === cv.id
+                          ? "Đang tải…"
+                          : cv.title}
+                        {cvs.length > 1 && ` (+${cvs.length - 1})`}
+                      </button>
+                    );
+                  })()}
+                </TableCell>
+                <TableCell className="hidden whitespace-nowrap text-slate-500 md:table-cell">
+                  {application.appliedAt
+                    ? formatDate(application.appliedAt)
+                    : "Chưa nộp"}
+                </TableCell>
+                <TableCell className="hidden text-slate-500 lg:table-cell">
+                  <LocationText location={application.job.location} />
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={APPLICATION_STATUS_VARIANTS[application.status]}
+                  >
+                    {APPLICATION_STATUS_LABELS[application.status]}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <SelectMenu<"" | ApplicationStatus>
+                    variant="field"
+                    className="min-w-40"
+                    side={
+                      index >= data.items.length - 2 && index >= 2
+                        ? "top"
+                        : "bottom"
+                    }
+                    align="right"
+                    label={
+                      savingId === application.id
+                        ? "Đang lưu…"
+                        : "Đổi trạng thái…"
+                    }
+                    value=""
+                    disabled={savingId === application.id}
+                    options={NEXT_STATUSES[application.status].map(
+                      (next) => ({
+                        value: next,
+                        label: APPLICATION_STATUS_LABELS[next],
+                      }),
+                    )}
+                    onChange={(next) => {
+                      if (next) void changeStatus(application, next);
+                    }}
+                  />
+                  {rowError?.id === application.id && (
+                    <p className="mt-1 text-xs text-rose-600">
+                      {rowError.message}
+                    </p>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        {data.items.length === 0 && (
+          <div className="p-12 text-center text-sm text-slate-400">
+            Không có đơn ứng tuyển nào ở trạng thái này.
+          </div>
+        )}
+
+        <Pagination
+          offset={offset}
+          limit={PAGE_SIZE}
+          total={data.total}
+          noun="đơn"
+          onOffsetChange={setOffset}
+        />
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -152,160 +310,7 @@ export function ApplicationsView() {
         />
       </div>
 
-      {error ? (
-        <Alert tone="danger">{error}</Alert>
-      ) : !data ? (
-        <Skeleton className="h-64 animate-pulse" />
-      ) : (
-        <Card className="overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead>Vị trí / Công ty</TableHead>
-                <TableHead className="hidden md:table-cell">CV đã nộp</TableHead>
-                <TableHead className="hidden md:table-cell">Ngày nộp</TableHead>
-                <TableHead className="hidden lg:table-cell">Địa điểm</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead>Cập nhật</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.items.map((application, index) => (
-                <TableRow key={application.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <CompanyLogo
-                        src={application.job.companyLogo}
-                        size="sm"
-                      />
-                      <div className="min-w-0">
-                        <Link
-                          href={`/dashboard/jobs/${application.jobId}`}
-                          className="hover:text-primary-600 block truncate font-medium text-slate-900"
-                        >
-                          {application.job.title}
-                        </Link>
-                        <p className="text-xs text-slate-400">
-                          {application.job.company}
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden whitespace-nowrap text-slate-500 md:table-cell">
-                    {(() => {
-                      const jobCvs = application.documents?.filter(
-                        (d) => d.kind === "CV",
-                      ) ?? [];
-                      const cvs = jobCvs.filter((d) => d.status === "DONE");
-                      if (!cvs.length) {
-                        if (
-                          jobCvs.some(
-                            (d) => d.status === "PENDING" || d.status === "RUNNING",
-                          )
-                        ) {
-                          return (
-                            <span className="text-xs text-slate-400">
-                              Đang viết CV…
-                            </span>
-                          );
-                        }
-                        return (
-                          <button
-                            type="button"
-                            disabled={creatingCvFor === application.jobId}
-                            onClick={() => void createCvFor(application.jobId)}
-                            className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-primary-600 hover:underline disabled:opacity-50"
-                          >
-                            <FileText className="size-3.5 shrink-0" />
-                            Tạo CV cho tin này
-                          </button>
-                        );
-                      }
-                      const cv = cvs[0];
-                      return (
-                        <button
-                          type="button"
-                          onClick={() => void openCvPdf(cv.id)}
-                          disabled={pdfLoadingId === cv.id}
-                          className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 hover:underline disabled:opacity-50"
-                          title={cvs.map((c) => c.title).join(", ")}
-                        >
-                          <FileText className="size-3.5 shrink-0" />
-                          {pdfLoadingId === cv.id
-                            ? "Đang tải…"
-                            : cv.title}
-                          {cvs.length > 1 && ` (+${cvs.length - 1})`}
-                        </button>
-                      );
-                    })()}
-                  </TableCell>
-                  <TableCell className="hidden whitespace-nowrap text-slate-500 md:table-cell">
-                    {application.appliedAt
-                      ? formatDate(application.appliedAt)
-                      : "Chưa nộp"}
-                  </TableCell>
-                  <TableCell className="hidden text-slate-500 lg:table-cell">
-                    <LocationText location={application.job.location} />
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={APPLICATION_STATUS_VARIANTS[application.status]}
-                    >
-                      {APPLICATION_STATUS_LABELS[application.status]}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <SelectMenu<"" | ApplicationStatus>
-                      variant="field"
-                      className="min-w-40"
-                      side={
-                        index >= data.items.length - 2 && index >= 2
-                          ? "top"
-                          : "bottom"
-                      }
-                      align="right"
-                      label={
-                        savingId === application.id
-                          ? "Đang lưu…"
-                          : "Đổi trạng thái…"
-                      }
-                      value=""
-                      disabled={savingId === application.id}
-                      options={NEXT_STATUSES[application.status].map(
-                        (next) => ({
-                          value: next,
-                          label: APPLICATION_STATUS_LABELS[next],
-                        }),
-                      )}
-                      onChange={(next) => {
-                        if (next) void changeStatus(application, next);
-                      }}
-                    />
-                    {rowError?.id === application.id && (
-                      <p className="mt-1 text-xs text-rose-600">
-                        {rowError.message}
-                      </p>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {data.items.length === 0 && (
-            <div className="p-12 text-center text-sm text-slate-400">
-              Không có đơn ứng tuyển nào ở trạng thái này.
-            </div>
-          )}
-
-          <Pagination
-            offset={offset}
-            limit={PAGE_SIZE}
-            total={data.total}
-            noun="đơn"
-            onOffsetChange={setOffset}
-          />
-        </Card>
-      )}
+      {content}
     </div>
   );
 }

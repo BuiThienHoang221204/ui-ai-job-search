@@ -197,15 +197,11 @@ export function useDocumentJob(loginNext: string): DocumentJob {
     setWatch((now) => (now?.kind === "watching" ? { ...now } : now));
   }, []);
 
-  const phase: DocumentJobPhase = !watch
-    ? "idle"
-    : current.error
-      ? "failed"
-      : current.timedOut
-        ? "timeout"
-        : current.document?.status === "DONE"
-          ? "done"
-          : "generating";
+  let phase: DocumentJobPhase = "generating";
+  if (!watch) phase = "idle";
+  else if (current.error) phase = "failed";
+  else if (current.timedOut) phase = "timeout";
+  else if (current.document?.status === "DONE") phase = "done";
 
   return {
     phase,

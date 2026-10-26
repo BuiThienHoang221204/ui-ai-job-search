@@ -129,6 +129,9 @@ function ToastCard({
   const danger = item.tone === "danger";
   const fromBottom = item.position === "bottom-right";
   const Icon = danger ? Warning : CheckCircle;
+  let motion = "translate-y-0 opacity-100";
+  if (!visible && fromBottom) motion = "opacity-0 translate-y-2";
+  else if (!visible) motion = "opacity-0 -translate-y-2";
 
   return (
     <div
@@ -136,9 +139,7 @@ function ToastCard({
       className={cn(
         "pointer-events-auto flex w-full max-w-lg items-start gap-3 rounded-xl border bg-white p-3.5 shadow-lg transition-all duration-300",
         danger ? "border-rose-200" : "border-slate-200",
-        visible
-          ? "translate-y-0 opacity-100"
-          : cn("opacity-0", fromBottom ? "translate-y-2" : "-translate-y-2"),
+        motion,
       )}
     >
       <Icon

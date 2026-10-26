@@ -275,13 +275,10 @@ function ProfileRecordForm({
       item={index === null ? {} : (items[index] ?? {})}
       saving={saving}
       onCancel={close}
-      onSubmit={(item) =>
-        saveItems(
-          index === null
-            ? [item, ...items]
-            : items.map((entry, at) => (at === index ? item : entry)),
-        )
-      }
+      onSubmit={(item) => {
+        if (index === null) saveItems([item, ...items]);
+        else saveItems(items.map((entry, at) => (at === index ? item : entry)));
+      }}
       onDelete={
         index === null
           ? undefined
@@ -297,10 +294,11 @@ export function EditModal() {
   const close = useProfileUi((state) => state.close);
   if (!editing) return null;
 
-  const title =
-    editing.kind === "basic"
-      ? "Sửa thông tin cơ bản"
-      : `${editing.index === null ? "Thêm" : "Sửa"} ${RECORDS[editing.type].title.toLowerCase()}`;
+  let title = "Sửa thông tin cơ bản";
+  if (editing.kind !== "basic") {
+    const verb = editing.index === null ? "Thêm" : "Sửa";
+    title = `${verb} ${RECORDS[editing.type].title.toLowerCase()}`;
+  }
 
   return (
     <Modal

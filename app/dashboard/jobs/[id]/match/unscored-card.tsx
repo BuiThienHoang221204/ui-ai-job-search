@@ -47,18 +47,17 @@ export function UnscoredCard({
 }: ScoreAction & { match: JobMatchDetail }) {
   const failed = match.status === "FAILED";
   const waiting = match.status === "PENDING" || match.status === "RUNNING";
-  const title = failed
-    ? "Lần chấm điểm trước không thành công"
-    : waiting
-      ? "Tin này đang chờ chấm điểm"
-      : "Kết quả chấm điểm chưa đầy đủ";
-  const detail = failed
-    ? match.failureKind
+  let title = "Kết quả chấm điểm chưa đầy đủ";
+  let detail = "AI chưa trả đủ điểm cho các chiều đánh giá. Hãy chấm lại.";
+  if (failed) {
+    title = "Lần chấm điểm trước không thành công";
+    detail = match.failureKind
       ? failureMessage(match.failureKind)
-      : "AI có thể đang quá tải hoặc trả kết quả sai định dạng. Hãy chấm lại."
-    : waiting
-      ? "Kết quả sẽ có sau khi hệ thống chấm xong. Bạn có thể chấm ngay thay vì chờ."
-      : "AI chưa trả đủ điểm cho các chiều đánh giá. Hãy chấm lại.";
+      : "AI có thể đang quá tải hoặc trả kết quả sai định dạng. Hãy chấm lại.";
+  } else if (waiting) {
+    title = "Tin này đang chờ chấm điểm";
+    detail = "Kết quả sẽ có sau khi hệ thống chấm xong. Bạn có thể chấm ngay thay vì chờ.";
+  }
 
   return (
     <Card>

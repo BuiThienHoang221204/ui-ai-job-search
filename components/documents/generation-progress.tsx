@@ -34,45 +34,48 @@ export function GenerationProgress({
         </h1>
         <p className="mt-1 mb-5 text-sm text-slate-500">{hint}</p>
         <ol>
-          {steps.map((step, index) => (
-            <li
-              key={step.label}
-              className="relative grid grid-cols-[1.75rem_minmax(0,1fr)] gap-3 pb-4 last:pb-0"
-            >
-              {index < steps.length - 1 && (
+          {steps.map((step, index) => {
+            let dotClass = "border-slate-200 text-slate-400";
+            if (step.done)
+              dotClass = "border-emerald-500 bg-emerald-500 text-white";
+            else if (index === current)
+              dotClass = "animate-spin border-primary-600 border-t-transparent";
+            return (
+              <li
+                key={step.label}
+                className="relative grid grid-cols-[1.75rem_minmax(0,1fr)] gap-3 pb-4 last:pb-0"
+              >
+                {index < steps.length - 1 && (
+                  <span
+                    className={cn(
+                      "absolute top-8 bottom-1 left-[0.8rem] w-0.5",
+                      step.done ? "bg-emerald-500" : "bg-slate-200",
+                    )}
+                  />
+                )}
                 <span
                   className={cn(
-                    "absolute top-8 bottom-1 left-[0.8rem] w-0.5",
-                    step.done ? "bg-emerald-500" : "bg-slate-200",
+                    "flex size-7 items-center justify-center rounded-full border-2 text-xs",
+                    dotClass,
                   )}
-                />
-              )}
-              <span
-                className={cn(
-                  "flex size-7 items-center justify-center rounded-full border-2 text-xs",
-                  step.done
-                    ? "border-emerald-500 bg-emerald-500 text-white"
-                    : index === current
-                      ? "animate-spin border-primary-600 border-t-transparent"
-                      : "border-slate-200 text-slate-400",
-                )}
-              >
-                {step.done ? (
-                  <Check weight="bold" className="size-3.5" />
-                ) : null}
-              </span>
-              <span
-                className={cn(
-                  "pt-1 text-sm",
-                  step.done || index === current
-                    ? "font-semibold text-slate-900"
-                    : "text-slate-400",
-                )}
-              >
-                {step.label}
-              </span>
-            </li>
-          ))}
+                >
+                  {step.done ? (
+                    <Check weight="bold" className="size-3.5" />
+                  ) : null}
+                </span>
+                <span
+                  className={cn(
+                    "pt-1 text-sm",
+                    step.done || index === current
+                      ? "font-semibold text-slate-900"
+                      : "text-slate-400",
+                  )}
+                >
+                  {step.label}
+                </span>
+              </li>
+            );
+          })}
         </ol>
         <ModelElapsed expected={expectedSeconds} className="mt-5 mb-0" />
       </Card>

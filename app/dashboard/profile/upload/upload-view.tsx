@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "@phosphor-icons/react/ssr";
 import { useCvUpload } from "@/hooks/use-cv-upload";
@@ -12,11 +13,35 @@ import { UploadPanel, UploadTips } from "./upload-cards";
 export function UploadCvView() {
   const cv = useCvUpload();
 
-  const note = cv.reviewing
-    ? "Bỏ hoặc sửa chỗ AI đọc sai rồi bấm Lưu."
-    : cv.reading
-      ? `Đang đọc ${cv.file?.name ?? cv.draft?.filename ?? "CV"}…`
-      : "AI đọc CV rồi điền sẵn hồ sơ cho bạn xem lại.";
+  let note = "AI đọc CV rồi điền sẵn hồ sơ cho bạn xem lại.";
+  if (cv.reviewing) note = "Bỏ hoặc sửa chỗ AI đọc sai rồi bấm Lưu.";
+  else if (cv.reading)
+    note = `Đang đọc ${cv.file?.name ?? cv.draft?.filename ?? "CV"}…`;
+
+  let content: ReactNode = (
+    <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(18.75rem,1fr)]">
+      <UploadPanel
+        reading={cv.reading}
+        file={cv.file}
+        draft={cv.draft}
+        partial={cv.partial}
+        onPick={(file) => void cv.upload(file)}
+        onRetry={() => void cv.retry()}
+      />
+      <UploadTips />
+    </div>
+  );
+  if (cv.loading) content = <Skeleton className="h-72" />;
+  else if (cv.reviewing && cv.draft)
+    content = (
+      <ReviewCard
+        draft={cv.draft}
+        profile={cv.profile}
+        saving={cv.saving}
+        onSave={(values) => void cv.apply(values)}
+        onDismiss={cv.dismiss}
+      />
+    );
 
   return (
     <div className="mx-auto w-full max-w-340 space-y-5 pb-6">
@@ -38,29 +63,7 @@ export function UploadCvView() {
 
       {cv.error && <Alert tone="danger">{cv.error}</Alert>}
 
-      {cv.loading ? (
-        <Skeleton className="h-72" />
-      ) : cv.reviewing && cv.draft ? (
-        <ReviewCard
-          draft={cv.draft}
-          profile={cv.profile}
-          saving={cv.saving}
-          onSave={(values) => void cv.apply(values)}
-          onDismiss={cv.dismiss}
-        />
-      ) : (
-        <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(18.75rem,1fr)]">
-          <UploadPanel
-            reading={cv.reading}
-            file={cv.file}
-            draft={cv.draft}
-            partial={cv.partial}
-            onPick={(file) => void cv.upload(file)}
-            onRetry={() => void cv.retry()}
-          />
-          <UploadTips />
-        </div>
-      )}
+      {content}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { Briefcase, GraduationCap, Hash } from "@phosphor-icons/react/ssr";
 import { useJobDetail } from "@/hooks/use-job-detail";
 import { cvChecklist } from "@/lib/cv-checklist";
@@ -39,6 +39,35 @@ export function CvChecklist({ jobId }: { jobId: string | null }) {
   );
   const left = total - done;
 
+  let keywordSection: ReactNode;
+  if (jobId === null) {
+    keywordSection = (
+      <p className="text-xs text-slate-500">
+        CV tổng quát không nhắm tin nào nên không có từ khoá để đối chiếu.
+      </p>
+    );
+  } else if (keywordTodos.length === 0) {
+    keywordSection = (
+      <p className="text-xs text-slate-500">
+        Tin này chưa được phân tích yêu cầu nên chưa có từ khoá.
+      </p>
+    );
+  } else {
+    keywordSection = (
+      <>
+        <div className="flex flex-wrap gap-1.5">
+          {keywordTodos.map((todo) => (
+            <KeywordChip key={todo.id} todo={todo} />
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-slate-500">
+          Bấm để thêm vào mục Kỹ năng — chỉ thêm kỹ năng bạn thật sự có; không
+          phù hợp thì bấm × để bỏ qua.
+        </p>
+      </>
+    );
+  }
+
   return (
     <div className="space-y-5">
       <div>
@@ -71,27 +100,7 @@ export function CvChecklist({ jobId }: { jobId: string | null }) {
             </span>
           )}
         </h3>
-        {jobId === null ? (
-          <p className="text-xs text-slate-500">
-            CV tổng quát không nhắm tin nào nên không có từ khoá để đối chiếu.
-          </p>
-        ) : keywordTodos.length === 0 ? (
-          <p className="text-xs text-slate-500">
-            Tin này chưa được phân tích yêu cầu nên chưa có từ khoá.
-          </p>
-        ) : (
-          <>
-            <div className="flex flex-wrap gap-1.5">
-              {keywordTodos.map((todo) => (
-                <KeywordChip key={todo.id} todo={todo} />
-              ))}
-            </div>
-            <p className="mt-2 text-xs text-slate-500">
-              Bấm để thêm vào mục Kỹ năng — chỉ thêm kỹ năng bạn thật sự có;
-              không phù hợp thì bấm × để bỏ qua.
-            </p>
-          </>
-        )}
+        {keywordSection}
       </section>
 
       {fieldTodos.length > 0 && (

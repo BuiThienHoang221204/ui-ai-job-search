@@ -32,11 +32,9 @@ export function ProgressPanel() {
   const total = GOALS.reduce((sum, goal) => sum + data.weekly[goal.key].goal, 0);
   const today = todayIndex();
   const { days, week } = data.streak;
-  const hint = week[today]
-    ? "Hôm nay bạn đã giữ chuỗi"
-    : days
-      ? "Làm một việc hôm nay để giữ chuỗi"
-      : "Tạo CV, nộp đơn hoặc luyện phỏng vấn để bắt đầu";
+  let hint = "Tạo CV, nộp đơn hoặc luyện phỏng vấn để bắt đầu";
+  if (week[today]) hint = "Hôm nay bạn đã giữ chuỗi";
+  else if (days) hint = "Làm một việc hôm nay để giữ chuỗi";
 
   return (
     <Card className="flex flex-col divide-y divide-slate-100">

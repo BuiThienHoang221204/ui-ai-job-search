@@ -66,33 +66,34 @@ export function FirstRun() {
             : "Bạn đã chọn ngành, xem được việc ngay. Tải CV lên để mỗi tin có điểm phù hợp và lý do vì sao hợp."}
         </p>
         <ol className="mt-6 grid gap-x-10 gap-y-4 border-t border-slate-100 pt-5 sm:grid-cols-3">
-          {steps.map((step, index) => (
-            <li key={step.title} className="flex gap-3">
-              <span
-                className={cn(
-                  "flex size-5.5 shrink-0 items-center justify-center rounded-full text-2xs font-semibold",
-                  step.done
-                    ? "bg-slate-900 text-white"
-                    : index === current
-                      ? "border border-slate-900 text-slate-900"
-                      : "border border-slate-300 text-slate-400",
-                )}
-              >
-                {step.done ? <Check className="size-3" /> : index + 1}
-              </span>
-              <div className="min-w-0">
-                <p className={cn("text-sm font-semibold", step.done || index === current ? "text-slate-900" : "text-slate-400")}>
-                  {step.title}
-                </p>
-                <p className="text-xs text-slate-500">{step.detail}</p>
-                {step.action && index === current && (
-                  <Link href={step.action.href} className="mt-2 inline-block">
-                    <Button size="sm">{step.action.label}</Button>
-                  </Link>
-                )}
-              </div>
-            </li>
-          ))}
+          {steps.map((step, index) => {
+            let badgeClass = "border border-slate-300 text-slate-400";
+            if (step.done) badgeClass = "bg-slate-900 text-white";
+            else if (index === current) badgeClass = "border border-slate-900 text-slate-900";
+            return (
+              <li key={step.title} className="flex gap-3">
+                <span
+                  className={cn(
+                    "flex size-5.5 shrink-0 items-center justify-center rounded-full text-2xs font-semibold",
+                    badgeClass,
+                  )}
+                >
+                  {step.done ? <Check className="size-3" /> : index + 1}
+                </span>
+                <div className="min-w-0">
+                  <p className={cn("text-sm font-semibold", step.done || index === current ? "text-slate-900" : "text-slate-400")}>
+                    {step.title}
+                  </p>
+                  <p className="text-xs text-slate-500">{step.detail}</p>
+                  {step.action && index === current && (
+                    <Link href={step.action.href} className="mt-2 inline-block">
+                      <Button size="sm">{step.action.label}</Button>
+                    </Link>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ol>
       </Card>
 

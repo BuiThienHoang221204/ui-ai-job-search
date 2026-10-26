@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowsClockwise, ChatsCircle } from "@phosphor-icons/react/ssr";
 import { failureMessage, isWorthRetrying } from "@/lib/failure-message";
@@ -332,38 +332,45 @@ export function PrepDetail({ jobId }: { jobId: string }) {
   if (!prep.data) return <Skeleton className="h-96" />;
   const record = prep.data;
 
+  let content: ReactNode;
+  if (record.status === "FAILED") {
+    content = (
+      <Alert
+        tone="danger"
+        title="Lượt soạn bị lỗi"
+        actions={
+          isWorthRetrying(record.failureKind) && (
+            <RegenerateButton prep={record} variant="primary" />
+          )
+        }
+      >
+        {failureMessage(record.failureKind)}
+      </Alert>
+    );
+  } else if (isPrepBusy(record.status)) {
+    content = (
+      <Card className="p-5">
+        <p className="font-medium text-slate-900">Đang soạn bộ câu hỏi…</p>
+        <p className="mt-1 text-sm text-slate-500">
+          Thường mất khoảng một phút. Bạn có thể rời trang, bộ câu hỏi vẫn được
+          soạn và sẽ hiện ở đây.
+        </p>
+        <div className="mt-4 grid max-w-xl gap-2.5">
+          <Skeleton className="h-3.5 w-3/4" />
+          <Skeleton className="h-3.5" />
+          <Skeleton className="h-3.5 w-5/6" />
+        </div>
+      </Card>
+    );
+  } else {
+    content = <PrepContent key={record.updatedAt} prep={record} />;
+  }
+
   return (
     <div className="space-y-4">
       <PrepHeader prep={record} />
 
-      {record.status === "FAILED" ? (
-        <Alert
-          tone="danger"
-          title="Lượt soạn bị lỗi"
-          actions={
-            isWorthRetrying(record.failureKind) && (
-              <RegenerateButton prep={record} variant="primary" />
-            )
-          }
-        >
-          {failureMessage(record.failureKind)}
-        </Alert>
-      ) : isPrepBusy(record.status) ? (
-        <Card className="p-5">
-          <p className="font-medium text-slate-900">Đang soạn bộ câu hỏi…</p>
-          <p className="mt-1 text-sm text-slate-500">
-            Thường mất khoảng một phút. Bạn có thể rời trang, bộ câu hỏi vẫn được
-            soạn và sẽ hiện ở đây.
-          </p>
-          <div className="mt-4 grid max-w-xl gap-2.5">
-            <Skeleton className="h-3.5 w-3/4" />
-            <Skeleton className="h-3.5" />
-            <Skeleton className="h-3.5 w-5/6" />
-          </div>
-        </Card>
-      ) : (
-        <PrepContent key={record.updatedAt} prep={record} />
-      )}
+      {content}
 
       <JobMockSessions jobId={record.jobId} />
     </div>

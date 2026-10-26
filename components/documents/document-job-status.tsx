@@ -28,18 +28,15 @@ export function DocumentJobStatus({
 }: DocumentJobStatusProps) {
   if (job.phase === "generating") {
     const status = job.document?.status;
+    let label: string = RUNNING_LABELS.SENDING;
+    if (status === "RUNNING") label = RUNNING_LABELS.RUNNING;
+    else if (status === "PENDING") label = RUNNING_LABELS.PENDING;
     return (
       <Card className="border-primary-200 bg-primary-50/40 p-5">
         <div className="flex items-start gap-3.5">
           <CircleNotch className="text-primary-600 mt-0.5 size-5.5 shrink-0 animate-spin" />
           <div className="space-y-1">
-            <p className="text-primary-900 text-sm font-semibold">
-              {status === "RUNNING"
-                ? RUNNING_LABELS.RUNNING
-                : status === "PENDING"
-                  ? RUNNING_LABELS.PENDING
-                  : RUNNING_LABELS.SENDING}
-            </p>
+            <p className="text-primary-900 text-sm font-semibold">{label}</p>
             <p className="text-primary-800/80 text-xs leading-relaxed">
               Việc này thường mất 30 đến 90 giây. Bạn cứ để trang mở, trạng thái
               sẽ tự cập nhật khi worker chạy xong.

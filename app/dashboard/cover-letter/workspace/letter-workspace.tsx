@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { parseCoverLetterContent } from "@/lib/document-content";
 import { useLetterDocument } from "@/hooks/use-letters";
 import { UNREADABLE_CONTENT_MESSAGE } from "@/components/documents";
@@ -25,20 +26,25 @@ export function LetterWorkspace({ documentId }: { documentId: string }) {
     );
   }
 
+  let preview: ReactNode;
+  if (empty) {
+    preview = <Alert tone="warning">{UNREADABLE_CONTENT_MESSAGE}</Alert>;
+  } else if (record.kind === "APPLICATION_EMAIL") {
+    preview = <EmailPreview documentId={documentId} />;
+  } else {
+    preview = (
+      <div className="mx-auto max-w-3xl rounded bg-white p-6 shadow-lg shadow-slate-900/5 sm:p-10">
+        <LetterPaper letter={parseCoverLetterContent(record.content)} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <LetterHeader documentId={documentId} />
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
         <div className="min-w-0 rounded-2xl border border-slate-200/80 bg-slate-100/70 p-4 sm:p-5">
-          {empty ? (
-            <Alert tone="warning">{UNREADABLE_CONTENT_MESSAGE}</Alert>
-          ) : record.kind === "APPLICATION_EMAIL" ? (
-            <EmailPreview documentId={documentId} />
-          ) : (
-            <div className="mx-auto max-w-3xl rounded bg-white p-6 shadow-lg shadow-slate-900/5 sm:p-10">
-              <LetterPaper letter={parseCoverLetterContent(record.content)} />
-            </div>
-          )}
+          {preview}
         </div>
         <LetterChecklistCard documentId={documentId} />
       </div>

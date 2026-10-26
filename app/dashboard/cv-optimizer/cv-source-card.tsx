@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { LinkSimple, Sparkle } from "@phosphor-icons/react/ssr";
 import { apiErrorMessage } from "@/lib/axios";
 import { useDraftState } from "@/hooks/use-draft-state";
@@ -72,13 +72,64 @@ export function CvSourceCard({
 
   const handleSubmit = () => {
     if (!ready) return;
-    onSubmit(
-      source === "pick"
-        ? { jobId: jobId === NO_JOB ? undefined : jobId }
-        : pasted.value,
-      language,
-    );
+    if (source === "pick")
+      onSubmit({ jobId: jobId === NO_JOB ? undefined : jobId }, language);
+    else onSubmit(pasted.value, language);
   };
+
+  let sourceFields: ReactNode = (
+    <div className="space-y-3">
+      <div>
+        <Label htmlFor="cv-url">Link tin tuyển dụng</Label>
+        <div className="flex flex-wrap items-center gap-2">
+          <Input
+            id="cv-url"
+            className="min-w-64 flex-1"
+            value={url}
+            disabled={fetching}
+            onChange={(event) => setUrl(event.target.value)}
+            placeholder="https://…"
+          />
+          <Button
+            variant="secondary"
+            onClick={handleExtract}
+            loading={fetching}
+            disabled={url.trim() === ""}
+          >
+            <LinkSimple className="size-4.5" />
+            {fetching ? "Đang đọc…" : "Lấy nội dung"}
+          </Button>
+        </div>
+        <p className="mt-1.5 text-xs text-slate-500">
+          Hệ thống tải trang rồi điền sẵn mô tả, tên công ty và vị trí để bạn
+          soát lại trước khi tạo CV.
+        </p>
+      </div>
+
+      {fetchError && <Alert tone="danger">{fetchError}</Alert>}
+    </div>
+  );
+  if (source === "pick")
+    sourceFields = (
+      <JobSelect
+        selectId="cv-job"
+        fixedJobId={fixedJobId}
+        value={jobId}
+        onChange={setJobId}
+        disabled={Boolean(fixedJobId)}
+        emptyOptionLabel="CV tổng quát (không nhắm vị trí nào)"
+        emptyHint="Chưa có công việc nào được chấm điểm. Dán mô tả công việc ở tab bên cạnh thì không cần chờ."
+      />
+    );
+  else if (source === "paste")
+    sourceFields = (
+      <PastedJobFields
+        idPrefix="cv"
+        state={pasted}
+        disabled={false}
+        readyHint="Mô tả này không được lưu thành tin tuyển dụng, chỉ dùng để viết CV."
+      />
+    );
 
   return (
     <div className="space-y-4 rounded-2xl border border-primary-100 bg-primary-50/70 p-4 sm:p-5">
@@ -96,55 +147,7 @@ export function CvSourceCard({
         )}
       </div>
 
-      {source === "pick" ? (
-        <JobSelect
-          selectId="cv-job"
-          fixedJobId={fixedJobId}
-          value={jobId}
-          onChange={setJobId}
-          disabled={Boolean(fixedJobId)}
-          emptyOptionLabel="CV tổng quát (không nhắm vị trí nào)"
-          emptyHint="Chưa có công việc nào được chấm điểm. Dán mô tả công việc ở tab bên cạnh thì không cần chờ."
-        />
-      ) : source === "paste" ? (
-        <PastedJobFields
-          idPrefix="cv"
-          state={pasted}
-          disabled={false}
-          readyHint="Mô tả này không được lưu thành tin tuyển dụng, chỉ dùng để viết CV."
-        />
-      ) : (
-        <div className="space-y-3">
-          <div>
-            <Label htmlFor="cv-url">Link tin tuyển dụng</Label>
-            <div className="flex flex-wrap items-center gap-2">
-              <Input
-                id="cv-url"
-                className="min-w-64 flex-1"
-                value={url}
-                disabled={fetching}
-                onChange={(event) => setUrl(event.target.value)}
-                placeholder="https://…"
-              />
-              <Button
-                variant="secondary"
-                onClick={handleExtract}
-                loading={fetching}
-                disabled={url.trim() === ""}
-              >
-                <LinkSimple className="size-4.5" />
-                {fetching ? "Đang đọc…" : "Lấy nội dung"}
-              </Button>
-            </div>
-            <p className="mt-1.5 text-xs text-slate-500">
-              Hệ thống tải trang rồi điền sẵn mô tả, tên công ty và vị trí để
-              bạn soát lại trước khi tạo CV.
-            </p>
-          </div>
-
-          {fetchError && <Alert tone="danger">{fetchError}</Alert>}
-        </div>
-      )}
+      {sourceFields}
 
       <div className="flex flex-wrap items-center justify-end gap-3">
         <div

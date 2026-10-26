@@ -6,7 +6,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ModelStreamError, streamModel } from "@/lib/model-stream";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { invalidateAfter, keys } from "@/lib/query-keys";
-import { fetchLatestCv } from "@/hooks/use-latest-cv";
 import { profileDraftService, profileService } from "@/services";
 import { useToast } from "@/hooks/use-toast";
 import type {
@@ -50,7 +49,7 @@ export function useCvUpload() {
         .catch(() => null),
       queryClient.fetchQuery({
         queryKey: keys.profileCv(),
-        queryFn: fetchLatestCv,
+        queryFn: profileDraftService.latestOrNull,
       }),
     ])
       .then(([current, latest]) => {
