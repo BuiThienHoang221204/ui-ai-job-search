@@ -53,6 +53,13 @@ const years = (value: number) =>
 
 /** Câu giải thích mốc kinh nghiệm dùng để tính lương. */
 function experienceLine(guide: SalaryGuide) {
+  if (guide.otherOccupationYears !== null) {
+    const other = `Bạn chưa có kinh nghiệm trong ngành của tin (${years(guide.otherOccupationYears)} ở ngành khác không được tính)`;
+    if (guide.experienceLabel) {
+      return `${other}, nên tạm lấy mốc tin yêu cầu: ${guide.experienceLabel}`;
+    }
+    return `${other}, tin cũng không nêu số năm — dùng mức chung của vị trí`;
+  }
   if (!guide.experienceLabel) {
     return "Chưa biết số năm kinh nghiệm của bạn lẫn của tin — dùng mức chung của vị trí";
   }
@@ -72,7 +79,7 @@ export function SalaryGuidePanel({ guide }: { guide: SalaryGuide | null }) {
       compact
       icon={Coins}
       title="Mức lương nên đề xuất"
-      description="Tính từ bảng lương tham chiếu, yêu cầu của tin và mức độ khớp hồ sơ"
+      description="Tính từ bảng lương tham chiếu, kinh nghiệm của bạn và mức lương tin công bố"
     >
       <div className="flex gap-2">
         <Amount
@@ -98,6 +105,11 @@ export function SalaryGuidePanel({ guide }: { guide: SalaryGuide | null }) {
         <li>{experienceLine(guide)}</li>
         {guide.anchoredOnCurrentSalary && (
           <li>Sàn được nâng theo mức lương hiện tại bạn khai trong hồ sơ</li>
+        )}
+        {guide.currentSalaryIgnored && (
+          <li>
+            Lương hiện tại của bạn ở ngành khác nên không dùng để nâng sàn
+          </li>
         )}
         {guide.cappedByPosting && (
           <li>Trần bị giới hạn bởi mức lương tin tuyển dụng công bố</li>

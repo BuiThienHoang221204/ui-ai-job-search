@@ -137,6 +137,8 @@ export interface SalaryGuide {
   expectedAboveCeiling: boolean;
   expectedBelowFloor: boolean;
   positionSlug: string | null;
+  otherOccupationYears: number | null;
+  currentSalaryIgnored: boolean;
 }
 
 export type JobRecord = Omit<JobListItem, "match" | "systemMatch"> & {
