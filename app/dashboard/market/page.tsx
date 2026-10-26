@@ -20,6 +20,9 @@ const ICONS: Record<string, string> = {
   "cham-soc-khach-hang": "customer",
   "xay-dung-kien-truc": "construction",
   "nhan-su-hanh-chinh-phap-che": "hr",
+  "ban-le-thuong-mai-dien-tu": "retail",
+  "nha-hang-khach-san-du-lich": "hospitality",
+  "y-te-duoc": "healthcare",
 };
 
 export const metadata: Metadata = {
