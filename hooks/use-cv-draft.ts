@@ -40,11 +40,12 @@ interface CvDraftState extends CvDraft {
   saved: CvDraft | null;
   tab: CvRailTab;
   previewRev: number;
-  target: CvSectionKey | null;
+  target: { section: CvSectionKey; field?: string } | null;
   skipped: string[];
   load: (record: DocumentRecord) => void;
   setContent: (content: CvContentInput) => void;
   editText: (path: string, text: string) => void;
+  applyText: (path: string, text: string) => void;
   insertLine: (path: string) => void;
   removeLine: (path: string) => void;
   addEntry: (section: CvSectionKey) => void;
@@ -54,7 +55,7 @@ interface CvDraftState extends CvDraft {
   setAccent: (accent: string) => void;
   setTypography: (typography: CvTypography) => void;
   setTab: (tab: CvRailTab) => void;
-  goTo: (section: CvSectionKey | null) => void;
+  goTo: (section: CvSectionKey | null, field?: string) => void;
   skip: (keyword: string) => void;
 }
 
@@ -105,7 +106,7 @@ const toLayout = (raw: CvLayout | null): CvLayout => {
 };
 
 /** Bản nháp của CV đang mở. Gõ chữ trên trang chỉ sửa `content`; thao tác đổi cấu trúc tăng `previewRev` để dựng lại trang. */
-export const useCvDraft = create<CvDraftState>((set) => ({
+export const useCvDraft = create<CvDraftState>((set, get) => ({
   recordId: null,
   saved: null,
   content: toDraft(null),
@@ -159,6 +160,10 @@ export const useCvDraft = create<CvDraftState>((set) => ({
       }
       return { content: setCvField(now.content, path, text) };
     }),
+  applyText: (path, text) => {
+    get().editText(path, text);
+    set((now) => ({ previewRev: now.previewRev + 1 }));
+  },
   insertLine: (path) =>
     set((now) => ({ content: insertCvLine(now.content, path) })),
   removeLine: (path) =>
@@ -186,7 +191,8 @@ export const useCvDraft = create<CvDraftState>((set) => ({
   setTypography: (typography) =>
     set((now) => ({ typography, content: withoutEmptyLines(now.content) })),
   setTab: (tab) => set({ tab }),
-  goTo: (target) => set({ target }),
+  goTo: (section, field) =>
+    set({ target: section ? { section, field } : null }),
   skip: (keyword) => set((now) => ({ skipped: [...now.skipped, keyword] })),
 }));
 

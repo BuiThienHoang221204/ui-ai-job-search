@@ -5,6 +5,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCvDraft } from "@/hooks/use-cv-draft";
 import { useCvInlineEdit } from "@/hooks/use-cv-inline-edit";
 import { placeCaretAtEnd } from "@/lib/cv-frame";
+import { bulletPath } from "@/lib/cv-checklist";
+import { LineRewrite } from "./line-rewrite";
 import { SectionToolbar } from "./section-toolbar";
 
 const PAGE_WIDTH = 794;
@@ -24,7 +26,7 @@ export function CvPreview({
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [fitScale, setFitScale] = useState(0);
   const [loads, setLoads] = useState(0);
-  const active = useCvInlineEdit(frameRef, loads);
+  const { active, line } = useCvInlineEdit(frameRef, loads);
   const target = useCvDraft((state) => state.target);
   const scale = fullSize ? 1 : fitScale;
 
@@ -44,17 +46,20 @@ export function CvPreview({
     const doc = frameRef.current?.contentDocument;
     const box = boxRef.current;
     const section = doc?.querySelector<HTMLElement>(
-      `[data-section="${target}"]`,
+      `[data-section="${target.section}"]`,
     );
     useCvDraft.getState().goTo(null);
     if (!box || !section) return;
 
+    const fields = [...section.querySelectorAll<HTMLElement>("[data-field]")];
+    const exact = fields.find((item) => item.dataset.field === target.field);
+    const field =
+      exact ?? fields.find((item) => item.textContent === "") ?? fields[0];
+    const anchor = exact ?? section;
     box.scrollTo({
-      top: Math.max(0, section.offsetTop * scale - 48),
+      top: Math.max(0, anchor.getBoundingClientRect().top * scale - 48),
       behavior: "smooth",
     });
-    const fields = [...section.querySelectorAll<HTMLElement>("[data-field]")];
-    const field = fields.find((item) => item.textContent === "") ?? fields[0];
     if (field) placeCaretAtEnd(field);
   }, [loads, target, scale]);
 
@@ -91,6 +96,13 @@ export function CvPreview({
               section={active.section}
               entry={active.entry}
               top={active.top * scale}
+            />
+          )}
+          {line && (
+            <LineRewrite
+              key={bulletPath(line.bullet)}
+              line={line}
+              scale={scale}
             />
           )}
         </div>

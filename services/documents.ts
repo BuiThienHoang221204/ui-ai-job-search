@@ -2,6 +2,8 @@ import { api } from "@/lib/axios";
 import { blobErrorToError, textErrorToError } from "@/lib/blob-error";
 import type {
   ApplicationEmailInput,
+  BulletRewrite,
+  CvBullet,
   CvContentInput,
   CvFont,
   CvFontSize,
@@ -119,6 +121,15 @@ export const documentsService = {
     },
   ) =>
     api.put<DocumentRecord>(`/documents/${id}/cv`, input).then((r) => r.data),
+
+  /** Hai đến ba cách viết lại một chỗ trên CV (câu, đoạn, chức danh); số liệu AI không biết để trống `[__]`. */
+  rewriteBullet: (
+    id: string,
+    input: { kind: CvBullet["kind"]; text: string; context: string },
+  ) =>
+    api
+      .post<BulletRewrite>(`/documents/${id}/rewrite-bullet`, input)
+      .then((r) => r.data),
 
   /** Lưu mẫu CV và màu nhấn đã chọn. */
   setTemplate: (

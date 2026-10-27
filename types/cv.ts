@@ -8,6 +8,12 @@ import type {
   CvTypography,
 } from "./document";
 
+export type CvBullet =
+  | { kind: "experience" | "project"; entry: number; line: number }
+  | { kind: "description"; entry: number }
+  | { kind: "competency"; line: number }
+  | { kind: "profile" | "headline" };
+
 export interface CvTodo {
   id: string;
   kind: "keyword" | "field" | "metric";
@@ -15,6 +21,17 @@ export interface CvTodo {
   label: string;
   hint: string;
   done: boolean;
+  bullet?: CvBullet;
+}
+
+export interface BulletSuggestion {
+  text: string;
+  keywords: string[];
+}
+
+export interface BulletRewrite {
+  suggestions: BulletSuggestion[];
+  remaining: number;
 }
 
 export type CvRailTab = "hoan-thien" | "thiet-ke" | "bo-cuc";

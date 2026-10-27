@@ -1,5 +1,76 @@
-import type { CvTodo, CvContentInput } from "@/types";
+import type { CvBullet, CvTodo, CvContentInput } from "@/types";
 import { fold } from "@/lib/text";
+
+export const HOLE = "[__]";
+
+/** Đường dẫn `data-field` trên trang CV của một chỗ viết lại được. */
+export function bulletPath(bullet: CvBullet): string {
+  switch (bullet.kind) {
+    case "profile":
+      return "profileStatement";
+    case "headline":
+      return "identity.title";
+    case "competency":
+      return `coreCompetencies.${bullet.line}`;
+    case "description":
+      return `projects.${bullet.entry}.description`;
+    case "experience":
+      return `experiences.${bullet.entry}.bullets.${bullet.line}`;
+    case "project":
+      return `projects.${bullet.entry}.bullets.${bullet.line}`;
+  }
+}
+
+const BULLET_PATH = /^(experiences|projects)\.(\d+)\.bullets\.(\d+)$/;
+const DESCRIPTION_PATH = /^projects\.(\d+)\.description$/;
+const COMPETENCY_PATH = /^coreCompetencies\.(\d+)$/;
+
+/** Chỗ viết lại được ứng với một đường dẫn `data-field`, hoặc `null` với các ô là dữ kiện (tên, công ty, thời gian…). */
+export function bulletOf(path: string): CvBullet | null {
+  if (path === "profileStatement") return { kind: "profile" };
+  if (path === "identity.title") return { kind: "headline" };
+
+  const competency = COMPETENCY_PATH.exec(path);
+  if (competency) return { kind: "competency", line: Number(competency[1]) };
+
+  const description = DESCRIPTION_PATH.exec(path);
+  if (description)
+    return { kind: "description", entry: Number(description[1]) };
+
+  const match = BULLET_PATH.exec(path);
+  if (!match) return null;
+  return {
+    kind: match[1] === "experiences" ? "experience" : "project",
+    entry: Number(match[2]),
+    line: Number(match[3]),
+  };
+}
+
+/** Một dòng ngữ cảnh gửi kèm chữ cần viết lại: vị trí tại công ty, tên dự án, hay đó là mục nào. */
+export function rewriteContext(
+  content: CvContentInput,
+  bullet: CvBullet,
+): string {
+  switch (bullet.kind) {
+    case "profile":
+      return "Đoạn giới thiệu đầu CV";
+    case "headline":
+      return "Dòng chức danh ngay dưới tên";
+    case "competency":
+      return "Mục Năng lực chính";
+    case "experience": {
+      const item = content.experiences[bullet.entry];
+      if (!item) return "";
+      return [item.position, item.company].filter(filled).join(" tại ");
+    }
+    case "project":
+    case "description": {
+      const item = content.projects[bullet.entry];
+      if (!item) return "";
+      return ["Dự án", item.name, item.role].filter(filled).join(" · ");
+    }
+  }
+}
 
 const PLACEHOLDER =
   /không cung cấp|chưa cung cấp|không có thông tin|not provided/i;
@@ -80,6 +151,18 @@ export function cvChecklist(
     }
     item.bullets.forEach((bullet, line) => {
       if (!bullet.trim()) return;
+      if (bullet.includes(HOLE)) {
+        todos.push({
+          id: `exp:${index}:hole:${line}`,
+          kind: "field",
+          section: "experience",
+          label: `Điền số liệu vào ${HOLE}`,
+          hint: where,
+          done: false,
+          bullet: { kind: "experience", entry: index, line },
+        });
+        return;
+      }
       todos.push({
         id: `exp:${index}:bullet:${line}`,
         kind: "metric",
@@ -87,6 +170,58 @@ export function cvChecklist(
         label: bullet,
         hint: where,
         done: /\d/.test(bullet),
+        bullet: { kind: "experience", entry: index, line },
+      });
+    });
+  });
+
+  if (content.profileStatement.includes(HOLE)) {
+    todos.push({
+      id: "profile:hole",
+      kind: "field",
+      section: "profile",
+      label: `Điền số liệu vào ${HOLE}`,
+      hint: "Giới thiệu",
+      done: false,
+      bullet: { kind: "profile" },
+    });
+  }
+
+  content.coreCompetencies.forEach((item, line) => {
+    if (!item.includes(HOLE)) return;
+    todos.push({
+      id: `comp:${line}:hole`,
+      kind: "field",
+      section: "competencies",
+      label: `Điền số liệu vào ${HOLE}`,
+      hint: "Năng lực chính",
+      done: false,
+      bullet: { kind: "competency", line },
+    });
+  });
+
+  content.projects.forEach((item, index) => {
+    if (item.description.includes(HOLE)) {
+      todos.push({
+        id: `proj:${index}:description:hole`,
+        kind: "field",
+        section: "projects",
+        label: `Điền số liệu vào ${HOLE}`,
+        hint: `Mô tả dự án · ${filled(item.name) ? item.name : `mục ${index + 1}`}`,
+        done: false,
+        bullet: { kind: "description", entry: index },
+      });
+    }
+    item.bullets.forEach((bullet, line) => {
+      if (!bullet.includes(HOLE)) return;
+      todos.push({
+        id: `proj:${index}:hole:${line}`,
+        kind: "field",
+        section: "projects",
+        label: `Điền số liệu vào ${HOLE}`,
+        hint: `Dự án · ${filled(item.name) ? item.name : `mục ${index + 1}`}`,
+        done: false,
+        bullet: { kind: "project", entry: index, line },
       });
     });
   });

@@ -3,15 +3,20 @@
 import type { Icon } from "@phosphor-icons/react";
 import { CaretRight } from "@phosphor-icons/react/ssr";
 import type { CvTodo } from "@/types";
+import { bulletPath } from "@/lib/cv-checklist";
 import { useCvDraft } from "@/hooks/use-cv-draft";
 
-/** Một việc cần sửa; bấm thì nhảy tới đúng mục trên trang CV và đặt con trỏ vào đó. */
+/** Một việc cần sửa; bấm thì nhảy tới đúng mục (hoặc đúng câu) trên trang CV và đặt con trỏ vào đó. */
 export function TodoRow({ todo, icon: Icon }: { todo: CvTodo; icon: Icon }) {
   return (
     <li className="border-t border-slate-100 first:border-t-0">
       <button
         type="button"
-        onClick={() => useCvDraft.getState().goTo(todo.section)}
+        onClick={() =>
+          useCvDraft
+            .getState()
+            .goTo(todo.section, todo.bullet && bulletPath(todo.bullet))
+        }
         className="group grid w-full cursor-pointer grid-cols-[2rem_minmax(0,1fr)_1rem] items-center gap-3 py-2.5 text-left"
       >
         <span className="flex size-8 items-center justify-center rounded-full bg-amber-50 text-amber-600">

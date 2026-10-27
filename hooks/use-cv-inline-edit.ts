@@ -8,12 +8,20 @@ import {
   placeCaretAtEnd,
   renumberLines,
 } from "@/lib/cv-frame";
-import type { CvSectionKey } from "@/types";
+import { bulletOf } from "@/lib/cv-checklist";
+import type { CvBullet, CvSectionKey } from "@/types";
 
 export interface ActiveSection {
   section: CvSectionKey;
   entry: string | null;
   top: number;
+}
+
+export interface ActiveLine {
+  bullet: CvBullet;
+  text: string;
+  top: number;
+  bottom: number;
 }
 
 const EDIT_CSS = `
@@ -30,14 +38,16 @@ const EDIT_CSS = `
 export function useCvInlineEdit(
   frameRef: RefObject<HTMLIFrameElement | null>,
   loads: number,
-): ActiveSection | null {
+): { active: ActiveSection | null; line: ActiveLine | null } {
   const [active, setActive] = useState<ActiveSection | null>(null);
+  const [line, setLine] = useState<ActiveLine | null>(null);
 
   useEffect(() => {
     if (loads === 0) return;
     const doc = frameRef.current?.contentDocument;
     if (!doc) return;
     setActive(null);
+    setLine(null);
 
     const style = doc.createElement("style");
     style.textContent = EDIT_CSS;
@@ -80,7 +90,24 @@ export function useCvInlineEdit(
       });
     };
 
+    const trackLine = (target: EventTarget | null) => {
+      const field = closestIn(target, "[data-field]");
+      const bullet = field ? bulletOf(field.dataset.field!) : null;
+      if (!field || !bullet) {
+        setLine(null);
+        return;
+      }
+      const box = field.getBoundingClientRect();
+      setLine({
+        bullet,
+        text: field.textContent ?? "",
+        top: box.top,
+        bottom: box.bottom,
+      });
+    };
+
     const onInput = (event: Event) => {
+      trackLine(event.target);
       const field = closestIn(event.target, "[data-field]");
       if (!field) return;
       if (field.textContent === "") field.innerHTML = "";
@@ -122,21 +149,27 @@ export function useCvInlineEdit(
       placeCaretAtEnd(neighbour);
     };
 
-    const onFocusIn = (event: FocusEvent) => showSection(event.target, true);
+    const onFocusIn = (event: FocusEvent) => {
+      showSection(event.target, true);
+      trackLine(event.target);
+    };
+    const onFocusOut = () => setLine(null);
     const onMouseOver = (event: MouseEvent) => showSection(event.target, false);
 
     doc.addEventListener("input", onInput);
     doc.addEventListener("keydown", onKeyDown);
     doc.addEventListener("focusin", onFocusIn);
+    doc.addEventListener("focusout", onFocusOut);
     doc.addEventListener("mouseover", onMouseOver);
     return () => {
       doc.removeEventListener("input", onInput);
       doc.removeEventListener("keydown", onKeyDown);
       doc.removeEventListener("focusin", onFocusIn);
+      doc.removeEventListener("focusout", onFocusOut);
       doc.removeEventListener("mouseover", onMouseOver);
       style.remove();
     };
   }, [frameRef, loads]);
 
-  return active;
+  return { active, line };
 }

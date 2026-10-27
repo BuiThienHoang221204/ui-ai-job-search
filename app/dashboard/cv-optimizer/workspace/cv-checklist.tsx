@@ -1,12 +1,13 @@
 "use client";
 
 import { useMemo, type ReactNode } from "react";
-import { Briefcase, GraduationCap, Hash } from "@phosphor-icons/react/ssr";
+import { Briefcase, GraduationCap } from "@phosphor-icons/react/ssr";
 import { useJobDetail } from "@/hooks/use-job-detail";
 import { cvChecklist } from "@/lib/cv-checklist";
 import { Progress } from "@/components/ui/progress";
 import { useCvDraft } from "@/hooks/use-cv-draft";
 import { KeywordChip } from "./keyword-chip";
+import { MetricRow } from "./metric-row";
 import { TodoRow } from "./todo-row";
 
 const ROW_ICONS = {
@@ -135,9 +136,12 @@ export function CvChecklist({ jobId }: { jobId: string | null }) {
             nguyên, đừng bịa.
           </p>
           <ul>
-            {metricTodos.map((todo) => (
-              <TodoRow key={todo.id} todo={todo} icon={Hash} />
-            ))}
+            {metricTodos.map(
+              (todo) =>
+                todo.bullet && (
+                  <MetricRow key={todo.id} todo={todo} bullet={todo.bullet} />
+                ),
+            )}
           </ul>
         </section>
       )}

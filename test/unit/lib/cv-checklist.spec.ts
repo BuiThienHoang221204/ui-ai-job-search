@@ -1,5 +1,12 @@
 import { describe, expect, test } from "vitest";
-import { cvChecklist, cvText, hasKeyword, withSkill } from "@/lib/cv-checklist";
+import {
+  bulletOf,
+  cvChecklist,
+  cvText,
+  hasKeyword,
+  rewriteContext,
+  withSkill,
+} from "@/lib/cv-checklist";
 import type { CvContentInput } from "@/types";
 
 const cv = (overrides: Partial<CvContentInput> = {}): CvContentInput => ({
@@ -69,6 +76,54 @@ describe("cvChecklist", () => {
     filled.experiences[0] = { ...filled.experiences[0], company: "Digistore" };
     const ids = cvChecklist(filled, [], []).todos.map((todo) => todo.id);
     expect(ids).not.toContain("exp:0:company");
+  });
+
+  test("câu còn ô [__] là việc cần điền, không còn là câu thiếu số liệu", () => {
+    const withHole = cv();
+    withHole.experiences[0] = {
+      ...withHole.experiences[0],
+      bullets: ["Tối ưu truy vấn PostgreSQL, giảm thời gian phản hồi [__]%"],
+    };
+    const todos = cvChecklist(withHole, [], []).todos;
+    expect(todos.find((todo) => todo.id === "exp:0:hole:0")?.kind).toBe(
+      "field",
+    );
+    expect(todos.map((todo) => todo.id)).not.toContain("exp:0:bullet:0");
+  });
+});
+
+describe("bulletOf", () => {
+  test("nhận câu Kinh nghiệm, câu Dự án và đoạn giới thiệu; trường khác thì không", () => {
+    expect(bulletOf("experiences.0.bullets.2")).toEqual({
+      kind: "experience",
+      entry: 0,
+      line: 2,
+    });
+    expect(bulletOf("projects.1.bullets.0")).toEqual({
+      kind: "project",
+      entry: 1,
+      line: 0,
+    });
+    expect(bulletOf("profileStatement")).toEqual({ kind: "profile" });
+    expect(bulletOf("identity.title")).toEqual({ kind: "headline" });
+    expect(bulletOf("coreCompetencies.3")).toEqual({
+      kind: "competency",
+      line: 3,
+    });
+    expect(bulletOf("projects.0.description")).toEqual({
+      kind: "description",
+      entry: 0,
+    });
+    expect(bulletOf("identity.email")).toBeNull();
+    expect(bulletOf("experiences.0.company")).toBeNull();
+  });
+});
+
+describe("rewriteContext", () => {
+  test("ngữ cảnh bỏ phần trống trước khi ghép", () => {
+    expect(
+      rewriteContext(cv(), { kind: "experience", entry: 0, line: 1 }),
+    ).toBe("Backend Developer");
   });
 });
 
