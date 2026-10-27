@@ -2,14 +2,22 @@ import { api, apiErrorStatus } from "@/lib/axios";
 import type { CvUploadReceipt, ProfileDraftRecord } from "@/types";
 
 export const profileDraftService = {
-  uploadCv: (file: File, stream = false) => {
-    const form = new FormData();
-    form.append("file", file);
+  /** Tải CV thẳng lên kho lưu trữ qua URL ký sẵn (byte không đi qua máy chủ), rồi báo máy chủ đọc file đó. */
+  uploadCv: async (file: File, stream = false) => {
+    const { key, url } = await api
+      .post<{ key: string; url: string }>("/profile-drafts/cv/upload-url")
+      .then((r) => r.data);
+    const put = await fetch(url, {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": "application/pdf" },
+    });
+    if (!put.ok)
+      throw new Error(`Tải file lên kho lưu trữ hỏng: ${put.status}`);
     return api
       .post<CvUploadReceipt>(
         `/profile-drafts/cv${stream ? "?stream=true" : ""}`,
-        form,
-        { headers: { "Content-Type": undefined } },
+        { key, filename: file.name },
       )
       .then((r) => r.data);
   },

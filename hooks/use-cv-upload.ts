@@ -99,7 +99,7 @@ export function useCvUpload() {
       void queryClient.invalidateQueries({ queryKey: keys.profileCv() });
     } catch (err) {
       if (err instanceof ModelStreamError) setError(err.message);
-      else fail(err, "Không đọc được CV");
+      else fail(err, "Không tải được CV lên. Kiểm tra mạng rồi thử lại.");
     } finally {
       if (mounted.current) {
         setBusy(false);
