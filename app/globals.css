@@ -327,9 +327,145 @@ html {
   background-position: center;
   mask-image: radial-gradient(ellipse at center, #000 35%, transparent 90%);
 }
+/* Khung trình diễn đầu trang chào (hero-demo.tsx): mọi phần chạy chung một vòng 11.5s, kiểu gốc là trạng thái cuối nên tắt chuyển động vẫn thấy kết quả đầy đủ. Chỉ animate transform/opacity để compositor tự chạy (đo 2026-10-28: animate top, stroke-dashoffset, clip-path, box-shadow và biến @property bắt tính lại style + layout mỗi khung hình, ~13% main thread khi đứng yên). */
+.hd-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.5;
+  pointer-events: none;
+  will-change: transform;
+}
+.hd-orb-1 { width: 280px; height: 280px; left: 40px; top: 40px; background: var(--brand-blue); animation: hd-drift-1 12s ease-in-out infinite; }
+.hd-orb-2 { width: 220px; height: 220px; right: 10px; bottom: 60px; background: oklch(0.75 0.15 200); animation: hd-drift-2 14s ease-in-out infinite; }
+.hd-orb-3 { width: 160px; height: 160px; right: 120px; top: 0; opacity: 0.3; background: oklch(0.8 0.14 330); animation: hd-drift-1 16s ease-in-out infinite reverse; }
+.dark .hd-orb { opacity: 0.3; }
+@keyframes hd-drift-1 { 50% { transform: translate(40px, 30px) scale(1.1); } }
+@keyframes hd-drift-2 { 50% { transform: translate(-50px, -20px) scale(0.9); } }
+.hd-stage { transition: transform 0.25s ease-out; }
+.hd-glow {
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 0 40px -8px color-mix(in oklch, var(--color-primary-500) 45%, transparent);
+}
+.hd-glow::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 160%;
+  aspect-ratio: 1;
+  margin: -80% 0 0 -80%;
+  background: conic-gradient(transparent 0 55%, var(--color-primary-500) 72%, oklch(0.8 0.15 200) 84%, transparent 96%);
+  animation: hd-spin 5s linear infinite;
+}
+@keyframes hd-spin { to { transform: rotate(360deg); } }
+.hd-reading { opacity: 0; pointer-events: none; animation: hd-reading 11.5s infinite; }
+@keyframes hd-reading {
+  0%, 9% { opacity: 1; }
+  11.3%, 96% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.hd-scan {
+  background: linear-gradient(180deg, transparent, color-mix(in oklch, var(--color-primary-500) 30%, transparent));
+  border-bottom: 2px solid var(--color-primary-500);
+  transform: translateY(9.25rem);
+  animation: hd-scan 11.5s ease-in-out infinite;
+}
+@keyframes hd-scan {
+  0% { transform: translateY(-100%); }
+  4.5% { transform: translateY(9.25rem); animation-timing-function: step-end; }
+  4.6% { transform: translateY(-100%); }
+  9% { transform: translateY(9.25rem); }
+}
+.hd-ring { animation: hd-ring 11.5s infinite; }
+@keyframes hd-ring {
+  0%, 13% { opacity: 0; transform: rotate(-150deg) scale(0.8); animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+  23.5% { opacity: 1; transform: none; }
+}
+.hd-digit { transform: translateY(calc(var(--d) * -1em)); animation: hd-digit 11.5s infinite; }
+@keyframes hd-digit {
+  0%, 13% { transform: none; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+  23.5% { transform: translateY(calc(var(--d) * -1em)); }
+}
+.hd-late { animation-delay: 4.1s; }
+.hd-grade { animation: hd-grade 11.5s infinite; }
+@keyframes hd-grade {
+  0%, 16.5% { opacity: 0; transform: translateY(6px); }
+  21% { opacity: 1; transform: none; }
+}
+.hd-bar { transform-origin: left; animation: hd-bar 11.5s infinite; }
+@keyframes hd-bar {
+  0%, 19% { transform: scaleX(0); animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+  27% { transform: none; }
+}
+.hd-rewrite { animation: hd-rewrite 11.5s infinite; }
+@keyframes hd-rewrite {
+  0%, 27% { opacity: 0; transform: translateY(6px); }
+  31% { opacity: 1; transform: none; }
+}
+.hd-strike::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 52%;
+  height: 1.5px;
+  background: var(--color-rose-600);
+  transform-origin: left;
+  animation: hd-strike 11.5s infinite;
+}
+@keyframes hd-strike {
+  0%, 30.4% { transform: scaleX(0); }
+  34.8% { transform: none; }
+}
+.hd-type::after {
+  content: "";
+  position: absolute;
+  inset: 0 -2px;
+  background: var(--color-white);
+  transform: scaleX(0);
+  transform-origin: right;
+  animation: hd-type 11.5s infinite;
+}
+@keyframes hd-type {
+  0%, 34% { transform: none; animation-timing-function: steps(40); }
+  43.5% { transform: scaleX(0); }
+}
+.hd-match { animation: hd-match 11.5s infinite; }
+@keyframes hd-match {
+  0%, 48.7% { opacity: 0; transform: translateY(20px) scale(0.92); animation-timing-function: cubic-bezier(0.3, 1.6, 0.5, 1); }
+  53%, 94% { opacity: 1; transform: none; }
+  98%, 100% { opacity: 0; transform: none; }
+}
+.hd-chip { display: inline-block; animation: hd-chip 11.5s infinite; }
+@keyframes hd-chip {
+  0%, 52% { opacity: 0; transform: scale(0.7); animation-timing-function: cubic-bezier(0.3, 1.6, 0.5, 1); }
+  55% { opacity: 1; transform: none; }
+}
+.hd-toast { animation: hd-toast 11.5s infinite; }
+@keyframes hd-toast {
+  0%, 60% { opacity: 0; transform: translateX(30px); animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+  64%, 94% { opacity: 1; transform: none; }
+  98%, 100% { opacity: 0; transform: none; }
+}
+.hd-ping::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: hd-ping 1.8s ease-out infinite;
+}
+@keyframes hd-ping {
+  0% { opacity: 0.8; transform: none; }
+  70%, 100% { opacity: 0; transform: scale(3); }
+}
+
 .dark .guest-hero::before { animation: twinkle 4s ease-in-out infinite; will-change: opacity; }
 @media (prefers-reduced-motion: reduce) {
   .shine::after, .animate-float, .animate-fade-up, .animate-scan, .animate-modal-backdrop, .animate-modal-in, .animate-chip-in, .dark .guest-hero::before { animation: none; }
+  .hd-orb, .hd-glow::before, .hd-reading, .hd-scan, .hd-ring, .hd-digit, .hd-grade, .hd-bar, .hd-rewrite, .hd-strike::after, .hd-type::after, .hd-match, .hd-chip, .hd-toast, .hd-ping::after { animation: none; }
 }
 
 .dark {

@@ -21,10 +21,11 @@ import {
   Target,
 } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
+import { CountUp } from "@/components/ui/count-up";
 import { useLoginModal } from "@/hooks/use-login-modal";
 import { formatCount } from "@/lib/number";
 import type { MarketOccupation } from "@/types";
-import { GuestSteps } from "./guest-steps";
+import { HeroDemo } from "./hero-demo";
 
 const FEATURES = [
   {
@@ -180,7 +181,7 @@ export function GuestHome({
                   className="mr-6 border-r border-slate-200 pr-6 last:mr-0 last:border-r-0 last:pr-0"
                 >
                   <p className="font-display text-3xl text-slate-900">
-                    {formatCount(stat.value)}
+                    <CountUp value={stat.value} />
                   </p>
                   <p className="text-xs text-slate-500">{stat.label}</p>
                 </div>
@@ -190,7 +191,7 @@ export function GuestHome({
         </div>
 
         <div className="animate-fade-up [animation-delay:150ms]">
-          <GuestSteps />
+          <HeroDemo jobCount={jobCount} />
         </div>
       </section>
 
