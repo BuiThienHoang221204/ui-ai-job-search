@@ -21,9 +21,10 @@ describe("isGuestPath", () => {
     );
   });
 
-  test("Chính sách bảo mật và Điều khoản sử dụng mở cho khách", () => {
+  test("Chính sách bảo mật, Điều khoản sử dụng và trang kiểm thử bảo mật mở cho khách", () => {
     expect(isGuestPath("/dashboard/chinh-sach-bao-mat")).toBe(true);
     expect(isGuestPath("/dashboard/dieu-khoan-su-dung")).toBe(true);
+    expect(isGuestPath("/dashboard/security")).toBe(true);
   });
 
   test("/dashboard mở cho khách: khách thấy trang chào, không bị đẩy sang đăng nhập", () => {

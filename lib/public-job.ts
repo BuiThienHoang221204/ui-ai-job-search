@@ -12,7 +12,7 @@ const PORTAL_NAMES: Record<string, string> = {
 };
 
 const GUEST_PATH =
-  /^\/dashboard(\/((jobs|market|salary)(\/[^/]+)?|cv-check|chinh-sach-bao-mat|dieu-khoan-su-dung))?$/;
+  /^\/dashboard(\/((jobs|market|salary)(\/[^/]+)?|cv-check|chinh-sach-bao-mat|dieu-khoan-su-dung|security))?$/;
 
 export function portalName(source: string): string {
   return PORTAL_NAMES[source] ?? source;

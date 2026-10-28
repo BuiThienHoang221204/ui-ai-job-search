@@ -1,0 +1,18 @@
+# Careelot — security.txt (RFC 9116)
+#
+# Hệ thống đang trong giai đoạn THỬ NGHIỆM. Chúng tôi CHO PHÉP kiểm thử bảo mật
+# thiện chí (good-faith) để tìm và vá lỗ hổng. Vui lòng đọc Policy để biết phạm
+# vi được phép và các điều cấm (không phá dữ liệu, không DoS, không đụng dữ liệu
+# người dùng thật). Báo lỗi tìm được tới Contact bên dưới.
+#
+# This service is in a TESTING phase. Good-faith security testing is AUTHORIZED
+# within the scope defined in the Policy below. Do not destroy data, do not run
+# denial-of-service, and do not access other users' real data. Report findings
+# to the Contact below.
+
+Contact: mailto:careelot00@gmail.com
+Expires: 2027-02-01T00:00:00.000Z
+Preferred-Languages: vi, en
+Policy: https://ui-ai-job-search.vercel.app/dashboard/security
+
+# Nếu dùng domain riêng, đổi URL trong dòng Policy ở trên cho khớp.
