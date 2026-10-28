@@ -33,7 +33,7 @@ export function Modal({ open, onClose, title, children, className, bodyClassName
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 m-0 flex items-center justify-center bg-slab/60 p-4"
+      className="animate-modal-backdrop fixed inset-0 z-50 m-0 flex items-center justify-center bg-slab/60 p-4"
       onClick={(e) => {
         if (e.target === overlayRef.current) onClose();
       }}
@@ -43,7 +43,7 @@ export function Modal({ open, onClose, title, children, className, bodyClassName
         aria-modal="true"
         aria-label={title}
         className={cn(
-          "relative w-full max-w-md rounded-2xl bg-white shadow-xl",
+          "animate-modal-in relative w-full max-w-md rounded-2xl bg-white shadow-xl",
           className,
         )}
       >

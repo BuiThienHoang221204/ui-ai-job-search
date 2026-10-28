@@ -26,7 +26,11 @@ export function AuthFromUrl() {
     rest.delete("auth");
     rest.delete("next");
     const query = rest.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname);
+    window.history.replaceState(
+      null,
+      "",
+      query ? `${pathname}?${query}` : pathname,
+    );
   }, [auth, params, pathname, router, user]);
 
   return null;

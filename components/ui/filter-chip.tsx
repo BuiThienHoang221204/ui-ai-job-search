@@ -11,7 +11,7 @@ export function FilterChip({
   onRemove: () => void;
 }) {
   return (
-    <span className="bg-primary-50 text-primary-700 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium">
+    <span className="animate-chip-in bg-primary-50 text-primary-700 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium">
       {label}
       <button
         type="button"

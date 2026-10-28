@@ -158,13 +158,20 @@ html {
   display: none;
 }
 
-:root {
-  --sidebar-width: 16rem;
+/* Bề rộng sidebar gắn thẳng vào hai phần tử dùng nó, không qua biến trên :root: đổi biến kế thừa ở :root bắt cả trang tính lại style mỗi lần đóng mở (đo 2026-10-28: ~22ms một lần, gây giật). */
+.sidebar-shell {
+  width: 16rem;
 }
 
 @media (width >= 64rem) {
-  :root[data-sidebar="collapsed"] {
-    --sidebar-width: 4.5rem;
+  .sidebar-offset {
+    padding-left: 16rem;
+  }
+  :root[data-sidebar="collapsed"] .sidebar-shell {
+    width: 4.5rem;
+  }
+  :root[data-sidebar="collapsed"] .sidebar-offset {
+    padding-left: 4.5rem;
   }
 }
 
@@ -277,6 +284,26 @@ html {
 }
 .animate-float { animation: float-y 6s ease-in-out infinite; will-change: transform; }
 .animate-fade-up { animation: fade-up 0.6s ease-out both; }
+@keyframes modal-backdrop {
+  from { opacity: 0; }
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+}
+.animate-modal-backdrop { animation: modal-backdrop 150ms ease-out; }
+.animate-modal-in { animation: modal-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes chip-in {
+  from { opacity: 0; transform: scale(0.85); }
+}
+.animate-chip-in { animation: chip-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+/* Khối mở rộng bằng grid-rows: đang trượt thì cắt phần tràn, trượt xong mới cho tràn để menu xổ xuống bên trong không bị cắt. */
+.reveal-overflow {
+  overflow: hidden;
+  animation: reveal-overflow 0s 200ms forwards;
+}
+@keyframes reveal-overflow {
+  to { overflow: visible; }
+}
 @keyframes scan-y {
   from { top: -2.25rem; }
   to { top: 100%; }
@@ -302,7 +329,7 @@ html {
 }
 .dark .guest-hero::before { animation: twinkle 4s ease-in-out infinite; will-change: opacity; }
 @media (prefers-reduced-motion: reduce) {
-  .shine::after, .animate-float, .animate-fade-up, .animate-scan, .dark .guest-hero::before { animation: none; }
+  .shine::after, .animate-float, .animate-fade-up, .animate-scan, .animate-modal-backdrop, .animate-modal-in, .animate-chip-in, .dark .guest-hero::before { animation: none; }
 }
 
 .dark {

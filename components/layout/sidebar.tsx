@@ -51,7 +51,7 @@ export function Sidebar() {
     : [...open, ...navItems.filter((item) => !isGuestPath(item.href))];
 
   return (
-    <aside className="flex h-full w-(--sidebar-width) shrink-0 flex-col overflow-hidden border-r border-slate-200/80 bg-white transition-[width] duration-200 ease-out">
+    <aside className="sidebar-shell flex h-full shrink-0 flex-col overflow-hidden border-r border-slate-200/80 bg-white transition-[width] duration-200 ease-out">
       <div className="flex h-[65px] shrink-0 items-center border-b border-slate-100 pr-3 pl-6 collapsed:justify-center collapsed:px-0">
         <BrandLogo className="h-[35px] w-[140px] shrink-0 collapsed:hidden" />
         <button
