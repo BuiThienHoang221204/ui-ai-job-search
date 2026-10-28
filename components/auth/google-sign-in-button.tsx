@@ -11,7 +11,7 @@ interface GoogleSignInButtonProps {
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
-/** Nút "Đăng nhập bằng Google", dùng chung cho /login và /register - ẩn hẳn khi chưa cấu hình Client ID thay vì hiện một nút lúc nào cũng lỗi. */
+/** Nút "Đăng nhập bằng Google", dùng chung cho form đăng nhập và đăng ký trong modal; ẩn hẳn khi chưa cấu hình Client ID thay vì hiện một nút lúc nào cũng lỗi. */
 export function GoogleSignInButton({
   onSuccess,
   onError,

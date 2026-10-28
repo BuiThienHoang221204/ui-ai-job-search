@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { logIn } from "./support";
 
 /**
  * Trang Thư xin việc: chọn loại thư đổi nhãn nút viết, và mở một thư đã viết
@@ -10,11 +11,7 @@ import { expect, test } from "@playwright/test";
 test("trang thu xin viec: chon loai thu va mo mot thu da viet", async ({
   page,
 }) => {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("demo@aijob.local");
-  await page.getByLabel("Mật khẩu").fill("Demo@12345");
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, "demo@aijob.local");
 
   await page.goto("/dashboard/cover-letter");
   await expect(page.getByRole("heading", { name: "Thư của bạn" })).toBeVisible({

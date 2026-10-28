@@ -16,7 +16,7 @@ interface RegisterFormProps {
   referral?: string;
 }
 
-/** Form tạo tài khoản, dùng chung cho trang /register và modal đăng nhập. */
+/** Form tạo tài khoản trong modal đăng nhập. */
 export function RegisterForm({
   onSuccess,
   onLoginInstead,

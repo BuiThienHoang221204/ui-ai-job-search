@@ -1,9 +1,10 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "@phosphor-icons/react/ssr";
 import { useCvUpload } from "@/hooks/use-cv-upload";
+import { usePendingCv } from "@/hooks/use-pending-cv";
 import { Alert } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ReviewCard } from "./review-card";
@@ -12,6 +13,12 @@ import { UploadPanel, UploadTips } from "./upload-cards";
 /** Màn đọc CV: tải lên (kèm tiến độ đọc) hoặc xem lại hồ sơ đã điền sẵn, tuỳ trạng thái lượt đọc. */
 export function UploadCvView() {
   const cv = useCvUpload();
+  const { upload } = cv;
+
+  useEffect(() => {
+    const pending = usePendingCv.getState().take();
+    if (pending) void upload(pending);
+  }, [upload]);
 
   let note = "AI đọc CV rồi điền sẵn hồ sơ cho bạn xem lại.";
   if (cv.reviewing) note = "Bỏ hoặc sửa chỗ AI đọc sai rồi bấm Lưu.";

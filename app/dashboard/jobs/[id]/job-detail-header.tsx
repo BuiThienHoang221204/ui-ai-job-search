@@ -19,6 +19,7 @@ import { formatJobSalary } from "@/lib/salary";
 import { useSession } from "@/hooks/use-session";
 import { useLoginModal } from "@/hooks/use-login-modal";
 import { FollowCompanyButton } from "./follow-company-button";
+import { JobShareButton } from "./job-share-button";
 
 interface JobDetailHeaderProps {
   card: Job;
@@ -135,6 +136,7 @@ export function JobDetailHeader({
           />
           {saved ? "Đã lưu" : "Lưu việc làm"}
         </Button>
+        <JobShareButton jobId={job.id} title={card.title} />
       </div>
     </div>
   );

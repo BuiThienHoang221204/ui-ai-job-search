@@ -8,7 +8,7 @@ import { Input, Label } from "@/components/ui/form";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import { authService } from "@/services";
 
-/** Form đăng nhập email/mật khẩu và Google, dùng chung cho trang /login và modal đăng nhập. */
+/** Form đăng nhập email/mật khẩu và Google trong modal đăng nhập. */
 export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

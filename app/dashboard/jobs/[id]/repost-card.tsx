@@ -2,7 +2,7 @@ import { ArrowsClockwise } from "@phosphor-icons/react/ssr";
 import type { JobReposts } from "@/types";
 import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/date";
-import { postedWeeks } from "@/lib/repost";
+import { postedWeeks } from "@/lib/date";
 
 /** Vị trí này được đăng lại nhiều lần: số lần, các tuần có đăng trong 90 ngày và câu nên hỏi khi phỏng vấn. */
 export function RepostCard({ reposts }: { reposts: JobReposts }) {

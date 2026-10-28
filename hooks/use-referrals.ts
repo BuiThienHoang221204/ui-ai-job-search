@@ -5,9 +5,10 @@ import { keys } from "@/lib/query-keys";
 import { referralsService } from "@/services";
 
 /** Mã mời, số bạn đã tham gia và phút giọng nói được thưởng còn lại. */
-export function useReferrals() {
+export function useReferrals(enabled = true) {
   return useQuery({
     queryKey: keys.referrals(),
     queryFn: referralsService.summary,
+    enabled,
   });
 }

@@ -1,5 +1,5 @@
 import { api } from "@/lib/axios";
-import { blobErrorToError, textErrorToError } from "@/lib/blob-error";
+import { blobErrorToError, textErrorToError } from "@/lib/blob";
 import type {
   ApplicationEmailInput,
   BulletRewrite,

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { logIn } from "./support";
 const SIZES = [
   { name: "desktop 1440", width: 1440, height: 900 },
   { name: "laptop 1280", width: 1280, height: 800 },
@@ -6,11 +7,7 @@ const SIZES = [
 const MIN_DETAIL_WIDTH = 520;
 
 test("danh sach va chi tiet cuon rieng, trang khong cuon", async ({ page }) => {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("demo@aijob.local");
-  await page.getByLabel("Mật khẩu").fill("Demo@12345");
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, "demo@aijob.local");
 
   for (const size of SIZES) {
     await page.setViewportSize({ width: size.width, height: size.height });
@@ -44,7 +41,7 @@ test("danh sach va chi tiet cuon rieng, trang khong cuon", async ({ page }) => {
 
     console.log(`${size.name}: ${JSON.stringify(m)}`);
     expect(m.bodyScrollWidth, size.name).toBeLessThanOrEqual(m.viewport + 1);
-    
+
     expect(m.trangCuon, size.name).toBe(false);
     expect(m.chiTiet.cuonDuoc, size.name).toBe(true);
     expect(m.chiTiet.rong, size.name).toBeGreaterThanOrEqual(MIN_DETAIL_WIDTH);

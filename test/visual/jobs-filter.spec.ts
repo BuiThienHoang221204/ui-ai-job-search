@@ -1,6 +1,6 @@
 import { mkdirSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
-import { waitForImages } from "./support";
+import { waitForImages, logIn } from "./support";
 
 /**
  * Kiểm BẰNG MẮT thanh lọc và phân trang của trang tìm việc.
@@ -14,11 +14,7 @@ const EMAIL = process.env.VISUAL_EMAIL ?? "admin@aijob.local";
 const PASSWORD = process.env.VISUAL_PASSWORD ?? "Demo@12345";
 
 async function login(page: Page) {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill(EMAIL);
-  await page.getByLabel("Mật khẩu").fill(PASSWORD);
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, EMAIL, PASSWORD);
 }
 
 test.beforeAll(() => {

@@ -14,3 +14,4 @@ export { profileDraftService } from "./profile-draft";
 export { companiesService } from "./companies";
 export { marketService } from "./market";
 export { referralsService } from "./referrals";
+export { cvCheckService } from "./cv-check";

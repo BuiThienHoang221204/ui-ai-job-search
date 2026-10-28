@@ -12,7 +12,7 @@ import { keys } from "@/lib/query-keys";
 import { toJobCardFromPublic, toJobCardFromRecord } from "@/lib/adapters";
 import { squeezeSidebar } from "@/lib/sidebar";
 import { JobFilterBar } from "./job-filter-bar";
-import { Sparkle, SortDescending } from "@phosphor-icons/react/ssr";
+import { Sparkle, SortDescending, FileMagnifyingGlass } from "@phosphor-icons/react/ssr";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { Alert } from "@/components/ui/alert";
 import Link from "next/link";
@@ -268,6 +268,18 @@ export function JobsView() {
           data-testid="job-list-pane"
           className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white xl:h-full"
         >
+          {!user && (
+            <Link
+              href="/dashboard/cv-check"
+              className="border-primary-100 bg-primary-50 text-primary-700 hover:bg-primary-100 flex shrink-0 items-center gap-2 border-b px-3.5 py-2.5 text-[13px]"
+            >
+              <FileMagnifyingGlass className="size-4 shrink-0" weight="fill" />
+              <span>
+                <span className="font-semibold text-slate-900">CV của bạn có qua được vòng lọc tự động?</span>{" "}
+                Phân tích CV, không cần tài khoản →
+              </span>
+            </Link>
+          )}
           {filter.since && (
             <div className="border-primary-100 bg-primary-50 text-primary-700 flex shrink-0 items-center gap-2 border-b px-3.5 py-2.5 text-[13px]">
               <Sparkle className="size-4 shrink-0" weight="fill" />

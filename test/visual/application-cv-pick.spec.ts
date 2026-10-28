@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { logIn } from "./support";
 
 /**
  * Đơn chưa có CV → "Tạo CV cho tin này" phải tạo CV cho đúng TIN của đơn. Lỗi
@@ -41,11 +42,7 @@ test("tao CV cho don gui dung jobId cua tin", async ({ page }) => {
     return route.fulfill({ json: { documentId: "doc-1", status: "PENDING" } });
   });
 
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("demo@aijob.local");
-  await page.getByLabel("Mật khẩu").fill("Demo@12345");
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, "demo@aijob.local");
 
   await page.goto("/dashboard/applications");
   await page.getByRole("button", { name: "Tạo CV cho tin này" }).click();
@@ -98,11 +95,7 @@ test("CV dang viet thi hien trang thai, khong hien nut tao", async ({
     }),
   );
 
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("demo@aijob.local");
-  await page.getByLabel("Mật khẩu").fill("Demo@12345");
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, "demo@aijob.local");
 
   await page.goto("/dashboard/applications");
   await expect(page.getByText("Đang viết CV…")).toBeVisible();

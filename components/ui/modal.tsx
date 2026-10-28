@@ -39,6 +39,9 @@ export function Modal({ open, onClose, title, children, className, bodyClassName
       }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
         className={cn(
           "relative w-full max-w-md rounded-2xl bg-white shadow-xl",
           className,

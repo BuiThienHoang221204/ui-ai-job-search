@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { logIn } from "./support";
 
 /**
  * Backend định vị câu hỏi theo số thứ tự trong mảng GỐC của bộ đề. Phần tử
@@ -48,11 +49,7 @@ const PREP = {
 };
 
 async function login(page: Page) {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("demo@aijob.local");
-  await page.getByLabel("Mật khẩu").fill("Demo@12345");
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, "demo@aijob.local");
 }
 
 test("tu tra loi luu dung so thu tu goc cua cau hoi", async ({ page }) => {

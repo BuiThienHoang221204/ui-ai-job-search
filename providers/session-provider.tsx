@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { CircleNotch } from "@phosphor-icons/react/ssr";
 import type { AuthUser } from "@/types";
 import { apiErrorStatus } from "@/lib/axios";
@@ -17,27 +18,24 @@ export interface SessionValue {
   user: AuthUser | null;
   loading: boolean;
   logout: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
 export const SessionContext = createContext<SessionValue>({
   user: null,
   loading: true,
   logout: async () => { },
+  refresh: async () => { },
 });
 
-/**
- * Nạp người dùng hiện tại một lần cho cả khung dashboard, và CHẶN render con
- * cho tới khi biết chắc đã đăng nhập. Không có middleware nào chặn trước -
- * chặn ở đây là lớp duy nhất, nên lộ `children` trước khi `/auth/me` trả lời
- * là lộ cả khung dashboard cho người chưa đăng nhập trong một nhịp.
- * Ngoại lệ duy nhất là trang việc làm (`isGuestPath`): khách xem được với `user = null`.
- */
+/** Nạp người dùng một lần cho cả khung dashboard và chặn render con tới khi biết chắc đã đăng nhập; trang trong `isGuestPath` thì khách xem được với `user = null`. */
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [anonymous, setAnonymous] = useState(false);
+  const queryClient = useQueryClient();
   const guestAllowed = anonymous && isGuestPath(pathname);
 
   useEffect(() => {
@@ -65,15 +63,21 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     router.replace(`/login?next=${encodeURIComponent(next)}`);
   }, [anonymous, pathname, router]);
 
+  const refresh = useCallback(async () => {
+    setUser(await authService.me());
+    setAnonymous(false);
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await authService.logout();
     } catch {
     }
+    queryClient.clear();
     setUser(null);
-    router.replace("/login");
-    router.refresh();
-  }, [router]);
+    setAnonymous(true);
+    router.replace("/dashboard");
+  }, [queryClient, router]);
 
   if (loading || (!user && !guestAllowed)) {
     return (
@@ -84,7 +88,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <SessionContext.Provider value={{ user, loading, logout }}>
+    <SessionContext.Provider value={{ user, loading, logout, refresh }}>
       {children}
     </SessionContext.Provider>
   );

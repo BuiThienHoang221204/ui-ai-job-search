@@ -33,6 +33,7 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: { proxyTimeout: 300_000 },
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },

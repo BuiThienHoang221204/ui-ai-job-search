@@ -1,4 +1,4 @@
-import type { AiFailureKind } from "./ai";
+import type { AiFailureKind } from "./api";
 
 export type MockInterviewStatus =
   "PENDING" | "RUNNING" | "WAITING_USER" | "DONE" | "FAILED";

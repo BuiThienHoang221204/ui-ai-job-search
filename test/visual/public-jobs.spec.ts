@@ -1,4 +1,5 @@
 import { expect, test, type APIRequestContext } from "@playwright/test";
+import { logIn } from "./support";
 
 /** Id của tin mới nhất, lấy từ API công khai. */
 async function firstJobId(request: APIRequestContext): Promise<string> {
@@ -118,11 +119,7 @@ test("nguoi da dang nhap thay ban day du cua tin", async ({
 }) => {
   const id = await firstJobId(request);
 
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("ketoan@aijob.local");
-  await page.getByLabel("Mật khẩu").fill("Demo@12345");
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, "ketoan@aijob.local");
 
   await page.goto(`/dashboard/jobs?job=${id}`);
 

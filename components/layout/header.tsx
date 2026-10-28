@@ -3,12 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { List, MagnifyingGlass, Sparkle } from "@phosphor-icons/react/ssr";
+import {
+  List,
+  MagnifyingGlass,
+  Sparkle,
+  FileMagnifyingGlass,
+} from "@phosphor-icons/react/ssr";
 import { pageTitle } from "@/components/layout/nav-items";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/form";
 import { useSession } from "@/hooks/use-session";
-import { useLoginModal } from "@/hooks/use-login-modal";
 import { isAdmin } from "@/lib/auth";
 
 const CV_OPTIMIZER_PATH = "/dashboard/cv-optimizer";
@@ -20,12 +24,12 @@ interface HeaderProps {
 /** Thanh đầu trang dashboard: nút mở menu, tiêu đề trang, ô tìm việc và người dùng. */
 export function Header({ onMenuClick }: HeaderProps) {
   const { user } = useSession();
-  const openLogin = useLoginModal((s) => s.open);
   const pathname = usePathname();
   const router = useRouter();
   const [term, setTerm] = useState("");
 
-  const title = pageTitle(pathname);
+  const title =
+    !user && pathname === "/dashboard" ? "Trang chủ" : pageTitle(pathname);
   const isOverview = pathname === "/dashboard";
 
   const submit = (event: React.FormEvent) => {
@@ -87,23 +91,22 @@ export function Header({ onMenuClick }: HeaderProps) {
           </span>
         )}
 
-        <Link
-          href={CV_OPTIMIZER_PATH}
-          onClick={(event) => {
-            if (user) return;
-            event.preventDefault();
-            openLogin({
-              reason: "Đăng nhập để tối ưu CV theo từng tin tuyển dụng.",
-              next: CV_OPTIMIZER_PATH,
-            });
-          }}
-        >
-          <Button size="sm">
-            <Sparkle className="size-4.5" />
-            <span className="hidden sm:inline">Tối ưu CV với AI</span>
-            <span className="sm:hidden">Tối ưu CV</span>
-          </Button>
-        </Link>
+        {user ? (
+          <Link href={CV_OPTIMIZER_PATH}>
+            <Button size="sm">
+              <Sparkle className="size-4.5" />
+              <span className="hidden sm:inline">Tối ưu CV với AI</span>
+              <span className="sm:hidden">Tối ưu CV</span>
+            </Button>
+          </Link>
+        ) : (
+          <Link href="/dashboard/cv-check">
+            <Button size="sm">
+              <FileMagnifyingGlass className="size-4.5" />
+              Phân tích CV
+            </Button>
+          </Link>
+        )}
       </div>
     </header>
   );

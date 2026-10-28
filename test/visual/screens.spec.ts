@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync } from "node:fs";
-import { waitForImages } from "./support";
+import { waitForImages, logIn } from "./support";
 
 /**
  * Chụp ảnh từng màn hình để xem BỐ CỤC.
@@ -63,11 +63,7 @@ const SCREENS = [
 ];
 
 async function login(page: Page) {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill(EMAIL);
-  await page.getByLabel("Mật khẩu").fill(PASSWORD);
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, EMAIL, PASSWORD);
 }
 
 test.beforeAll(() => {
@@ -80,7 +76,7 @@ test("chụp các trang công khai", async ({ page }) => {
     { path: "/register", name: "00-register" },
   ]) {
     await page.goto(path);
-    await expect(page.locator("form")).toBeVisible();
+    await expect(page.getByRole("dialog").locator("form")).toBeVisible();
     await waitForImages(page);
     await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true });
   }

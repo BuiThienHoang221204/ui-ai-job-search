@@ -23,7 +23,7 @@ Frontend Next.js (App Router) + Tailwind v4 + TanStack Query + zustand + react-h
 
 **3. Tránh re-render thừa bằng cách đặt state ĐÚNG CHỖ, không phải rắc `memo`.** State đổi nhanh (stream từng mảnh, đếm giờ, ô đang gõ) phải nằm trong component NHỎ NHẤT dùng nó. Mẫu: `useJobScoring(jobId)` chỉ được gọi trong `MatchPanel`, nên mỗi mảnh stream của lượt chấm điểm chỉ render lại khối đó chứ không kéo cả trang. Chỉ dùng `memo`/`useMemo` khi đã thấy vấn đề thật.
 
-**4. Tái sử dụng component có sẵn** trong `components/ui/` (`Card`, `SectionCard`, `Button`, `Badge`, `Progress`, `ProgressCircle`, `SelectMenu`, `Tabs`, `Modal`…) và `components/layout/`, `components/jobs/`, `components/documents/`. Không tạo component mới khi một cái có sẵn làm được; ưu tiên sửa component đang có hơn thêm file. Không dùng thẻ HTML gốc (`<select>`…) khi đã có component tương ứng.
+**4. Tái sử dụng component có sẵn** trong `components/ui/` (`Card`, `SectionCard`, `Button`, `Badge`, `Progress`, `ProgressCircle`, `SelectMenu`, `Tabs`, `Modal`…) và `components/layout/`, `components/jobs/`, `components/documents/`. Không tạo component mới khi một cái có sẵn làm được; ưu tiên sửa component đang có hơn thêm file. Không dùng thẻ HTML gốc (`<select>`…) khi đã có component tương ứng. Hook cũng vậy: trước khi tự viết state cho việc quen thuộc, grep `hooks/` — đã có `useDropdown` (đóng khi bấm ra ngoài), `useCopy` (sao chép kèm nhãn "đã chép"), `useFileDrop` (kéo thả file), `useDebounce`, `useScrollLock`. Đã sửa 2026-10-28: menu Chia sẻ tự viết đóng/mở bằng `onBlur`, nút sao chép tự giữ cờ `copied`.
 
 **5. Đặt file đúng chỗ.** Chia theo LOẠI file (chốt 2026-10-16 sau đợt tái cấu trúc):
 
@@ -47,6 +47,7 @@ types/        mọi type dùng chung, một file theo miền, gom qua types/inde
 - **Hook (`useXxx`) → `hooks/`**, kể cả hook chỉ một trang dùng. Hàm KHÔNG phải hook thì không để trong `hooks/` (đã dời: `afterSaveJob` → `lib/job-cache.ts`, `isClosed` → `lib/interview-status.ts`).
 - **Context: provider ở `providers/`, hook đọc nó ở `hooks/`** (`SessionProvider` + `hooks/use-session.ts`). Đừng để context trong `components/`.
 - **Hàm thuần (không React) → `lib/`** kèm test ở `test/unit/lib/`. Mẫu: `lib/cv-checklist.ts`. Không có barrel `lib/index.ts` — import thẳng file (`@/lib/cn`).
+- **`lib/` và `types/` chia theo CHỦ ĐỀ, không theo hàm.** Thêm hàm hay type mới thì đặt vào file cùng chủ đề đã có (đường dẫn đăng nhập → `lib/redirect.ts`, tin công khai → `lib/public-job.ts`, ngày giờ → `lib/date.ts`, kiểu lỗi API chung → `types/api.ts`, mọi thứ quanh tin và điểm phù hợp → `types/job.ts`); chỉ mở file mới khi chưa có chủ đề nào hợp. Test đi theo vào spec của file đó. Đã gom 2026-10-28: `auth-redirect`, `job-share`, `blob-error`, `repost`, `types/ai`, `types/job-action`, `types/match`. Ngược lại, **hook vẫn một hook một file** (`use-xxx.ts`) — đó là quy ước, không phải file lẻ cần gom.
 - **Mỗi component một file.** Trang lớn chia thư mục con theo trạng thái màn hình (ví dụ `cv-optimizer/home/`, `cv-optimizer/workspace/`), file gốc chỉ ghép các phần lại.
 - **Component chỉ một trang dùng → cạnh trang trong `app/`** (import tương đối `./job-row`). **Dùng ở nhiều trang → `components/<nhóm>/`.** Mẫu: `components/jobs/job-action-cards.tsx` dùng chung cho trang chi tiết tin, CV và thư.
 - **Không viết lớp bọc mỏng.** Component chỉ để gọi lại một component khác với vài props cố định thì viết thẳng ở chỗ dùng.
@@ -84,7 +85,7 @@ Lý do và nguồn của từng quy tắc dưới đây (docs Next.js 16, react.
 **SEO**
 
 - Khu riêng tư (`/dashboard/*` khi đã đăng nhập) và trang tin tuyển dụng: `robots: { index: false, follow: false }` — trang tin vì điều khoản portal (`../ai-job-search/docs/adr/0008-trang-viec-lam-cong-khai.md`).
-- Trang muốn được index (như `/salary/*`) render nội dung trong Server Component, khai `metadata`/`generateMetadata`, gọi `notFound()` khi không có dữ liệu để trả 404 thật.
+- Trang muốn được index (như `/dashboard/market/*`, `/dashboard/salary/*`; ghi đè `noindex` của khung dashboard bằng `robots` ở cấp trang) render nội dung trong Server Component, khai `metadata`/`generateMetadata`, gọi `notFound()` khi không có dữ liệu để trả 404 thật.
 - JobPosting JSON-LD và bỏ `noindex` trang tin chỉ làm khi chủ dự án quyết.
 
 ## Quy trình

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { logIn } from "./support";
 
 /**
  * Bốn màn vừa chuyển từ `useEffect` sang `useApiQuery` còn chạy không.
@@ -22,11 +23,7 @@ const PASSWORD = process.env.VISUAL_PASSWORD ?? "Demo@12345";
 const STUDIO_EMAIL = process.env.VISUAL_STUDIO_EMAIL ?? "ketoan@aijob.local";
 
 async function login(page: Page, email = EMAIL) {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Mật khẩu").fill(PASSWORD);
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, email, PASSWORD);
 }
 
 /** Chỉ ghi lời gọi tới backend, bỏ qua request nội bộ của Next. */

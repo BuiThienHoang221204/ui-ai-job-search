@@ -15,7 +15,7 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
     const onUnauthorized = (error: unknown) => {
       if (apiErrorStatus(error) !== 401) return;
       if (typeof window === "undefined") return;
-      if (window.location.pathname.startsWith("/login")) return;
+      if (new URLSearchParams(window.location.search).has("auth")) return;
       const next = encodeURIComponent(
         window.location.pathname + window.location.search,
       );

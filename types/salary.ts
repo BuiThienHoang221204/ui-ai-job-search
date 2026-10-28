@@ -31,10 +31,6 @@ export interface SalaryPeer {
 }
 
 export interface SalaryPositionDetail extends SalaryPositionSummary {
-  provider: string;
-  providerUrl: string;
-  updatedAt: string;
-  sampleSize: number | null;
   bands: SalaryBand[];
   peers: SalaryPeer[];
 }

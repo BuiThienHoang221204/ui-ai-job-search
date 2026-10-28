@@ -21,3 +21,5 @@ export interface Paginated<T> {
   limit: number;
   offset: number;
 }
+
+export type AiFailureKind = "SCHEMA" | "TIMEOUT" | "UPSTREAM" | "OTHER";

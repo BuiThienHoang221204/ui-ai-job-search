@@ -34,3 +34,17 @@ export async function waitForImages(page: Page, limitMs = 8000): Promise<void> {
     ]);
   }, limitMs);
 }
+
+/** Đăng nhập qua modal: `/login` chuyển về trang chủ và mở modal, xong thì chờ modal đóng (phiên đã nạp). */
+export async function logIn(
+  page: Page,
+  email: string,
+  password = "Demo@12345",
+): Promise<void> {
+  await page.goto("/login");
+  const dialog = page.getByRole("dialog");
+  await dialog.getByLabel("Email").fill(email);
+  await dialog.getByLabel("Mật khẩu").fill(password);
+  await dialog.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  await dialog.waitFor({ state: "hidden" });
+}

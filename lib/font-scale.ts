@@ -1,4 +1,4 @@
-export const BASE_PX = 16;
+export const BASE_PX = 17.6;
 export const MIN_PERCENT = 90;
 export const MAX_PERCENT = 150;
 export const STEP_PERCENT = 10;

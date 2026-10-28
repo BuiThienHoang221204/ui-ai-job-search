@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { logIn } from "./support";
 
 /**
  * Lượt tìm hiểu công ty rơi về hàng đợi (stream hỏng) thì giao diện poll chờ
@@ -30,11 +31,7 @@ test("tim hieu cong ty: qua 5 phut chua co ket qua thi dung poll", async ({
     route.fulfill({ status: 500, json: { message: "hỏng" } }),
   );
 
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("demo@aijob.local");
-  await page.getByLabel("Mật khẩu").fill("Demo@12345");
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, "demo@aijob.local");
 
   await page.goto("/dashboard/jobs/demo_job_backend_001");
   await page.getByRole("button", { name: "Tìm hiểu công ty này" }).click();

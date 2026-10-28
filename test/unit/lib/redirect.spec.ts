@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { safeNextPath } from "@/lib/redirect";
+import { authEntryPath, safeNextPath } from "@/lib/redirect";
 
 describe("safeNextPath", () => {
   test.each([
@@ -25,5 +25,19 @@ describe("safeNextPath", () => {
 
   test("không có tham số thì trả fallback", () => {
     expect(safeNextPath(null, "/dashboard")).toBe("/dashboard");
+  });
+});
+
+describe("authEntryPath", () => {
+  test("giữ next và mã giới thiệu của đường dẫn cũ", () => {
+    expect(
+      authEntryPath("register", { ref: "ABC123", next: "/dashboard/jobs" }),
+    ).toBe("/dashboard?auth=register&next=%2Fdashboard%2Fjobs&ref=ABC123");
+  });
+
+  test("bỏ tham số lạ và tham số lặp", () => {
+    expect(authEntryPath("login", { utm: "x", next: ["/a", "/b"] })).toBe(
+      "/dashboard?auth=login",
+    );
   });
 });

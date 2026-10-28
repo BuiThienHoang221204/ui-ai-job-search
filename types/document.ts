@@ -1,4 +1,4 @@
-import type { AiFailureKind } from "./ai";
+import type { AiFailureKind } from "./api";
 import type { WorkStatus } from "./api";
 
 export type DocumentKind = "CV" | "COVER_LETTER" | "APPLICATION_EMAIL";

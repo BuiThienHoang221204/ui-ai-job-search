@@ -1,8 +1,9 @@
+import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 export interface TabItem {
   value: string;
-  label: string;
+  label: ReactNode;
 }
 
 interface TabsProps {

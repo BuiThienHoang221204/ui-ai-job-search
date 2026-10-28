@@ -63,7 +63,10 @@ export async function SalaryDetail({
       <Headline data={data} scale={scale} />
       <Experience bands={data.bands} scale={scale} />
       <Peers data={data} basePath={basePath} />
-      <SourceNote data={data} />
+      <Alert tone="info">
+        Số liệu chỉ mang tính tham khảo; thu nhập thực tế phụ thuộc năng lực cá
+        nhân và chính sách của từng doanh nghiệp.
+      </Alert>
     </div>
   );
 }
@@ -285,35 +288,5 @@ function Peers({
         </TableBody>
       </Table>
     </SectionCard>
-  );
-}
-
-/** Dải ghi nguồn số liệu lương, luôn hiện. */
-function SourceNote({ data }: { data: SalaryPositionDetail }) {
-  const updated = new Date(data.updatedAt).toLocaleDateString("vi-VN");
-
-  return (
-    <Alert tone="info">
-      {data.sampleSize === null ? (
-        <>
-          Nguồn:{" "}
-          <a
-            href={data.providerUrl}
-            target="_blank"
-            rel="noopener"
-            className="underline"
-          >
-            {data.provider}
-          </a>{" "}
-          · cập nhật {updated}.{" "}
-        </>
-      ) : (
-        <>
-          Tổng hợp từ {data.sampleSize} tin tuyển dụng · cập nhật {updated}.{" "}
-        </>
-      )}
-      Số liệu chỉ mang tính tham khảo; thu nhập thực tế phụ thuộc năng lực cá nhân
-      và chính sách của từng doanh nghiệp.
-    </Alert>
   );
 }

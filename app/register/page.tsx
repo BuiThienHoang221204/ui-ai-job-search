@@ -1,8 +1,10 @@
-import type { Metadata } from "next";
-import { RegisterView } from "./register-view";
+import { redirect } from "next/navigation";
+import { authEntryPath } from "@/lib/redirect";
 
-export const metadata: Metadata = { title: "Đăng ký — Careelot" };
-
-export default function RegisterPage() {
-  return <RegisterView />;
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  redirect(authEntryPath("register", await searchParams));
 }

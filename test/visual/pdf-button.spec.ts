@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { logIn } from "./support";
 
 /*
  * Kiểm nút "Xem PDF" như người dùng gặp nó.
@@ -9,11 +10,7 @@ import { expect, test } from "@playwright/test";
  * đó trong trang để xem có phải PDF thật.
  */
 test("nut Xem PDF mo duoc ban PDF", async ({ page }) => {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("admin@aijob.local");
-  await page.getByLabel("Mật khẩu").fill("Demo@12345");
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, "admin@aijob.local");
 
   await page.goto("/dashboard/cv-optimizer");
 

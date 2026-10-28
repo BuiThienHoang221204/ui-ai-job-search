@@ -24,4 +24,14 @@ export const marketService = {
     if (!res.ok) throw new Error(`Market API ${res.status} ${slug}`);
     return res.json() as Promise<MarketReport>;
   },
+
+  /** Tổng số tin đang hiện cho khách; cache 1 ngày như báo cáo thị trường. */
+  jobCount: async (): Promise<number> => {
+    const res = await fetch(`${API}/public/jobs?limit=1`, {
+      next: { revalidate: REVALIDATE_SECONDS },
+    });
+    if (!res.ok) throw new Error(`Public jobs API ${res.status}`);
+    const page = (await res.json()) as { total: number };
+    return page.total;
+  },
 };

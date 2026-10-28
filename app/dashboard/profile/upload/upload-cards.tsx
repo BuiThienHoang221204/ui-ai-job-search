@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   ArrowCounterClockwise,
   Check,
@@ -10,14 +9,13 @@ import {
   ListBullets,
   LockSimple,
   TextT,
-  UploadSimple,
 } from "@phosphor-icons/react/ssr";
 import { failureMessage, isWorthRetrying } from "@/lib/failure-message";
 import { DashSection } from "@/components/ui/dash-section";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/cn";
+import { PdfDropZone } from "@/components/ui/pdf-drop-zone";
 import type { PartialProposal, ProfileDraftRecord } from "@/types";
 
 const LIVE_ROWS = [
@@ -41,50 +39,6 @@ const LIVE_ROWS = [
       p.educations?.length ? `${p.educations.length} mục` : "",
   },
 ];
-
-/** Ô kéo thả; chọn hoặc thả file là nộp luôn. */
-function DropZone({ onPick }: { onPick: (file: File) => void }) {
-  const [over, setOver] = useState(false);
-  const pick = (file?: File) => file && onPick(file);
-
-  return (
-    <label
-      onDragOver={(event) => {
-        event.preventDefault();
-        setOver(true);
-      }}
-      onDragLeave={() => setOver(false)}
-      onDrop={(event) => {
-        event.preventDefault();
-        setOver(false);
-        pick(event.dataTransfer.files[0]);
-      }}
-      className={cn(
-        "grid cursor-pointer place-items-center gap-2.5 rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-colors",
-        over
-          ? "border-primary-500 bg-primary-100"
-          : "border-primary-200 bg-primary-50 hover:border-primary-300",
-      )}
-    >
-      <FilePdf weight="duotone" className="size-14 text-rose-500" />
-      <p className="text-base font-semibold text-slate-900">
-        Kéo thả CV vào đây
-      </p>
-      <p className="text-sm text-slate-500">hoặc</p>
-      <span className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white">
-        <UploadSimple className="size-4.5" />
-        Chọn file PDF
-      </span>
-      <p className="text-xs text-slate-500">PDF, tối đa 10MB</p>
-      <input
-        type="file"
-        accept="application/pdf,.pdf"
-        className="sr-only"
-        onChange={(event) => pick(event.target.files?.[0])}
-      />
-    </label>
-  );
-}
 
 /** Tên file và danh sách phần AI đã đọc xong, hiện dần theo stream. */
 function Reading({
@@ -189,7 +143,7 @@ export function UploadPanel({
       {reading ? (
         <Reading file={file} draft={draft} partial={partial} />
       ) : (
-        <DropZone onPick={onPick} />
+        <PdfDropZone onPick={onPick} />
       )}
     </Card>
   );

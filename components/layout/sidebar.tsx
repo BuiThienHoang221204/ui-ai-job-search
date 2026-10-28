@@ -1,9 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Lightning, SidebarSimple, SignOut } from "@phosphor-icons/react/ssr";
+import {
+  Lightning,
+  LockSimple,
+  SidebarSimple,
+  SignOut,
+} from "@phosphor-icons/react/ssr";
 import { toggleSidebar } from "@/lib/sidebar";
 import { navItems } from "@/components/layout/nav-items";
 import { BrandLogo } from "@/components/layout/brand-logo";
@@ -39,6 +44,12 @@ export function Sidebar() {
     return matched.sort((a, b) => b.href.length - a.href.length)[0]?.href;
   }, [pathname, searchParams]);
 
+  const open = navItems.filter((item) => isGuestPath(item.href));
+  const openCount = user ? navItems.length : open.length;
+  const items = user
+    ? navItems.filter((item) => !item.guestOnly)
+    : [...open, ...navItems.filter((item) => !isGuestPath(item.href))];
+
   return (
     <aside className="flex h-full w-(--sidebar-width) shrink-0 flex-col overflow-hidden border-r border-slate-200/80 bg-white transition-[width] duration-200 ease-out">
       <div className="flex h-[65px] shrink-0 items-center border-b border-slate-100 pr-3 pl-6 collapsed:justify-center collapsed:px-0">
@@ -55,11 +66,21 @@ export function Sidebar() {
       </div>
 
       <nav className="scrollbar-thin w-64 flex-1 space-y-1 overflow-y-auto px-3 py-3">
-        {navItems.map(({ label, href, icon: Icon }) => {
+        {items.map(({ label: itemLabel, href, icon: Icon }, index) => {
           const active = href === activeHref;
+          const label =
+            !user && href === "/dashboard" ? "Trang chủ" : itemLabel;
           return (
+            <Fragment key={href}>
+            {!user && index === openCount && (
+              <p
+                data-sidebar-label
+                className="px-3 pt-3 pb-1 text-2xs font-bold tracking-widest text-slate-400 uppercase"
+              >
+                Cần tài khoản
+              </p>
+            )}
             <Link
-              key={href}
               href={href}
               title={label}
               onClick={(event) => {
@@ -83,7 +104,15 @@ export function Sidebar() {
               <span data-sidebar-label className="truncate">
                 {label}
               </span>
+              {!user && !isGuestPath(href) && (
+                <LockSimple
+                  data-sidebar-label
+                  aria-label="Cần đăng nhập"
+                  className="ml-auto size-3.5 shrink-0 text-slate-300"
+                />
+              )}
             </Link>
+            </Fragment>
           );
         })}
 

@@ -1,8 +1,10 @@
-import type { Metadata } from "next";
-import { LoginView } from "./login-view";
+import { redirect } from "next/navigation";
+import { authEntryPath } from "@/lib/redirect";
 
-export const metadata: Metadata = { title: "Đăng nhập — Careelot" };
-
-export default function LoginPage() {
-  return <LoginView />;
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  redirect(authEntryPath("login", await searchParams));
 }

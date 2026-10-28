@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { logIn } from "./support";
 
 /**
  * Dải chọn mẫu nằm ở đầu khu sửa CV (`?doc=`), chỉ hiện SAU KHI mở một CV đã
@@ -8,11 +9,7 @@ import { expect, test } from "@playwright/test";
  * dữ liệu thật của người dùng.
  */
 test("kho chon mau CV hien sau khi mo mot CV da tao", async ({ page }) => {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("ketoan@aijob.local");
-  await page.getByLabel("Mật khẩu").fill("Demo@12345");
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, "ketoan@aijob.local");
 
   await page.goto("/dashboard/cv-optimizer");
   await expect(page.getByRole("heading", { name: "CV của bạn" })).toBeVisible({

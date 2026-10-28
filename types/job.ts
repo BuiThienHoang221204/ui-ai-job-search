@@ -1,4 +1,4 @@
-import type { AiFailureKind } from "./ai";
+import type { AiFailureKind, QueuedResult } from "./api";
 import type { WorkStatus } from "./api";
 import type { ApplicationStatus } from "./application";
 
@@ -252,3 +252,16 @@ export interface PartialEvaluation {
   gaps?: string[];
   recommendation?: string;
 }
+
+export type JobActionKey = "cv" | "letter" | "interview" | "apply";
+
+export type EvaluateResult =
+  | (QueuedResult & { alreadyScored: false })
+  | {
+      queued: false;
+      alreadyScored: true;
+      overallScore: number | null;
+      verdict: JobMatchWithJob["verdict"];
+    };
+
+export type MatchSort = "newest" | "score_desc" | "score_asc";

@@ -1,12 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { logIn } from "./support";
 
 /** Mở CV đầu tiên trong kho tài liệu của tài khoản kế toán. */
 async function moCv(page: import("@playwright/test").Page) {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("ketoan@aijob.local");
-  await page.getByLabel("Mật khẩu").fill("Demo@12345");
-  await page.getByRole("button", { name: "Đăng nhập" }).click();
-  await page.waitForURL(/\/dashboard/);
+  await logIn(page, "ketoan@aijob.local");
 
   await page.goto("/dashboard/cv-optimizer");
   await page.locator("a[href*='?doc=']").first().click();

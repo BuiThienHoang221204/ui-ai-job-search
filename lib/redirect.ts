@@ -13,3 +13,16 @@ export function safeNextPath(raw: string | null, fallback: string): string {
     return fallback;
   }
 }
+
+/** Đường dẫn mở modal đăng nhập/đăng ký trên trang chủ, giữ `next` và `ref` của đường dẫn cũ `/login`, `/register`. */
+export function authEntryPath(
+  mode: "login" | "register",
+  params: Record<string, string | string[] | undefined>,
+): string {
+  const query = new URLSearchParams({ auth: mode });
+  for (const key of ["next", "ref"]) {
+    const value = params[key];
+    if (typeof value === "string" && value) query.set(key, value);
+  }
+  return `/dashboard?${query.toString()}`;
+}
