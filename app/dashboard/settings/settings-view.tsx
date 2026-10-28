@@ -12,12 +12,14 @@ import {
 } from "@phosphor-icons/react/ssr";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionCard } from "@/components/ui/section-card";
+import { DeleteAccountCard } from "./delete-account-card";
 import { DisplayCard } from "./display-card";
 import { NotificationsCard } from "./notifications-card";
 import { ReferralCard } from "./referral-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/hooks/use-session";
 import { isAdmin } from "@/lib/auth";
+import { OPERATOR, PRIVACY_PATH } from "@/lib/legal";
 
 /** Trang tài khoản; chỉ hiện những gì backend thật sự có. */
 export function SettingsView() {
@@ -43,7 +45,9 @@ export function SettingsView() {
           ) : (
             <dl className="grid gap-4 sm:grid-cols-3">
               <div>
-                <dt className="text-xs font-medium text-slate-400">Họ và tên</dt>
+                <dt className="text-xs font-medium text-slate-400">
+                  Họ và tên
+                </dt>
                 <dd className="mt-0.5 text-sm text-slate-900">
                   {user?.name ?? "—"}
                 </dd>
@@ -64,8 +68,9 @@ export function SettingsView() {
           )}
 
           <p className="mt-5 max-w-2xl border-t border-slate-100 pt-4 text-xs text-slate-500">
-            Chưa đổi được tên hay email từ giao diện — backend chưa có endpoint
-            cập nhật. Kỹ năng, kinh nghiệm và định hướng nghề nghiệp nằm ở{" "}
+            Tên và email hiện chưa đổi được ở đây; cần đổi thì gửi email tới{" "}
+            {OPERATOR.email}. Kỹ năng, kinh nghiệm và định hướng nghề nghiệp nằm
+            ở{" "}
             <Link
               href="/dashboard/profile"
               className="font-medium text-slate-900 underline underline-offset-2"
@@ -101,7 +106,19 @@ export function SettingsView() {
               detail="CV và thư xin việc đã sinh — chỉ tài khoản của bạn đọc được."
             />
           </dl>
+          <p className="mt-5 border-t border-slate-100 pt-4 text-xs text-slate-500">
+            Chi tiết dữ liệu nào được lưu, lưu bao lâu và chia sẻ cho ai:{" "}
+            <Link
+              href={PRIVACY_PATH}
+              className="font-medium text-slate-900 underline underline-offset-2"
+            >
+              Chính sách bảo mật
+            </Link>
+            .
+          </p>
         </SectionCard>
+
+        <DeleteAccountCard />
 
         <div className="flex flex-wrap items-center justify-between gap-3 px-1 pt-1">
           <p className="text-xs text-slate-500">

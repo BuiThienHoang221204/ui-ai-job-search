@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { UserPlus, WarningCircle } from "@phosphor-icons/react/ssr";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
+import { cn } from "@/lib/cn";
+import { PRIVACY_PATH, TERMS_PATH } from "@/lib/legal";
 import { authService } from "@/services";
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -29,6 +32,7 @@ export function RegisterForm({
   const [error, setError] = useState<string | null>(null);
   const [duplicate, setDuplicate] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [accepted, setAccepted] = useState(false);
 
   /** Kiểm tra dữ liệu, gọi API đăng ký và xử lý lỗi trùng email. */
   async function handleSubmit(event: React.FormEvent) {
@@ -142,7 +146,41 @@ export function RegisterForm({
         </p>
       )}
 
-      <Button type="submit" className="w-full" loading={loading}>
+      <label className="flex items-start gap-2.5 text-xs leading-relaxed text-slate-600">
+        <input
+          type="checkbox"
+          checked={accepted}
+          onChange={(event) => setAccepted(event.target.checked)}
+          className="accent-primary-600 mt-0.5 size-4 shrink-0"
+        />
+        <span>
+          Tôi đồng ý với{" "}
+          <Link
+            href={TERMS_PATH}
+            target="_blank"
+            className="text-primary-600 font-semibold"
+          >
+            Điều khoản sử dụng
+          </Link>{" "}
+          và{" "}
+          <Link
+            href={PRIVACY_PATH}
+            target="_blank"
+            className="text-primary-600 font-semibold"
+          >
+            Chính sách bảo mật
+          </Link>
+          , gồm việc gửi chữ của CV và hồ sơ tới nhà cung cấp AI ở nước ngoài để
+          phân tích.
+        </span>
+      </label>
+
+      <Button
+        type="submit"
+        className="w-full"
+        loading={loading}
+        disabled={!accepted}
+      >
         {!loading && <UserPlus className="size-4.5" />}
         Tạo tài khoản
       </Button>
@@ -153,7 +191,13 @@ export function RegisterForm({
         <span className="h-px flex-1 bg-slate-200" />
       </div>
 
-      <div className="flex justify-center">
+      <div
+        aria-disabled={!accepted}
+        className={cn(
+          "flex justify-center",
+          !accepted && "pointer-events-none opacity-50",
+        )}
+      >
         <GoogleSignInButton
           onSuccess={onSuccess}
           onError={(message) => setError(message)}

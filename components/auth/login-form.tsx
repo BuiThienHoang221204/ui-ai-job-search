@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { SignIn, WarningCircle } from "@phosphor-icons/react/ssr";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
+import { PRIVACY_PATH, TERMS_PATH } from "@/lib/legal";
 import { authService } from "@/services";
 
 /** Form đăng nhập email/mật khẩu và Google trong modal đăng nhập. */
@@ -90,6 +92,18 @@ export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
           onError={(message) => setError(message)}
         />
       </div>
+
+      <p className="text-center text-xs text-slate-500">
+        Khi đăng nhập, bạn đồng ý với{" "}
+        <Link href={TERMS_PATH} className="text-primary-600 font-semibold">
+          Điều khoản sử dụng
+        </Link>{" "}
+        và{" "}
+        <Link href={PRIVACY_PATH} className="text-primary-600 font-semibold">
+          Chính sách bảo mật
+        </Link>
+        .
+      </p>
     </form>
   );
 }

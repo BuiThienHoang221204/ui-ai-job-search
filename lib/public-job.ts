@@ -12,13 +12,13 @@ const PORTAL_NAMES: Record<string, string> = {
 };
 
 const GUEST_PATH =
-  /^\/dashboard(\/((jobs|market|salary)(\/[^/]+)?|cv-check))?$/;
+  /^\/dashboard(\/((jobs|market|salary)(\/[^/]+)?|cv-check|chinh-sach-bao-mat|dieu-khoan-su-dung))?$/;
 
 export function portalName(source: string): string {
   return PORTAL_NAMES[source] ?? source;
 }
 
-/** Trang khách chưa đăng nhập xem được: trang chào (`/dashboard`), việc làm (danh sách, chi tiết một tin), báo cáo thị trường, tra cứu lương và phân tích CV. */
+/** Trang khách chưa đăng nhập xem được: trang chào (`/dashboard`), việc làm (danh sách, chi tiết một tin), báo cáo thị trường, tra cứu lương, phân tích CV, Chính sách bảo mật và Điều khoản sử dụng. */
 export function isGuestPath(pathname: string): boolean {
   return GUEST_PATH.test(pathname);
 }

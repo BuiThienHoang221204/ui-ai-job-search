@@ -18,8 +18,10 @@ import { useSession } from "@/hooks/use-session";
 import { useLoginModal } from "@/hooks/use-login-modal";
 import { isGuestPath } from "@/lib/public-job";
 import { isAdmin } from "@/lib/auth";
+import { PRIVACY_PATH, TERMS_PATH } from "@/lib/legal";
 
-const ADMIN_APP_URL = process.env.NEXT_PUBLIC_ADMIN_URL ?? "http://localhost:3001";
+const ADMIN_APP_URL =
+  process.env.NEXT_PUBLIC_ADMIN_URL ?? "http://localhost:3001";
 
 /** Thanh điều hướng bên của dashboard. */
 export function Sidebar() {
@@ -72,46 +74,49 @@ export function Sidebar() {
             !user && href === "/dashboard" ? "Trang chủ" : itemLabel;
           return (
             <Fragment key={href}>
-            {!user && index === openCount && (
-              <p
-                data-sidebar-label
-                className="px-3 pt-3 pb-1 text-2xs font-bold tracking-widest text-slate-400 uppercase"
-              >
-                Cần tài khoản
-              </p>
-            )}
-            <Link
-              href={href}
-              title={label}
-              onClick={(event) => {
-                if (user || isGuestPath(href)) return;
-                event.preventDefault();
-                openLogin({ reason: `Đăng nhập để mở mục "${label}".`, next: href });
-              }}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-150",
-                active
-                  ? "bg-primary-50 text-primary-900 font-semibold border-l-2 border-primary-600 pl-2.5"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
-              )}
-            >
-              <Icon
-                className={cn(
-                  "size-4.5 shrink-0",
-                  active ? "text-primary-600" : "text-slate-400",
-                )}
-              />
-              <span data-sidebar-label className="truncate">
-                {label}
-              </span>
-              {!user && !isGuestPath(href) && (
-                <LockSimple
+              {!user && index === openCount && (
+                <p
                   data-sidebar-label
-                  aria-label="Cần đăng nhập"
-                  className="ml-auto size-3.5 shrink-0 text-slate-300"
-                />
+                  className="px-3 pt-3 pb-1 text-2xs font-bold tracking-widest text-slate-400 uppercase"
+                >
+                  Cần tài khoản
+                </p>
               )}
-            </Link>
+              <Link
+                href={href}
+                title={label}
+                onClick={(event) => {
+                  if (user || isGuestPath(href)) return;
+                  event.preventDefault();
+                  openLogin({
+                    reason: `Đăng nhập để mở mục "${label}".`,
+                    next: href,
+                  });
+                }}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-150",
+                  active
+                    ? "bg-primary-50 text-primary-900 font-semibold border-l-2 border-primary-600 pl-2.5"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                )}
+              >
+                <Icon
+                  className={cn(
+                    "size-4.5 shrink-0",
+                    active ? "text-primary-600" : "text-slate-400",
+                  )}
+                />
+                <span data-sidebar-label className="truncate">
+                  {label}
+                </span>
+                {!user && !isGuestPath(href) && (
+                  <LockSimple
+                    data-sidebar-label
+                    aria-label="Cần đăng nhập"
+                    className="ml-auto size-3.5 shrink-0 text-slate-300"
+                  />
+                )}
+              </Link>
             </Fragment>
           );
         })}
@@ -175,6 +180,15 @@ export function Sidebar() {
           </button>
         </div>
       )}
+      <p className="shrink-0 px-4 pb-3 text-2xs text-slate-400 collapsed:hidden">
+        <Link href={PRIVACY_PATH} className="hover:text-slate-700">
+          Chính sách bảo mật
+        </Link>
+        {" · "}
+        <Link href={TERMS_PATH} className="hover:text-slate-700">
+          Điều khoản
+        </Link>
+      </p>
     </aside>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowCounterClockwise,
@@ -35,6 +35,7 @@ import { ReportOverview } from "./report-overview";
 import { ReportQuestions } from "./report-questions";
 import { RewriteList } from "./rewrite-list";
 import { RubricChecks } from "./rubric-checks";
+import { TocLinks } from "./toc-links";
 
 const SECTION = "scroll-mt-20";
 
@@ -52,7 +53,6 @@ export function CvCheckReport({
   const router = useRouter();
   const openLogin = useLoginModal((state) => state.open);
   const [sharing, setSharing] = useState(false);
-  const [active, setActive] = useState("overview");
 
   const review = result.review;
   const issues = review?.sections.flatMap((part) => part.issues) ?? [];
@@ -75,21 +75,6 @@ export function CvCheckReport({
     },
     { id: "next", label: "Việc cần làm tiếp", show: true },
   ].filter((item) => item.show);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        }
-      },
-      { rootMargin: "-80px 0px -60% 0px" },
-    );
-    for (const element of document.querySelectorAll("[data-report-section]")) {
-      observer.observe(element);
-    }
-    return () => observer.disconnect();
-  }, []);
 
   const practice = () => {
     if (user) router.push("/dashboard/interview");
@@ -233,37 +218,18 @@ export function CvCheckReport({
           <p className="mb-2 text-sm font-semibold text-slate-900">
             Trong báo cáo
           </p>
-          {toc.map((item) => (
-            <a
-              key={item.id}
-              href={`#${item.id}`}
-              onClick={(event) => {
-                event.preventDefault();
-                document
-                  .getElementById(item.id)
-                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                setActive(item.id);
-              }}
-              className={cn(
-                "block border-l-2 border-slate-200 px-3 py-1.5 text-sm text-slate-500 hover:text-slate-900",
-                active === item.id &&
-                  "border-primary-600 font-semibold text-slate-900",
-              )}
-            >
-              {item.label}
-            </a>
-          ))}
+          <TocLinks items={toc} />
         </nav>
 
         <div className="min-w-0 space-y-11">
           {review && (
-            <section id="overview" data-report-section className={SECTION}>
+            <section id="overview" className={SECTION}>
               <ReportHeading title="Tổng quan" />
               <ReportOverview review={review} />
             </section>
           )}
 
-          <section id="fixes" data-report-section className={SECTION}>
+          <section id="fixes" className={SECTION}>
             <ReportHeading
               title="Đề xuất sửa CV"
               count={review ? issues.length : result.flags.length}
@@ -316,7 +282,7 @@ export function CvCheckReport({
             )}
           </section>
 
-          <section id="ats" data-report-section className={SECTION}>
+          <section id="ats" className={SECTION}>
             <ReportHeading
               title="Máy lọc ATS đọc CV thế nào"
               sub={`${result.score}/100 theo bảng chấm 8 tiêu chí`}
@@ -351,7 +317,7 @@ export function CvCheckReport({
           </section>
 
           {questions.length > 0 && (
-            <section id="questions" data-report-section className={SECTION}>
+            <section id="questions" className={SECTION}>
               <ReportHeading
                 title="Câu hỏi phỏng vấn dự đoán"
                 count={questions.length}
@@ -361,7 +327,7 @@ export function CvCheckReport({
             </section>
           )}
 
-          <section id="next" data-report-section className={SECTION}>
+          <section id="next" className={SECTION}>
             <ReportHeading title="Việc cần làm tiếp" />
             <div className="mt-3 space-y-2.5">
               <NextStep

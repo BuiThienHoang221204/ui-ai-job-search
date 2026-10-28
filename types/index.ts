@@ -21,3 +21,4 @@ export type * from "./upskill";
 export type * from "./market";
 export type * from "./referral";
 export type * from "./cv-check";
+export type * from "./legal";
