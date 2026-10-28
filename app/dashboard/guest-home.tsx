@@ -21,10 +21,10 @@ import {
   Target,
 } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
-import { CountUp } from "@/components/ui/count-up";
 import { useLoginModal } from "@/hooks/use-login-modal";
 import { formatCount } from "@/lib/number";
 import type { MarketOccupation } from "@/types";
+import { CountUp } from "./count-up";
 import { HeroDemo } from "./hero-demo";
 
 const FEATURES = [
@@ -32,7 +32,7 @@ const FEATURES = [
     icon: FileMagnifyingGlass,
     title: "Phân tích CV",
     free: true,
-    note: "Điểm theo 8 tiêu chí, câu nên viết lại, máy lọc hồ sơ đọc CV thế nào và câu hỏi phỏng vấn dự đoán.",
+    note: "Điểm theo 8 tiêu chí, câu nên viết lại, máy lọc hồ sơ (ATS) đọc CV thế nào và câu hỏi phỏng vấn dự đoán.",
   },
   {
     icon: Stack,

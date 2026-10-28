@@ -2,7 +2,12 @@
 
 import { useCallback, useState } from "react";
 import { apiErrorMessage } from "@/lib/axios";
-import { MAX_CV_TEXT, pagesOfText } from "@/lib/cv-check";
+import {
+  MAX_CV_TEXT,
+  SAMPLE_CV_CHECK,
+  SAMPLE_CV_NAME,
+  pagesOfText,
+} from "@/lib/cv-check";
 import { MAX_PDF_BYTES, pdfErrorMessage, readPdfText } from "@/lib/pdf-browser";
 import { cvCheckService } from "@/services";
 import type { CvCheckPhase, CvCheckResult, CvCheckSource } from "@/types";
@@ -24,17 +29,28 @@ export function useCvCheck() {
       );
       return;
     }
-    setSource({ name: picked.name, file: picked, pages: null });
+    setSource({
+      name: picked.name,
+      file: picked,
+      pages: null,
+      multiColumn: null,
+    });
     setResult(null);
     setPhase("reading");
     try {
       const pdf = await readPdfText(picked);
-      setSource({ name: picked.name, file: picked, pages: pdf.pages });
+      setSource({
+        name: picked.name,
+        file: picked,
+        pages: pdf.pages,
+        multiColumn: pdf.multiColumn,
+      });
       setPhase("scoring");
       setResult(
         await cvCheckService.check({
-          ...pdf,
           text: pdf.text.slice(0, MAX_CV_TEXT),
+          pages: pdf.pages,
+          pagesRead: pdf.pagesRead,
         }),
       );
     } catch (err) {
@@ -48,7 +64,7 @@ export function useCvCheck() {
     const text = raw.trim().slice(0, MAX_CV_TEXT);
     const pages = pagesOfText(text);
     setError(null);
-    setSource({ name: "CV dán vào", file: null, pages });
+    setSource({ name: "CV dán vào", file: null, pages, multiColumn: null });
     setResult(null);
     setPhase("scoring");
     try {
@@ -60,10 +76,21 @@ export function useCvCheck() {
     }
   }, []);
 
+  const showSample = useCallback(() => {
+    setError(null);
+    setSource({
+      name: SAMPLE_CV_NAME,
+      file: null,
+      pages: 1,
+      multiColumn: false,
+    });
+    setResult(SAMPLE_CV_CHECK);
+  }, []);
+
   const reset = useCallback(() => {
     setResult(null);
     setSource(null);
   }, []);
 
-  return { source, phase, result, error, run, runText, reset };
+  return { source, phase, result, error, run, runText, showSample, reset };
 }

@@ -60,6 +60,22 @@ export interface CvReview {
     why: string;
     hint: string;
   }>;
+  parsed?: {
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+    jobs: Array<{
+      title: string;
+      company: string | null;
+      dates: string | null;
+    }>;
+    education: Array<{
+      school: string;
+      degree: string | null;
+      dates: string | null;
+    }>;
+    skills: string[];
+  };
 }
 
 export type CvCheckPhase = "idle" | "reading" | "scoring";
@@ -70,6 +86,7 @@ export interface CvCheckSource {
   name: string;
   file: File | null;
   pages: number | null;
+  multiColumn: boolean | null;
 }
 
 export type CvCheckReason =

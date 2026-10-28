@@ -11,7 +11,8 @@ export const MAX_CV_TEXT = 40_000;
 export const CV_RUBRIC = [
   {
     key: "ats",
-    label: "Máy lọc đọc được",
+    label: "ATS đọc được",
+    reader: "Máy lọc ATS",
     points: 30,
     items: [
       {
@@ -37,6 +38,7 @@ export const CV_RUBRIC = [
   {
     key: "content",
     label: "Nội dung",
+    reader: "Nhà tuyển dụng",
     points: 45,
     items: [
       {
@@ -62,6 +64,7 @@ export const CV_RUBRIC = [
   {
     key: "structure",
     label: "Cấu trúc",
+    reader: "Cả hai",
     points: 25,
     items: [
       {
@@ -200,3 +203,286 @@ export function drawShareCard(
   context.fillText(link, 72, 592, CARD_WIDTH - 144);
   context.globalAlpha = 1;
 }
+
+export const SAMPLE_CV_NAME = "CV mẫu - Nguyen Van An.pdf";
+
+export const SAMPLE_CV_CHECK: CvCheckResult = {
+  score: 72,
+  groups: [
+    { key: "ats", label: "ATS đọc được", earned: 30, max: 30 },
+    { key: "content", label: "Nội dung", earned: 22, max: 45 },
+    { key: "structure", label: "Cấu trúc", earned: 20, max: 25 },
+  ],
+  checks: [
+    {
+      key: "textLayer",
+      group: "ats",
+      label: "File có lớp chữ",
+      earned: 15,
+      max: 15,
+      detail: "Máy lọc đọc được chữ trong file.",
+      sample: null,
+    },
+    {
+      key: "clean",
+      group: "ats",
+      label: "Không có ký tự hỏng",
+      earned: 10,
+      max: 10,
+      detail: "Máy đọc ra chữ sạch, không có ký tự hỏng.",
+      sample: null,
+    },
+    {
+      key: "contact",
+      group: "ats",
+      label: "Liên hệ in thành chữ",
+      earned: 5,
+      max: 5,
+      detail: "Email và số điện thoại in thành chữ.",
+      sample: null,
+    },
+    {
+      key: "metrics",
+      group: "content",
+      label: "Số liệu trong từng dòng",
+      earned: 10,
+      max: 20,
+      detail: "2/8 dòng kinh nghiệm có số liệu (nên từ một nửa trở lên).",
+      sample: "Tham gia tối ưu hệ thống",
+    },
+    {
+      key: "actionVerbs",
+      group: "content",
+      label: "Mở đầu bằng động từ hành động",
+      earned: 4,
+      max: 15,
+      detail:
+        "2/8 dòng mở đầu bằng động từ hành động (xây dựng, triển khai, built, led…).",
+      sample: "Tham gia tối ưu hệ thống",
+    },
+    {
+      key: "concise",
+      group: "content",
+      label: "Câu gọn",
+      earned: 8,
+      max: 10,
+      detail: "2/8 dòng dài quá 35 chữ.",
+      sample: null,
+    },
+    {
+      key: "sections",
+      group: "structure",
+      label: "Đủ mục chính",
+      earned: 10,
+      max: 15,
+      detail: "Không thấy mục Học vấn.",
+      sample: null,
+    },
+    {
+      key: "length",
+      group: "structure",
+      label: "Độ dài 1–2 trang",
+      earned: 10,
+      max: 10,
+      detail: "CV dài 1 trang (nên 1–2 trang).",
+      sample: null,
+    },
+  ],
+  flags: [],
+  mode: "ai",
+  reason: null,
+  aiRemaining: null,
+  review: {
+    summary:
+      "CV gọn một trang, máy lọc đọc tốt và có dự án thật với NestJS, PostgreSQL. Điểm yếu là phần kinh nghiệm kể việc đã làm mà ít nói kết quả: chỉ 2/8 dòng có con số, nhiều dòng mở đầu bằng “Tham gia”, “Hỗ trợ”. Thêm mục Học vấn và viết lại các câu dưới đây là CV đủ sức vào vòng phỏng vấn Backend Junior.",
+    targetRole: "Backend Developer",
+    level: "junior",
+    sections: [
+      {
+        section: "contact",
+        verdict: "ok",
+        note: "Đủ email, số điện thoại, GitHub và LinkedIn, in thành chữ.",
+        issues: [],
+      },
+      {
+        section: "summary",
+        verdict: "fix",
+        note: "Câu giới thiệu chung chung, chưa nói bạn mạnh mảng nào.",
+        issues: [
+          {
+            title: "Phần giới thiệu chưa nói rõ thế mạnh",
+            impact: "recruiter",
+            why: "Nhà tuyển dụng đọc phần này trong vài giây đầu. Nói thẳng bạn làm backend với công nghệ gì, đã đưa sản phẩm nào lên chạy thật.",
+            quote:
+              "Là một lập trình viên nhiệt huyết, ham học hỏi, mong muốn phát triển bản thân trong môi trường chuyên nghiệp.",
+            rewrite:
+              "Backend Developer 1,5 năm kinh nghiệm với NestJS và PostgreSQL, đã đưa [__] API vào chạy thật phục vụ [__] người dùng mỗi ngày.",
+          },
+        ],
+      },
+      {
+        section: "experience",
+        verdict: "fix",
+        note: "Kể đúng việc nhưng thiếu kết quả đo được.",
+        issues: [
+          {
+            title: "Dòng kinh nghiệm không có kết quả",
+            impact: "both",
+            why: "“Tham gia” không cho biết bạn tự làm phần nào. Mở đầu bằng động từ và thêm con số để máy lọc lẫn người đọc thấy tác động.",
+            quote: "Tham gia tối ưu hệ thống",
+            rewrite:
+              "Tối ưu truy vấn PostgreSQL bằng index và phân trang con trỏ, giảm độ trễ API danh sách đơn hàng [__]%.",
+          },
+          {
+            title: "Việc hỗ trợ chưa thấy vai trò của bạn",
+            impact: "recruiter",
+            why: "Ghi rõ bạn xây phần nào và nó giúp được gì, thay vì chỉ “hỗ trợ”.",
+            quote: "Hỗ trợ team xây dựng chức năng thanh toán",
+            rewrite:
+              "Xây dựng luồng thanh toán VNPay với webhook và kiểm tra trùng giao dịch, xử lý [__] giao dịch mỗi ngày không sai lệch.",
+          },
+          {
+            title: "Thiếu tên công nghệ máy lọc tìm",
+            impact: "ats",
+            why: "Máy lọc so từ khoá với tin tuyển dụng. “Viết API” không khớp được với “RESTful API”, “Redis” hay “Docker”.",
+            quote: "Viết API cho ứng dụng di động",
+            rewrite:
+              "Thiết kế [__] RESTful API cho ứng dụng di động bằng NestJS, cache bằng Redis và đóng gói Docker.",
+          },
+        ],
+      },
+      {
+        section: "projects",
+        verdict: "fix",
+        note: "Dự án cá nhân tốt nhưng chưa có link và quy mô.",
+        issues: [
+          {
+            title: "Dự án nên kèm link và quy mô",
+            impact: "recruiter",
+            why: "Thêm link GitHub hoặc bản chạy thử để nhà tuyển dụng kiểm chứng ngay, nhất là với CV Junior.",
+            quote: null,
+            rewrite: null,
+          },
+        ],
+      },
+      {
+        section: "skills",
+        verdict: "ok",
+        note: "Chia nhóm rõ: ngôn ngữ, framework, cơ sở dữ liệu, công cụ.",
+        issues: [],
+      },
+      {
+        section: "education",
+        verdict: "missing",
+        note: "Không thấy mục Học vấn.",
+        issues: [
+          {
+            title: "Thêm mục Học vấn",
+            impact: "ats",
+            why: "Nhiều máy lọc coi Học vấn là mục bắt buộc. Ghi tên trường, ngành và năm tốt nghiệp, kể cả khi bạn tự học là chính.",
+            quote: null,
+            rewrite: null,
+          },
+        ],
+      },
+    ],
+    ats: [
+      {
+        key: "readingOrder",
+        status: "pass",
+        note: "Bố cục một cột, máy đọc đúng thứ tự từ trên xuống.",
+      },
+      {
+        key: "headings",
+        status: "pass",
+        note: "Tên mục quen thuộc: Kinh nghiệm, Dự án, Kỹ năng.",
+      },
+      {
+        key: "dates",
+        status: "warn",
+        note: "Lẫn hai kiểu ngày “03/2024” và “Tháng 3, 2023”; nên dùng một kiểu.",
+      },
+      {
+        key: "jobTitles",
+        status: "pass",
+        note: "Chức danh rõ ràng: Backend Developer, Thực tập sinh Backend.",
+      },
+      {
+        key: "spelling",
+        status: "pass",
+        note: "Không thấy lỗi chính tả.",
+      },
+    ],
+    strengths: [
+      "Dùng đúng bộ công nghệ nhiều tin Backend đang tuyển: NestJS, PostgreSQL, Redis, Docker.",
+      "Có dự án đưa vào chạy thật, không chỉ bài tập trên lớp.",
+      "Gọn một trang, bố cục một cột nên máy lọc đọc dễ.",
+    ],
+    improvements: [
+      "Thêm con số vào ít nhất một nửa số dòng kinh nghiệm.",
+      "Mở đầu mỗi dòng bằng động từ: xây dựng, tối ưu, triển khai.",
+      "Bổ sung mục Học vấn và link GitHub cho từng dự án.",
+    ],
+    questions: [
+      {
+        question:
+          "Bạn đã tối ưu truy vấn PostgreSQL như thế nào? Làm sao biết truy vấn nào chậm?",
+        topic: "Cơ sở dữ liệu",
+        level: "intermediate",
+        why: "CV ghi “tối ưu hệ thống” nên người phỏng vấn sẽ hỏi cụ thể bạn làm gì.",
+        hint: "Kể theo thứ tự: đo bằng EXPLAIN ANALYZE, thêm index nào, kết quả trước và sau.",
+      },
+      {
+        question:
+          "Nếu VNPay gọi webhook hai lần cho cùng một giao dịch, hệ thống của bạn xử lý ra sao?",
+        topic: "Thanh toán",
+        level: "advanced",
+        why: "Bạn ghi có làm luồng thanh toán; chống trùng là câu hỏi gần như chắc chắn gặp.",
+        hint: "Nói về khoá idempotency hoặc ràng buộc unique trên mã giao dịch.",
+      },
+      {
+        question: "Bạn dùng Redis để cache những gì, và xoá cache khi nào?",
+        topic: "Cache",
+        level: "intermediate",
+        why: "Redis nằm trong phần kỹ năng nên dễ bị hỏi sâu.",
+        hint: "Chọn một ví dụ thật, nêu thời gian sống của khoá và lúc dữ liệu đổi thì xử lý cache thế nào.",
+      },
+      {
+        question:
+          "Module trong NestJS dùng để làm gì? Bạn chia module cho dự án ra sao?",
+        topic: "NestJS",
+        level: "basic",
+        why: "Câu khởi động quen thuộc khi CV ghi NestJS là framework chính.",
+        hint: "Giải thích dependency injection rồi kể cách bạn tách module theo nghiệp vụ.",
+      },
+    ],
+    parsed: {
+      name: "Nguyễn Văn An",
+      email: "an.nguyen@gmail.com",
+      phone: "0901 234 567",
+      jobs: [
+        {
+          title: "Backend Developer",
+          company: "Công ty TNHH Phần mềm Sao Mai",
+          dates: "03/2024 – nay",
+        },
+        {
+          title: "Thực tập sinh Backend",
+          company: "Công ty Cổ phần Công nghệ Biển Xanh",
+          dates: "Tháng 3, 2023 – 02/2024",
+        },
+      ],
+      education: [],
+      skills: [
+        "NestJS",
+        "Node.js",
+        "TypeScript",
+        "PostgreSQL",
+        "Redis",
+        "Docker",
+        "Git",
+        "RESTful API",
+      ],
+    },
+  },
+};

@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import { Eye } from "@phosphor-icons/react/ssr";
 import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { useCvCheck } from "@/hooks/use-cv-check";
 import { useLoginModal } from "@/hooks/use-login-modal";
@@ -14,7 +16,8 @@ import { RubricCards } from "./rubric-cards";
 
 /** Trang phân tích CV cho cả khách lẫn người đã đăng nhập: chọn file PDF hoặc dán chữ, chờ phân tích, xem báo cáo. */
 export function CvCheckView() {
-  const { source, phase, result, error, run, runText, reset } = useCvCheck();
+  const { source, phase, result, error, run, runText, showSample, reset } =
+    useCvCheck();
   const { user } = useSession();
   const openLogin = useLoginModal((state) => state.open);
 
@@ -72,12 +75,21 @@ export function CvCheckView() {
   } else if (result && source) {
     content = <CvCheckReport result={result} source={source} onReset={reset} />;
   }
+  const idle = phase === "idle" && !result;
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Phân tích CV"
-        subtitle="Xem máy lọc hồ sơ có đọc được CV của bạn không, và những dòng nào nên viết lại."
+        subtitle="Xem máy lọc hồ sơ (ATS) có đọc được CV của bạn không, và những dòng nào nên viết lại."
+        actions={
+          idle && (
+            <Button variant="outline" onClick={showSample}>
+              <Eye className="size-4" />
+              Xem phân tích mẫu
+            </Button>
+          )
+        }
       />
       {error && <Alert tone="danger">{error}</Alert>}
       {content}

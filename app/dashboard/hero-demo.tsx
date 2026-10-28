@@ -9,7 +9,7 @@ const CARD =
 const LABEL = "text-primary-600 text-2xs font-bold tracking-widest uppercase";
 const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const BARS = [
-  { label: "Máy lọc đọc được", value: 100, score: "30/30" },
+  { label: "ATS đọc được", value: 100, score: "30/30" },
   { label: "Nội dung", value: 51, score: "23/45" },
   { label: "Cấu trúc", value: 84, score: "21/25" },
 ];

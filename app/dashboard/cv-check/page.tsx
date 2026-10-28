@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { CvCheckView } from "./cv-check-view";
 
 export const metadata: Metadata = {
-  title: "Phân tích CV",
+  title: "Kiểm tra CV chuẩn ATS miễn phí",
   description:
-    "Kéo thả CV PDF để xem máy lọc hồ sơ có đọc được không và 3 lỗi đáng sửa nhất. Không cần tài khoản.",
+    "Kiểm tra CV chuẩn ATS miễn phí: kéo thả CV PDF để xem máy lọc hồ sơ (ATS) có đọc được không, câu nào nên viết lại và câu hỏi phỏng vấn dự đoán. Không cần tài khoản.",
 };
 
 export default function CvCheckPage() {

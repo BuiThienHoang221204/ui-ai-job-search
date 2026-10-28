@@ -10,14 +10,19 @@ export function RubricCards() {
           Chấm theo 8 tiêu chí, tổng 100 điểm
         </h2>
         <p className="text-xs text-slate-500">
-          Điểm do hệ thống đếm, AI chỉ nhận xét
+          Không có điểm ATS chung — mỗi nhóm ghi rõ ai là người đọc
         </p>
       </div>
       <div className="mt-3 grid gap-3 md:grid-cols-3">
         {CV_RUBRIC.map((group) => (
           <Card key={group.key} className="p-4">
             <div className="flex items-baseline justify-between border-b border-slate-200 pb-2.5">
-              <p className="font-semibold text-slate-900">{group.label}</p>
+              <p className="font-semibold text-slate-900">
+                {group.label}
+                <span className="ml-1.5 text-xs font-normal text-slate-500">
+                  {group.reader}
+                </span>
+              </p>
               <span className="text-primary-600 font-mono text-xs font-semibold">
                 {group.points}
               </span>

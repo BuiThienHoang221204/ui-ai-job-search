@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowCounterClockwise, ShareNetwork } from "@phosphor-icons/react/ssr";
+import {
+  ArrowCounterClockwise,
+  Info,
+  ShareNetwork,
+} from "@phosphor-icons/react/ssr";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,13 +16,20 @@ import { ProgressCircle } from "@/components/ui/progress-circle";
 import { useLoginModal } from "@/hooks/use-login-modal";
 import { usePendingCv } from "@/hooks/use-pending-cv";
 import { useSession } from "@/hooks/use-session";
-import { LEVEL_LABELS, gradeOf, quickReasonMessage } from "@/lib/cv-check";
+import {
+  CV_RUBRIC,
+  LEVEL_LABELS,
+  SAMPLE_CV_CHECK,
+  gradeOf,
+  quickReasonMessage,
+} from "@/lib/cv-check";
 import { cn } from "@/lib/cn";
 import type { CvCheckResult, CvCheckSource } from "@/types";
 import { AtsChecks } from "./ats-checks";
 import { CvShare } from "./cv-share";
 import { FlagList } from "./flag-list";
 import { NextStep } from "./next-step";
+import { ParsedFields } from "./parsed-fields";
 import { ReportHeading } from "./report-heading";
 import { ReportOverview } from "./report-overview";
 import { ReportQuestions } from "./report-questions";
@@ -49,11 +60,14 @@ export function CvCheckReport({
   const general = issues.filter((issue) => !issue.quote);
   const questions = review?.questions ?? [];
   const grade = gradeOf(result.score);
+  const sample = result === SAMPLE_CV_CHECK;
+  const atsChecks =
+    (review?.ats.length ?? 0) > 0 || source.multiColumn !== null;
 
   const toc = [
     { id: "overview", label: "Tổng quan", show: Boolean(review) },
     { id: "fixes", label: "Đề xuất sửa CV", show: true },
-    { id: "ats", label: "Máy lọc đọc CV thế nào", show: true },
+    { id: "ats", label: "Máy lọc ATS đọc CV thế nào", show: true },
     {
       id: "questions",
       label: "Câu hỏi phỏng vấn dự đoán",
@@ -93,6 +107,17 @@ export function CvCheckReport({
 
   return (
     <div className="space-y-7">
+      {sample && (
+        <Alert
+          tone="info"
+          title="Đây là phân tích mẫu"
+          actions={<Button onClick={onReset}>Phân tích CV của bạn</Button>}
+        >
+          Kết quả của một CV Backend Developer giả định, để bạn xem trước báo
+          cáo trông thế nào. Tải CV của bạn lên để nhận phân tích thật, miễn phí
+          và không cần tài khoản.
+        </Alert>
+      )}
       <Card className="overflow-hidden">
         <div className="from-primary-50 grid items-center gap-6 bg-linear-to-br to-transparent p-6 lg:grid-cols-[auto_minmax(0,1fr)_auto]">
           <ProgressCircle value={result.score} size={120} strokeWidth={10}>
@@ -127,35 +152,63 @@ export function CvCheckReport({
             )}
           </div>
           <div className="flex flex-wrap gap-2 self-start lg:flex-col">
-            <Button variant="outline" onClick={() => setSharing(true)}>
-              <ShareNetwork className="size-4" />
-              Chia sẻ
-            </Button>
+            {!sample && (
+              <Button variant="outline" onClick={() => setSharing(true)}>
+                <ShareNetwork className="size-4" />
+                Chia sẻ
+              </Button>
+            )}
             <Button variant="outline" onClick={onReset}>
               <ArrowCounterClockwise className="size-4" />
-              Phân tích CV khác
+              {sample ? "Phân tích CV của bạn" : "Phân tích CV khác"}
             </Button>
           </div>
         </div>
         <div className="grid border-t border-slate-200 sm:grid-cols-3 sm:divide-x sm:divide-slate-200">
-          {result.groups.map((group) => (
-            <div key={group.key} className="px-6 py-4">
-              <p className="text-sm text-slate-600">{group.label}</p>
-              <p className="mt-0.5 flex items-baseline justify-between">
-                <span className="font-display text-2xl text-slate-900">
-                  {group.earned}
-                  <span className="text-xs text-slate-500">/{group.max}</span>
-                </span>
-                <span className="text-xs text-slate-500">
-                  chiếm {group.max}%
-                </span>
-              </p>
-              <Progress
-                value={(group.earned / group.max) * 100}
-                className="mt-2 h-1.5"
-              />
-            </div>
-          ))}
+          {result.groups.map((group) => {
+            const rubric = CV_RUBRIC.find((item) => item.key === group.key);
+            return (
+              <div
+                key={group.key}
+                tabIndex={0}
+                className="group relative px-6 py-4 outline-none"
+              >
+                <p className="flex items-center gap-1.5 text-sm text-slate-600">
+                  {group.label}
+                  <Info className="size-4 text-slate-400" />
+                  <span className="ml-auto text-xs text-slate-400">
+                    {rubric?.reader}
+                  </span>
+                </p>
+                <p className="mt-0.5 flex items-baseline justify-between">
+                  <span className="font-display text-2xl text-slate-900">
+                    {group.earned}
+                    <span className="text-xs text-slate-500">/{group.max}</span>
+                  </span>
+                  <span className="text-xs text-slate-500">
+                    chiếm {group.max}%
+                  </span>
+                </p>
+                <Progress
+                  value={(group.earned / group.max) * 100}
+                  className="mt-2 h-1.5"
+                />
+                <div className="invisible absolute inset-x-3 bottom-full z-10 mb-1 rounded-lg bg-slate-900 px-3 py-2.5 text-xs leading-relaxed text-slate-100 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus:visible group-focus:opacity-100">
+                  <p className="font-semibold">{group.max} điểm, gồm:</p>
+                  <ul className="mt-1 space-y-1">
+                    {rubric?.items.map((item) => (
+                      <li key={item.key}>
+                        <b>
+                          {item.label} · {item.points}đ:
+                        </b>{" "}
+                        {item.note}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </Card>
 
@@ -265,26 +318,36 @@ export function CvCheckReport({
 
           <section id="ats" data-report-section className={SECTION}>
             <ReportHeading
-              title="Máy lọc đọc CV thế nào"
+              title="Máy lọc ATS đọc CV thế nào"
               sub={`${result.score}/100 theo bảng chấm 8 tiêu chí`}
             />
+            {review?.parsed && (
+              <div className="mt-3">
+                <ParsedFields parsed={review.parsed} />
+              </div>
+            )}
             <div
-              className={cn(
-                "mt-3 grid gap-3",
-                review && review.ats.length > 0 && "xl:grid-cols-2",
-              )}
+              className={cn("mt-3 grid gap-3", atsChecks && "xl:grid-cols-2")}
             >
-              {review && review.ats.length > 0 && (
-                <AtsChecks ats={review.ats} />
+              {atsChecks && (
+                <AtsChecks
+                  ats={review?.ats ?? []}
+                  multiColumn={source.multiColumn}
+                />
               )}
               <RubricChecks result={result} />
             </div>
-            {review && (
-              <p className="mt-3 text-xs text-slate-500">
-                AI chỉ nhận xét, không chấm điểm. Mọi &ldquo;Câu trong CV&rdquo;
-                đã được kiểm là có thật trong file của bạn.
-              </p>
-            )}
+            <p className="mt-3 text-xs text-slate-500">
+              Không có điểm ATS chung: mỗi công ty cài đặt máy lọc một kiểu.
+              Điểm ở đây do hệ thống đếm theo 8 tiêu chí cố định, nên cùng một
+              CV luôn ra cùng một điểm: nhóm ATS đọc được đo thứ máy lọc cần đọc
+              ra, nhóm Nội dung đo thứ nhà tuyển dụng muốn đọc.
+              {review &&
+                " AI tách CV thành từng mục, từng dòng để đếm, rồi nhận xét và gợi ý viết lại."}
+              {review &&
+                !sample &&
+                " Mọi “Câu trong CV” đã được kiểm là có thật trong file của bạn."}
+            </p>
           </section>
 
           {questions.length > 0 && (

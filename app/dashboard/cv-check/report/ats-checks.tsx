@@ -5,17 +5,43 @@ import { StatusIcon } from "./status-icon";
 
 const ATS_ORDER = { fail: 0, warn: 1, pass: 2 };
 
-/** Năm điểm máy lọc hồ sơ hay vấp, theo AI, lỗi xếp trước. */
-export function AtsChecks({ ats }: { ats: CvReview["ats"] }) {
-  const items = [...ats].sort(
-    (a, b) => ATS_ORDER[a.status] - ATS_ORDER[b.status],
-  );
+/** Những điểm máy lọc hay vấp khi đọc file: bố cục đo từ PDF (nếu có) rồi tới phần AI xét trên chữ, lỗi xếp trước. */
+export function AtsChecks({
+  ats,
+  multiColumn,
+}: {
+  ats: CvReview["ats"];
+  multiColumn: boolean | null;
+}) {
+  const items = ats
+    .filter((item) => multiColumn === null || item.key !== "readingOrder")
+    .sort((a, b) => ATS_ORDER[a.status] - ATS_ORDER[b.status]);
   return (
     <Card className="p-5">
       <h3 className="text-sm font-semibold text-slate-900">
-        AI xét trên chữ trích ra từ file
+        Máy lọc đọc file thế nào
       </h3>
       <ul className="mt-2">
+        {multiColumn !== null && (
+          <li className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-2 py-2.5">
+            <StatusIcon status={multiColumn ? "fail" : "pass"} />
+            <div className="text-sm">
+              <p className="font-medium text-slate-900">
+                Bố cục một cột
+                <span className="ml-1.5 rounded bg-slate-100 px-1.5 py-0.5 text-2xs font-semibold text-slate-500">
+                  đo từ file PDF
+                </span>
+              </p>
+              {multiColumn && (
+                <p className="text-xs text-slate-500">
+                  CV chia nhiều cột hoặc kẻ bảng. Nhiều ATS đọc ngang qua các
+                  cột nên chữ hai bên bị trộn vào nhau; chuyển sang bố cục một
+                  cột cho chắc.
+                </p>
+              )}
+            </div>
+          </li>
+        )}
         {items.map((item) => (
           <li
             key={item.key}
