@@ -133,27 +133,28 @@ export function CvSourceCard({
 
   return (
     <div className="space-y-4 rounded-2xl border border-primary-100 bg-primary-50/70 p-4 sm:p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="space-y-3">
         <p className="text-sm font-semibold text-slate-900">
           Bạn muốn ứng tuyển vị trí nào?
         </p>
         {!fixedJobId && (
           <Tabs
+            fullWidth
             tabs={SOURCES}
             value={source}
             onChange={(value) => setSource(value as Source)}
-            className="bg-white"
+            className="bg-white sm:max-w-sm"
           />
         )}
       </div>
 
       {sourceFields}
 
-      <div className="flex flex-wrap items-center justify-end gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
         <div
           role="group"
           aria-label="Ngôn ngữ CV"
-          className="flex items-center gap-2"
+          className="flex items-center justify-between gap-2 sm:justify-start"
         >
           <span className="text-sm text-slate-500">Ngôn ngữ</span>
           <div className="flex h-10.5 items-center rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
@@ -176,7 +177,12 @@ export function CvSourceCard({
           </div>
         </div>
 
-        <Button size="lg" onClick={handleSubmit} disabled={!ready}>
+        <Button
+          size="lg"
+          className="w-full sm:w-auto"
+          onClick={handleSubmit}
+          disabled={!ready}
+        >
           <Sparkle className="size-4.5" />
           Tạo CV bằng AI
         </Button>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "@phosphor-icons/react/ssr";
 import { useQueryClient } from "@tanstack/react-query";
 import { apiErrorStatus } from "@/lib/axios";
 import { invalidateAfter } from "@/lib/query-keys";
@@ -75,7 +76,9 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
 
   const handleApply = async () => {
     if (!user) {
-      openLogin({ reason: "Đăng nhập để ứng tuyển và lưu tin vào lịch sử ứng tuyển." });
+      openLogin({
+        reason: "Đăng nhập để ứng tuyển và lưu tin vào lịch sử ứng tuyển.",
+      });
       return;
     }
     if (job?.application) {
@@ -142,6 +145,17 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
 
   return (
     <div className="space-y-6">
+      {!embedded && (
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
+        >
+          <ArrowLeft className="size-4.5" />
+          Quay lại danh sách việc làm
+        </button>
+      )}
+
       <ResponsiveBannerAd align="start" />
 
       <JobDetailHeader

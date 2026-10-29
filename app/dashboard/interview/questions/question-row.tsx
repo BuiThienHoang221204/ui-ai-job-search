@@ -28,7 +28,13 @@ const TYPE_ICONS: Record<QuestionType, Icon> = {
 };
 
 /** Một câu hỏi: số thứ tự, tiêu đề kèm nút copy, ngành · loại · trạng thái đáp án, nhãn độ khó; bấm để mở phần đáp án. */
-export function QuestionRow({ question, number }: { question: QuestionSummary; number: number }) {
+export function QuestionRow({
+  question,
+  number,
+}: {
+  question: QuestionSummary;
+  number: number;
+}) {
   const [open, setOpen] = useState(false);
   const { copied, copy } = useCopy();
   const TypeIcon = question.type ? TYPE_ICONS[question.type] : null;
@@ -38,7 +44,9 @@ export function QuestionRow({ question, number }: { question: QuestionSummary; n
     <div
       className={cn(
         "overflow-hidden rounded-xl border bg-white transition-colors",
-        open ? "border-primary-200 shadow-sm" : "border-slate-200/80 hover:border-slate-300",
+        open
+          ? "border-primary-200 shadow-sm"
+          : "border-slate-200/80 hover:border-slate-300",
       )}
     >
       <div
@@ -83,6 +91,11 @@ export function QuestionRow({ question, number }: { question: QuestionSummary; n
             </button>
           </p>
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-slate-500">
+            {question.difficulty && (
+              <span className="sm:hidden">
+                <DifficultyBadge difficulty={question.difficulty} />
+              </span>
+            )}
             {question.industryName && (
               <span className="inline-flex items-center gap-1">
                 <Briefcase className="size-3.5 text-slate-400" />
@@ -110,7 +123,11 @@ export function QuestionRow({ question, number }: { question: QuestionSummary; n
         </div>
 
         <div className="flex items-center gap-2">
-          {question.difficulty && <DifficultyBadge difficulty={question.difficulty} />}
+          {question.difficulty && (
+            <span className="hidden sm:block">
+              <DifficultyBadge difficulty={question.difficulty} />
+            </span>
+          )}
           <CaretDown
             className={cn(
               "size-4 shrink-0 transition-transform",

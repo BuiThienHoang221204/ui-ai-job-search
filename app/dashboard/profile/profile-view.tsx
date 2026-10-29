@@ -36,7 +36,7 @@ export function ProfileView() {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-340 space-y-5 pb-6">
+    <div className="space-y-5 pb-6">
       <ProfileHeader />
 
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(18.75rem,1fr)]">

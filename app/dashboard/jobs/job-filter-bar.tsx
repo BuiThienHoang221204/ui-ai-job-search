@@ -28,29 +28,9 @@ import { OccupationPicker } from "./occupation-picker";
 import { cn } from "@/lib/cn";
 import { useSession } from "@/hooks/use-session";
 import { useDropdown } from "@/hooks/use-dropdown";
+import { JobFilterSheet } from "./job-filter-sheet";
+import { EMPTY_FILTER, POSTED_STEPS, SALARY_STEPS } from "./job-filter-options";
 
-const EMPTY_FILTER: JobFilterValue = {
-  q: "",
-  province: [],
-  occupation: [],
-  salaryMin: 0,
-  postedWithin: 0,
-  sort: "newest",
-  saved: false,
-  applied: false,
-  followed: false,
-  subOccupation: [],
-  since: "",
-};
-
-const SALARY_STEPS = [10, 15, 20, 30, 50];
-
-const POSTED_STEPS = [
-  { value: 1, label: "Trong 24 giờ" },
-  { value: 3, label: "Trong 3 ngày" },
-  { value: 7, label: "Trong 7 ngày" },
-  { value: 30, label: "Trong 30 ngày" },
-];
 /** Thanh bộ lọc việc làm: các dropdown lọc, công tắc, sắp xếp và chip đang bật. */
 export function JobFilterBar({
   value,
@@ -58,7 +38,7 @@ export function JobFilterBar({
   onChange,
 }: {
   value: JobFilterValue;
-  
+
   filters: JobFilters | null;
   onChange: (next: JobFilterValue) => void;
 }) {
@@ -100,6 +80,7 @@ export function JobFilterBar({
     (value.followed ? 1 : 0);
 
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const secondary =
     value.occupation.length +
@@ -136,20 +117,44 @@ export function JobFilterBar({
           }}
         />
       )}
+      {sheetOpen && filters && (
+        <JobFilterSheet
+          value={value}
+          provinceOptions={provinceOptions}
+          occupations={filters.occupations}
+          showAccount={Boolean(user)}
+          onApply={onChange}
+          onClose={() => setSheetOpen(false)}
+        />
+      )}
       <div className="mb-4">
         <div className="flex flex-wrap items-center gap-2">
           <SearchInput
-            className="min-w-72 flex-1"
+            className="min-w-0 flex-1"
             value={value.q}
             onChange={(next) => set("q", next)}
             placeholder="Vị trí tuyển dụng, tên công ty…"
           />
 
+          <button
+            type="button"
+            onClick={() => setSheetOpen(true)}
+            className="relative flex h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 shadow-sm sm:hidden"
+          >
+            <Funnel className="size-4.5 text-slate-400" />
+            Bộ lọc
+            {active > 0 && (
+              <span className="bg-primary-100 text-primary-700 rounded-full px-1.5 text-xs font-semibold">
+                {active}
+              </span>
+            )}
+          </button>
+
           <MultiSelect
             label="Địa điểm"
             icon={MapPin}
             align="right"
-            className="w-full sm:w-60"
+            className="hidden sm:block sm:w-60"
             options={provinceOptions}
             selected={value.province}
             onToggle={(code) => toggle("province", code)}
@@ -158,6 +163,7 @@ export function JobFilterBar({
           />
 
           <TriggerButton
+            className="hidden sm:flex"
             icon={Funnel}
             label="Bộ lọc"
             active={secondary > 0}
@@ -175,11 +181,18 @@ export function JobFilterBar({
         <div
           inert={!moreOpen}
           className={cn(
-            "grid transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none",
-            moreOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+            "hidden transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none sm:grid",
+            moreOpen
+              ? "grid-rows-[1fr] opacity-100"
+              : "grid-rows-[0fr] opacity-0",
           )}
         >
-          <div className={cn("min-h-0", moreOpen ? "reveal-overflow" : "overflow-hidden")}>
+          <div
+            className={cn(
+              "min-h-0",
+              moreOpen ? "reveal-overflow" : "overflow-hidden",
+            )}
+          >
             <div className="flex flex-wrap items-center gap-2 pt-2.5">
               {user && (
                 <>
@@ -207,7 +220,9 @@ export function JobFilterBar({
               <TriggerButton
                 icon={Briefcase}
                 label="Ngành nghề"
-                active={value.occupation.length + value.subOccupation.length > 0}
+                active={
+                  value.occupation.length + value.subOccupation.length > 0
+                }
                 open={pickerOpen}
                 onClick={() => setPickerOpen(true)}
               >
@@ -263,7 +278,9 @@ export function JobFilterBar({
           }}
           className={cn(
             "grid transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none",
-            showChips ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+            showChips
+              ? "grid-rows-[1fr] opacity-100"
+              : "grid-rows-[0fr] opacity-0",
           )}
         >
           <div className="min-h-0 overflow-hidden">
@@ -290,13 +307,22 @@ export function JobFilterBar({
                 />
               ))}
               {value.saved && (
-                <FilterChip label="Đã lưu" onRemove={() => set("saved", false)} />
+                <FilterChip
+                  label="Đã lưu"
+                  onRemove={() => set("saved", false)}
+                />
               )}
               {value.applied && (
-                <FilterChip label="Đã ứng tuyển" onRemove={() => set("applied", false)} />
+                <FilterChip
+                  label="Đã ứng tuyển"
+                  onRemove={() => set("applied", false)}
+                />
               )}
               {value.followed && (
-                <FilterChip label="Công ty theo dõi" onRemove={() => set("followed", false)} />
+                <FilterChip
+                  label="Công ty theo dõi"
+                  onRemove={() => set("followed", false)}
+                />
               )}
               {value.salaryMin > 0 && (
                 <FilterChip
@@ -314,7 +340,11 @@ export function JobFilterBar({
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) clearAll();
+                  if (
+                    window.matchMedia("(prefers-reduced-motion: reduce)")
+                      .matches
+                  )
+                    clearAll();
                   else setClearing(true);
                 }}
               >
@@ -351,7 +381,6 @@ function Toggle({
           : "border-slate-200 bg-white text-slate-700",
       )}
     >
-      
       <Icon
         className={cn(
           "size-4.5 shrink-0",
@@ -429,7 +458,7 @@ function MultiSelect({
   label: string;
   icon: PhosphorIcon;
   className?: string;
-  
+
   align?: "left" | "right";
   options: FilterOption[];
   selected: string[];

@@ -51,7 +51,7 @@ export function UploadCvView() {
     );
 
   return (
-    <div className="mx-auto w-full max-w-340 space-y-5 pb-6">
+    <div className="space-y-5 pb-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">

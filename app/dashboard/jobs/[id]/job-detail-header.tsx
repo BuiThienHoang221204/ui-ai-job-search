@@ -46,69 +46,66 @@ export function JobDetailHeader({
 
   return (
     <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm">
-      <div className="flex flex-wrap items-start gap-4">
-        <CompanyLogo
-          src={card.companyLogo}
-          size="lg"
-        />
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 text-sm font-medium text-slate-500">
-              <Buildings className="size-4.5" />
-              {card.company}
-            </span>
-            {user && job.companyKey && (
-              <FollowCompanyButton jobId={job.id} companyKey={job.companyKey} />
-            )}
-            {match?.overallScore !== null && match?.overallScore !== undefined && (
+      <div className="flex items-start gap-3.5">
+        <CompanyLogo src={card.companyLogo} size="lg" />
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1.5">
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-slate-500">
+            <Buildings className="size-4.5 shrink-0" />
+            {card.company}
+          </span>
+          {user && job.companyKey && (
+            <FollowCompanyButton jobId={job.id} companyKey={job.companyKey} />
+          )}
+          {match?.overallScore !== null &&
+            match?.overallScore !== undefined && (
               <Badge variant="success" className="font-mono">
                 AI chấm {match.overallScore}%
               </Badge>
             )}
-            {verdict && <Badge variant={verdict.variant}>{verdict.label}</Badge>}
-          </div>
-          <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
-            {card.title}
-          </h1>
-          <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-slate-500">
-            {user && (
-              <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700">
-                <Wallet className="size-4.5" />
-                {formatJobSalary(card)}
-              </span>
-            )}
-            {!user && (
-              <button
-                type="button"
-                onClick={() =>
-                  openLogin({ reason: "Đăng nhập để xem mức lương của tin này." })
-                }
-                className="inline-flex items-center gap-1.5 font-semibold text-primary-600 hover:text-primary-700"
-              >
-                <Wallet className="size-4.5" />
-                Đăng nhập để xem lương
-              </button>
-            )}
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin className="size-4.5" />
-              {card.location}
-            </span>
-            {job.workMode && (
-              <span className="text-xs text-slate-400">{job.workMode}</span>
-            )}
-            <JobTime time={card.postedAt} className="text-xs text-slate-400" />
-          </div>
-          {card.tags.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {card.tags.map((tag) => (
-                <Badge key={tag} variant="outline">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
+          {verdict && <Badge variant={verdict.variant}>{verdict.label}</Badge>}
         </div>
       </div>
+
+      <h1 className="mt-3 text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
+        {card.title}
+      </h1>
+      <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-slate-500">
+        {user && (
+          <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700">
+            <Wallet className="size-4.5" />
+            {formatJobSalary(card)}
+          </span>
+        )}
+        {!user && (
+          <button
+            type="button"
+            onClick={() =>
+              openLogin({ reason: "Đăng nhập để xem mức lương của tin này." })
+            }
+            className="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1.5 font-semibold"
+          >
+            <Wallet className="size-4.5" />
+            Đăng nhập để xem lương
+          </button>
+        )}
+        <span className="inline-flex items-center gap-1.5">
+          <MapPin className="size-4.5 shrink-0" />
+          {card.location}
+        </span>
+        {job.workMode && (
+          <span className="text-xs text-slate-400">{job.workMode}</span>
+        )}
+        <JobTime time={card.postedAt} className="text-xs text-slate-400" />
+      </div>
+      {card.tags.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {card.tags.map((tag) => (
+            <Badge key={tag} variant="outline">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      )}
 
       <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
         <Button

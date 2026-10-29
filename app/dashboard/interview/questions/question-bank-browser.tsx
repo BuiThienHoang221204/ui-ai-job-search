@@ -1,10 +1,21 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Briefcase, ChatCircleDots, TrendUp } from "@phosphor-icons/react/ssr";
+import {
+  Briefcase,
+  CaretDown,
+  ChatCircleDots,
+  Funnel,
+  TrendUp,
+} from "@phosphor-icons/react/ssr";
 import { QUESTION_PAGE_SIZE, useQuestionBank } from "@/hooks/use-question-bank";
 import { Button } from "@/components/ui/button";
 import { FilterChip } from "@/components/ui/filter-chip";
+import {
+  BottomSheet,
+  SheetChip,
+  SheetSection,
+} from "@/components/ui/bottom-sheet";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -47,7 +58,10 @@ export function QuestionBankBrowser({
   initial: QuestionPage;
 }) {
   const bank = useQuestionBank(initialFacets, initial);
-  const [railOpen, setRailOpen] = useState(() => pickOffer(AFFILIATE_OFFERS, "question-bank") !== null);
+  const [railOpen, setRailOpen] = useState(
+    () => pickOffer(AFFILIATE_OFFERS, "question-bank") !== null,
+  );
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   let results: ReactNode;
   if (bank.pending) {
@@ -69,7 +83,11 @@ export function QuestionBankBrowser({
     results = (
       <div className="space-y-3">
         {bank.page.items.map((question, index) => (
-          <QuestionRow key={question.id} question={question} number={bank.offset + index + 1} />
+          <QuestionRow
+            key={question.id}
+            question={question}
+            number={bank.offset + index + 1}
+          />
         ))}
       </div>
     );
@@ -83,7 +101,22 @@ export function QuestionBankBrowser({
           onChange={bank.setTerm}
           placeholder="Tìm trong nội dung câu hỏi…"
         />
-        <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setSheetOpen(true)}
+          className="flex h-10 w-full items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 text-sm text-slate-700 shadow-sm sm:hidden"
+        >
+          <Funnel className="size-4.5 shrink-0 text-slate-400" />
+          Bộ lọc
+          {bank.activeCount > 0 && (
+            <span className="bg-primary-100 text-primary-700 rounded-full px-1.5 text-xs font-semibold">
+              {bank.activeCount}
+            </span>
+          )}
+          <CaretDown className="ml-auto size-4.5 shrink-0 text-slate-400" />
+        </button>
+
+        <div className="hidden flex-wrap items-center gap-2 sm:flex">
           <SelectMenu
             label="Mọi ngành nghề"
             icon={Briefcase}
@@ -107,6 +140,49 @@ export function QuestionBankBrowser({
             options={menuOptions(bank.difficultyOptions, "Mọi độ khó")}
           />
         </div>
+
+        {sheetOpen && (
+          <BottomSheet
+            title="Bộ lọc câu hỏi"
+            onClose={() => setSheetOpen(false)}
+            footer={
+              <div className="flex gap-2.5">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={bank.clearFilters}
+                >
+                  Xoá lọc
+                </Button>
+                <Button
+                  className="flex-[2]"
+                  onClick={() => setSheetOpen(false)}
+                >
+                  Xong
+                </Button>
+              </div>
+            }
+          >
+            <QGroup
+              title="Ngành nghề"
+              options={bank.industryOptions}
+              value={bank.industry}
+              onSelect={bank.setIndustry}
+            />
+            <QGroup
+              title="Loại câu hỏi"
+              options={bank.typeOptions}
+              value={bank.type}
+              onSelect={bank.setType}
+            />
+            <QGroup
+              title="Độ khó"
+              options={bank.difficultyOptions}
+              value={bank.difficulty}
+              onSelect={bank.setDifficulty}
+            />
+          </BottomSheet>
+        )}
 
         {bank.activeCount > 0 && (
           <div className="flex flex-wrap items-center gap-2">
@@ -164,5 +240,34 @@ export function QuestionBankBrowser({
         )}
       </div>
     </div>
+  );
+}
+
+function QGroup({
+  title,
+  options,
+  value,
+  onSelect,
+}: {
+  title: string;
+  options: QuestionFilterOption[];
+  value: string | null;
+  onSelect: (code: string | null) => void;
+}) {
+  return (
+    <SheetSection title={title}>
+      <SheetChip active={value === null} onClick={() => onSelect(null)}>
+        Tất cả
+      </SheetChip>
+      {options.map((o) => (
+        <SheetChip
+          key={o.code}
+          active={value === o.code}
+          onClick={() => onSelect(o.code)}
+        >
+          {o.name}
+        </SheetChip>
+      ))}
+    </SheetSection>
   );
 }

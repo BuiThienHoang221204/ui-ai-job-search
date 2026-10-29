@@ -2,16 +2,19 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ChatsCircle } from "@phosphor-icons/react/ssr";
+import {
+  CaretRight,
+  ChatCircleText,
+  ChatsCircle,
+} from "@phosphor-icons/react/ssr";
 import { mockInterviewService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
-import {
-  InterviewStatusBadge,
-} from "./interview-status-badge";
+import { InterviewStatusBadge } from "./interview-status-badge";
 import { SectionCard } from "@/components/ui/section-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { relativeDay } from "@/lib/date";
+import { plainPreview } from "@/lib/text";
 
 const LIMIT = 20;
 
@@ -39,38 +42,52 @@ export function JobMockSessions({ jobId }: { jobId: string }) {
     );
   } else {
     content = (
-      <ul className="space-y-2">
-        {items.map((session) => (
-          <li key={session.id}>
-            <Link
-              href={`/dashboard/interview/${jobId}/mock?run=${session.id}`}
-              className="block rounded-lg border border-slate-200/80 px-4 py-3 transition-colors hover:border-primary-200 hover:bg-primary-50/40"
-            >
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="text-sm font-semibold text-slate-900">
-                  {relativeDay(session.createdAt)}
-                </span>
-                <span className="text-xs text-slate-500">
+      <ul className="space-y-2.5">
+        {items.map((session) => {
+          const waiting = session.status === "WAITING_USER";
+          return (
+            <li key={session.id}>
+              <Link
+                href={`/dashboard/interview/${jobId}/mock?run=${session.id}`}
+                className="hover:border-primary-200 hover:bg-primary-50/40 block rounded-xl border border-slate-200/80 p-3.5 transition-colors"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-semibold text-slate-900">
+                    {relativeDay(session.createdAt)}
+                  </span>
+                  <InterviewStatusBadge status={session.status} />
+                </div>
+
+                <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
+                  <ChatCircleText className="size-3.5 text-slate-400" />
                   {session._count.steps} lượt hỏi
-                </span>
-                <InterviewStatusBadge status={session.status} />
-                <span className="ml-auto text-xs font-medium text-primary-700">
-                  {session.status === "WAITING_USER" ? "Tiếp tục ›" : "Xem lại ›"}
-                </span>
-              </div>
-              {session.closing && (
-                <p className="mt-1.5 line-clamp-2 text-sm text-slate-600">
-                  Tổng kết: {session.closing}
                 </p>
-              )}
-              {session.status === "WAITING_USER" && session.question && (
-                <p className="mt-1.5 line-clamp-2 text-sm text-slate-500">
-                  Đang chờ bạn trả lời: {session.question}
+
+                {session.closing && (
+                  <p className="mt-2 line-clamp-2 text-sm text-slate-600">
+                    <span className="font-medium text-slate-700">
+                      Tổng kết:
+                    </span>{" "}
+                    {plainPreview(session.closing)}
+                  </p>
+                )}
+                {waiting && session.question && (
+                  <p className="mt-2 line-clamp-2 text-sm text-slate-500">
+                    <span className="font-medium text-slate-600">
+                      Đang chờ bạn trả lời:
+                    </span>{" "}
+                    {session.question}
+                  </p>
+                )}
+
+                <p className="text-primary-700 mt-2.5 flex items-center justify-end gap-0.5 text-xs font-semibold">
+                  {waiting ? "Tiếp tục" : "Xem lại"}
+                  <CaretRight className="size-3.5" />
                 </p>
-              )}
-            </Link>
-          </li>
-        ))}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     );
   }

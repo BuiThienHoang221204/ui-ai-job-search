@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { MagnifyingGlass } from "@phosphor-icons/react/ssr";
+import { CaretDown, Funnel, MagnifyingGlass } from "@phosphor-icons/react/ssr";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
+import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { SearchInput } from "@/components/ui/search-input";
 import {
   Table,
@@ -45,6 +46,7 @@ export function SalaryBrowser({
   const [term, setTerm] = useState("");
   const [occupation, setOccupation] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const scale = useMemo(() => globalScale(positions), [positions]);
 
@@ -69,6 +71,36 @@ export function SalaryBrowser({
     setOffset(0);
   };
 
+  const selected = occupation
+    ? (occupations.find((o) => o.code === occupation) ?? null)
+    : null;
+
+  const chips = (
+    <>
+      <FilterChip
+        label="Tất cả"
+        count={positions.length}
+        active={occupation === null}
+        onClick={() => {
+          pickOccupation(null);
+          setSheetOpen(false);
+        }}
+      />
+      {occupations.map((o) => (
+        <FilterChip
+          key={o.code}
+          label={o.name}
+          count={o.positionCount}
+          active={occupation === o.code}
+          onClick={() => {
+            pickOccupation(o.code);
+            setSheetOpen(false);
+          }}
+        />
+      ))}
+    </>
+  );
+
   return (
     <div className="flex flex-col gap-4">
       <SearchInput
@@ -78,23 +110,31 @@ export function SalaryBrowser({
         placeholder="Tìm chức danh — kế toán, backend, tuyển dụng…"
       />
 
-      <div className="flex flex-wrap gap-2">
-        <FilterChip
-          label="Tất cả"
-          count={positions.length}
-          active={occupation === null}
-          onClick={() => pickOccupation(null)}
-        />
-        {occupations.map((o) => (
-          <FilterChip
-            key={o.code}
-            label={o.name}
-            count={o.positionCount}
-            active={occupation === o.code}
-            onClick={() => pickOccupation(o.code)}
-          />
-        ))}
-      </div>
+      <button
+        type="button"
+        onClick={() => setSheetOpen(true)}
+        className="flex h-11 w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-sm text-slate-700 shadow-sm sm:hidden"
+      >
+        <Funnel className="size-4.5 shrink-0 text-slate-400" />
+        <span className="truncate">
+          {selected ? selected.name : "Tất cả ngành nghề"}
+        </span>
+        <span className="font-mono text-xs text-slate-400">
+          {selected ? selected.positionCount : positions.length}
+        </span>
+        <CaretDown className="ml-auto size-4.5 shrink-0 text-slate-400" />
+      </button>
+
+      <div className="hidden flex-wrap gap-2 sm:flex">{chips}</div>
+
+      {sheetOpen && (
+        <BottomSheet
+          title="Chọn ngành nghề"
+          onClose={() => setSheetOpen(false)}
+        >
+          <div className="flex flex-wrap gap-2">{chips}</div>
+        </BottomSheet>
+      )}
 
       <Card className="overflow-hidden">
         {shown.length === 0 ? (
@@ -109,7 +149,9 @@ export function SalaryBrowser({
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="w-[30%] sm:w-[26%]">Vị trí</TableHead>
-                  <TableHead className="hidden w-[20%] md:table-cell">Ngành</TableHead>
+                  <TableHead className="hidden w-[20%] md:table-cell">
+                    Ngành
+                  </TableHead>
                   <TableHead className="hidden whitespace-nowrap sm:table-cell">
                     Khoảng lương phổ biến
                     <span className="ml-2 font-mono text-[11px] font-normal tracking-normal text-slate-400 normal-case">
@@ -202,7 +244,9 @@ function FilterChip({
       {label}
       <span
         className={
-          active ? "font-mono text-xs opacity-70" : "font-mono text-xs text-slate-400"
+          active
+            ? "font-mono text-xs opacity-70"
+            : "font-mono text-xs text-slate-400"
         }
       >
         {count}

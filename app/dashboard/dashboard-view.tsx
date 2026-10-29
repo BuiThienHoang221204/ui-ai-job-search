@@ -33,7 +33,7 @@ export function DashboardView() {
   const adSkills = data.suggestions.flatMap((suggestion) => suggestionSkill(suggestion) ?? []);
 
   return (
-    <div className="mx-auto w-full max-w-340 space-y-5 pb-6">
+    <div className="space-y-5 pb-6">
       {onboardingLevel(data) === "takeover" ? (
         <FirstRun />
       ) : (
