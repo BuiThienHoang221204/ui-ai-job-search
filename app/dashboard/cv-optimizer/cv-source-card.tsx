@@ -133,17 +133,17 @@ export function CvSourceCard({
 
   return (
     <div className="space-y-4 rounded-2xl border border-primary-100 bg-primary-50/70 p-4 sm:p-5">
-      <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-semibold text-slate-900">
           Bạn muốn ứng tuyển vị trí nào?
         </p>
         {!fixedJobId && (
           <Tabs
-            fullWidth
+            mobileFull
             tabs={SOURCES}
             value={source}
             onChange={(value) => setSource(value as Source)}
-            className="bg-white sm:max-w-sm"
+            className="bg-white"
           />
         )}
       </div>

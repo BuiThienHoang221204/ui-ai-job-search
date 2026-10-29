@@ -11,8 +11,8 @@ interface TabsProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
-  /** Các tab chia đều hết chiều ngang (segmented control) thay vì co theo nội dung. */
-  fullWidth?: boolean;
+  /** Trên mobile các tab chia đều hết chiều ngang; từ sm trở lên co theo nội dung như thường. */
+  mobileFull?: boolean;
 }
 
 /** Thanh tab chuyển khung nhìn. */
@@ -21,15 +21,15 @@ export function Tabs({
   value,
   onChange,
   className,
-  fullWidth,
+  mobileFull,
 }: TabsProps) {
   return (
     <div
       role="tablist"
       className={cn(
         "flex gap-1 rounded-xl bg-slate-100 p-1",
-        fullWidth
-          ? "w-full"
+        mobileFull
+          ? "w-full sm:w-fit sm:max-w-full"
           : "scrollbar-thin w-fit max-w-full overflow-x-auto",
         className,
       )}
@@ -44,7 +44,9 @@ export function Tabs({
             onClick={() => onChange(tab.value)}
             className={cn(
               "cursor-pointer rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors",
-              fullWidth ? "flex-1 text-center" : "shrink-0",
+              mobileFull
+                ? "flex-1 text-center sm:flex-none sm:text-left"
+                : "shrink-0",
               active
                 ? "bg-white text-primary-700 shadow-sm"
                 : "text-slate-500 hover:text-slate-800",
