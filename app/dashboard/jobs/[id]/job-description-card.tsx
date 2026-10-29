@@ -5,6 +5,7 @@ import { ArrowSquareOut, CaretDown, FileText } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/ui/section-card";
 import { portalName } from "@/lib/public-job";
+import { parseDescription } from "@/lib/job-description";
 import { cn } from "@/lib/cn";
 import { useSession } from "@/hooks/use-session";
 
@@ -24,6 +25,7 @@ export function JobDescriptionCard({
 }) {
   const { user } = useSession();
   const [open, setOpen] = useState(defaultOpen);
+  const blocks = parseDescription(description);
   const foldable = description.length > LONG_ENOUGH_TO_FOLD;
 
   return (
@@ -36,10 +38,35 @@ export function JobDescriptionCard({
           : "Đoạn đầu của tin tuyển dụng gốc"
       }
     >
-      <div className={cn("relative", foldable && !open && "max-h-64 overflow-hidden")}>
-        <p className="text-sm leading-relaxed whitespace-pre-line text-slate-600">
-          {description}
-        </p>
+      <div
+        className={cn(
+          "relative space-y-2.5 text-sm leading-relaxed text-slate-600",
+          foldable && !open && "max-h-64 overflow-hidden",
+        )}
+      >
+        {blocks.map((block, index) => {
+          if (block.type === "heading")
+            return (
+              <h4
+                key={index}
+                className="mt-4 font-semibold text-slate-800 first:mt-0"
+              >
+                {block.text}
+              </h4>
+            );
+          if (block.type === "list")
+            return (
+              <ul
+                key={index}
+                className="list-disc space-y-1.5 pl-5 marker:text-slate-400"
+              >
+                {block.items.map((item, itemIndex) => (
+                  <li key={itemIndex}>{item}</li>
+                ))}
+              </ul>
+            );
+          return <p key={index}>{block.text}</p>;
+        })}
         {foldable && !open && (
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-white/0 to-white" />
         )}
@@ -53,7 +80,9 @@ export function JobDescriptionCard({
           onClick={() => setOpen(!open)}
           aria-expanded={open}
         >
-          <CaretDown className={cn("size-4 transition-transform", open && "rotate-180")} />
+          <CaretDown
+            className={cn("size-4 transition-transform", open && "rotate-180")}
+          />
           {open ? "Thu gọn mô tả" : "Xem toàn bộ mô tả"}
         </Button>
       )}
