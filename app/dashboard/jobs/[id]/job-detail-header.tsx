@@ -46,9 +46,13 @@ export function JobDetailHeader({
 
   return (
     <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm">
-      <div className="flex items-start gap-3.5">
-        <CompanyLogo src={card.companyLogo} size="lg" />
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1.5">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-3.5 sm:gap-x-4">
+        <CompanyLogo
+          src={card.companyLogo}
+          size="lg"
+          className="sm:row-span-2"
+        />
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
           <span className="inline-flex items-center gap-1 text-sm font-medium text-slate-500">
             <Buildings className="size-4.5 shrink-0" />
             {card.company}
@@ -64,48 +68,52 @@ export function JobDetailHeader({
             )}
           {verdict && <Badge variant={verdict.variant}>{verdict.label}</Badge>}
         </div>
-      </div>
 
-      <h1 className="mt-3 text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
-        {card.title}
-      </h1>
-      <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-slate-500">
-        {user && (
-          <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700">
-            <Wallet className="size-4.5" />
-            {formatJobSalary(card)}
-          </span>
-        )}
-        {!user && (
-          <button
-            type="button"
-            onClick={() =>
-              openLogin({ reason: "Đăng nhập để xem mức lương của tin này." })
-            }
-            className="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1.5 font-semibold"
-          >
-            <Wallet className="size-4.5" />
-            Đăng nhập để xem lương
-          </button>
-        )}
-        <span className="inline-flex items-center gap-1.5">
-          <MapPin className="size-4.5 shrink-0" />
-          {card.location}
-        </span>
-        {job.workMode && (
-          <span className="text-xs text-slate-400">{job.workMode}</span>
-        )}
-        <JobTime time={card.postedAt} className="text-xs text-slate-400" />
-      </div>
-      {card.tags.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {card.tags.map((tag) => (
-            <Badge key={tag} variant="outline">
-              {tag}
-            </Badge>
-          ))}
+        <div className="col-span-2 mt-3 min-w-0 sm:col-span-1 sm:col-start-2 sm:mt-1">
+          <h1 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
+            {card.title}
+          </h1>
+          <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-slate-500">
+            {user && (
+              <span className="inline-flex items-center gap-1.5 font-semibold text-slate-700">
+                <Wallet className="size-4.5" />
+                {formatJobSalary(card)}
+              </span>
+            )}
+            {!user && (
+              <button
+                type="button"
+                onClick={() =>
+                  openLogin({
+                    reason: "Đăng nhập để xem mức lương của tin này.",
+                  })
+                }
+                className="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1.5 font-semibold"
+              >
+                <Wallet className="size-4.5" />
+                Đăng nhập để xem lương
+              </button>
+            )}
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin className="size-4.5 shrink-0" />
+              {card.location}
+            </span>
+            {job.workMode && (
+              <span className="text-xs text-slate-400">{job.workMode}</span>
+            )}
+            <JobTime time={card.postedAt} className="text-xs text-slate-400" />
+          </div>
+          {card.tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {card.tags.map((tag) => (
+                <Badge key={tag} variant="outline">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
         <Button
