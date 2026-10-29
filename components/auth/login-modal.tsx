@@ -36,6 +36,7 @@ export function LoginModal() {
       <Modal
         open={isOpen}
         onClose={close}
+        className="max-w-[452px]"
         title={login ? "Đăng nhập để tiếp tục" : "Tạo tài khoản"}
       >
         <p className="-mt-2 mb-4 text-sm text-slate-500">{reason ?? hint}</p>

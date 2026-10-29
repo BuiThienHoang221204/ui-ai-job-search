@@ -193,10 +193,7 @@ export function RegisterForm({
 
       <div
         aria-disabled={!accepted}
-        className={cn(
-          "flex justify-center",
-          !accepted && "pointer-events-none opacity-50",
-        )}
+        className={cn(!accepted && "pointer-events-none opacity-50")}
       >
         <GoogleSignInButton
           onSuccess={onSuccess}

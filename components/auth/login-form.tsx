@@ -86,7 +86,7 @@ export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
         <span className="h-px flex-1 bg-slate-200" />
       </div>
 
-      <div className="flex justify-center">
+      <div>
         <GoogleSignInButton
           onSuccess={onSuccess}
           onError={(message) => setError(message)}
