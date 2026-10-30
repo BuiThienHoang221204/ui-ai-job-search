@@ -9,10 +9,7 @@ import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
 import type { Application, ApplicationStatus } from "@/types";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { invalidateAfter, keys } from "@/lib/query-keys";
-import {
-  applicationsService,
-  documentsService,
-} from "@/services";
+import { applicationsService, documentsService } from "@/services";
 import {
   APPLICATION_STATUS_LABELS,
   APPLICATION_STATUS_VARIANTS,
@@ -57,9 +54,10 @@ export function ApplicationsView() {
   const [status, setStatus] = useState<StatusFilter>("all");
   const [offset, setOffset] = useState(0);
   const [savingId, setSavingId] = useState<string | null>(null);
-  const [rowError, setRowError] = useState<{ id: string; message: string } | null>(
-    null,
-  );
+  const [rowError, setRowError] = useState<{
+    id: string;
+    message: string;
+  } | null>(null);
   const [pdfLoadingId, setPdfLoadingId] = useState<string | null>(null);
   const [creatingCvFor, setCreatingCvFor] = useState<string | null>(null);
   const toast = useToast();
@@ -139,16 +137,22 @@ export function ApplicationsView() {
     content = <Skeleton className="h-64 animate-pulse" />;
   } else {
     content = (
-      <Card className="overflow-hidden">
-        <Table>
+      <Card>
+        <Table className="table-fixed" scrollable={false}>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead>Vị trí / Công ty</TableHead>
-              <TableHead className="hidden md:table-cell">CV đã nộp</TableHead>
-              <TableHead className="hidden md:table-cell">Ngày nộp</TableHead>
-              <TableHead className="hidden lg:table-cell">Địa điểm</TableHead>
-              <TableHead>Trạng thái</TableHead>
-              <TableHead>Cập nhật</TableHead>
+              <TableHead className="hidden w-44 md:table-cell">
+                CV đã nộp
+              </TableHead>
+              <TableHead className="hidden w-24 md:table-cell">
+                Ngày nộp
+              </TableHead>
+              <TableHead className="hidden w-40 lg:table-cell">
+                Địa điểm
+              </TableHead>
+              <TableHead className="w-24 sm:w-28">Trạng thái</TableHead>
+              <TableHead className="w-36 sm:w-48">Cập nhật</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -159,6 +163,7 @@ export function ApplicationsView() {
                     <CompanyLogo
                       src={application.job.companyLogo}
                       size="sm"
+                      className="shrink-0"
                     />
                     <div className="min-w-0">
                       <Link
@@ -167,7 +172,7 @@ export function ApplicationsView() {
                       >
                         {application.job.title}
                       </Link>
-                      <p className="text-xs text-slate-400">
+                      <p className="truncate text-xs text-slate-400">
                         {application.job.company}
                       </p>
                     </div>
@@ -175,14 +180,15 @@ export function ApplicationsView() {
                 </TableCell>
                 <TableCell className="hidden whitespace-nowrap text-slate-500 md:table-cell">
                   {(() => {
-                    const jobCvs = application.documents?.filter(
-                      (d) => d.kind === "CV",
-                    ) ?? [];
+                    const jobCvs =
+                      application.documents?.filter((d) => d.kind === "CV") ??
+                      [];
                     const cvs = jobCvs.filter((d) => d.status === "DONE");
                     if (!cvs.length) {
                       if (
                         jobCvs.some(
-                          (d) => d.status === "PENDING" || d.status === "RUNNING",
+                          (d) =>
+                            d.status === "PENDING" || d.status === "RUNNING",
                         )
                       ) {
                         return (
@@ -209,14 +215,18 @@ export function ApplicationsView() {
                         type="button"
                         onClick={() => void openCvPdf(cv.id)}
                         disabled={pdfLoadingId === cv.id}
-                        className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 hover:underline disabled:opacity-50"
+                        className="flex max-w-full items-center gap-1 text-xs text-primary-600 hover:text-primary-700 hover:underline disabled:opacity-50"
                         title={cvs.map((c) => c.title).join(", ")}
                       >
                         <FileText className="size-3.5 shrink-0" />
-                        {pdfLoadingId === cv.id
-                          ? "Đang tải…"
-                          : cv.title}
-                        {cvs.length > 1 && ` (+${cvs.length - 1})`}
+                        <span className="truncate">
+                          {pdfLoadingId === cv.id ? "Đang tải…" : cv.title}
+                        </span>
+                        {cvs.length > 1 && (
+                          <span className="shrink-0">
+                            {` (+${cvs.length - 1})`}
+                          </span>
+                        )}
                       </button>
                     );
                   })()}
@@ -227,7 +237,10 @@ export function ApplicationsView() {
                     : "Chưa nộp"}
                 </TableCell>
                 <TableCell className="hidden text-slate-500 lg:table-cell">
-                  <LocationText location={application.job.location} />
+                  <LocationText
+                    location={application.job.location}
+                    className="max-w-full"
+                  />
                 </TableCell>
                 <TableCell>
                   <Badge
@@ -239,7 +252,6 @@ export function ApplicationsView() {
                 <TableCell>
                   <SelectMenu<"" | ApplicationStatus>
                     variant="field"
-                    className="min-w-40"
                     side={
                       index >= data.items.length - 2 && index >= 2
                         ? "top"
@@ -253,12 +265,10 @@ export function ApplicationsView() {
                     }
                     value=""
                     disabled={savingId === application.id}
-                    options={NEXT_STATUSES[application.status].map(
-                      (next) => ({
-                        value: next,
-                        label: APPLICATION_STATUS_LABELS[next],
-                      }),
-                    )}
+                    options={NEXT_STATUSES[application.status].map((next) => ({
+                      value: next,
+                      label: APPLICATION_STATUS_LABELS[next],
+                    }))}
                     onChange={(next) => {
                       if (next) void changeStatus(application, next);
                     }}
