@@ -305,20 +305,19 @@ export function ApplicationsView() {
       <PageHeader
         title="Lịch sử ứng tuyển"
         subtitle="Theo dõi trạng thái từng đơn ứng tuyển của bạn"
+        actions={
+          <SelectMenu
+            label="Mọi trạng thái"
+            icon={Funnel}
+            value={status}
+            options={STATUS_OPTIONS}
+            onChange={(next) => {
+              setStatus(next);
+              setOffset(0);
+            }}
+          />
+        }
       />
-
-      <div className="flex">
-        <SelectMenu
-          label="Mọi trạng thái"
-          icon={Funnel}
-          value={status}
-          options={STATUS_OPTIONS}
-          onChange={(next) => {
-            setStatus(next);
-            setOffset(0);
-          }}
-        />
-      </div>
 
       {content}
     </div>
