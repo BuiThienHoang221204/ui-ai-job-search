@@ -14,5 +14,7 @@ Contact: mailto:careelot00@gmail.com
 Expires: 2027-02-01T00:00:00.000Z
 Preferred-Languages: vi, en
 Policy: https://ui-ai-job-search.vercel.app/dashboard/security
+Policy: http://localhost:3000/dashboard/security
 
-# Nếu dùng domain riêng, đổi URL trong dòng Policy ở trên cho khớp.
+# Mỗi dòng Policy là MỘT URI (RFC 9116). Dùng domain riêng thì đổi URL cho khớp;
+# dòng localhost chỉ để xem chính sách khi chạy máy cá nhân, có thể bỏ khi lên thật.
