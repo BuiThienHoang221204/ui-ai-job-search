@@ -20,10 +20,12 @@ const ALLOWED = [
 ];
 
 const FORBIDDEN = [
-  "Xoá, sửa hay làm hỏng dữ liệu; tấn công từ chối dịch vụ (DoS) hay gửi lượng lớn request làm quá tải.",
-  "Truy cập, xem hay tải dữ liệu của người dùng thật khác; thử mật khẩu tài khoản không phải của bạn.",
-  "Gửi email, thông báo hàng loạt; rút cạn hạn mức gọi AI; đăng nội dung spam ra ngoài.",
-  "Dùng social engineering, tấn công vật lý, hay nhắm vào nhân sự và bên thứ ba (nhà cung cấp AI, hạ tầng).",
+  "Tấn công từ chối dịch vụ (DoS) hay gửi lượng lớn request.",
+  "Thử mật khẩu của tài khoản người dùng khác.",
+  "Truy cập, xem hay tải dữ liệu của người dùng thật.",
+  "Gửi email, thông báo hàng loạt hay rút cạn hạn mức gọi AI.",
+  "Dùng social engineering hoặc tấn công bên thứ ba (nhà cung cấp AI, hạ tầng).",
+  "Khai thác gây hỏng dữ liệu — ví dụ gọi thật lệnh xoá tài khoản, hay tải tệp xấu lên kho lưu trữ.",
 ];
 
 /** Trang chính sách kiểm thử bảo mật cho giai đoạn thử nghiệm; khách và công cụ dò quét (security.txt) đọc được mà không cần đăng nhập. */
