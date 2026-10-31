@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Careelot</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #f1f5f9;
+        color: #0f172a;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+          sans-serif;
+      }
+      .wrap {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 24px;
+        text-align: center;
+      }
+      .brand {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .msg {
+        font-size: 14px;
+        color: #64748b;
+        max-width: 22rem;
+        line-height: 1.6;
+      }
+      .spinner {
+        width: 34px;
+        height: 34px;
+        border: 3px solid #cbd5e1;
+        border-top-color: #4f46e5;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-color-scheme: dark) {
+        html,
+        body {
+          background: #0f172a;
+          color: #e2e8f0;
+        }
+        .msg {
+          color: #94a3b8;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      Màn hình dự phòng: WebView bình thường tải server.url (site đã deploy).
+      Nội dung này chỉ hiện khi không kết nối được máy chủ.
+    -->
+    <div class="wrap">
+      <div class="spinner"></div>
+      <div class="brand">Careelot</div>
+      <div class="msg">
+        Đang kết nối máy chủ… Nếu màn hình này ở lâu, hãy kiểm tra kết nối mạng
+        rồi mở lại ứng dụng.
+      </div>
+    </div>
+  </body>
+</html>

@@ -10,9 +10,13 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:visual": "playwright test"
+    "test:visual": "playwright test",
+    "cap:sync": "cap sync android",
+    "cap:android": "cap open android"
   },
   "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
     "@google/genai": "^2.31.0",
     "@phosphor-icons/react": "^2.1.10",
     "@react-oauth/google": "^0.13.5",
@@ -28,6 +32,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.6.0",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^24.0.0",
