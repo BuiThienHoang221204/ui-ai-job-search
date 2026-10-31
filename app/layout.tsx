@@ -3,6 +3,7 @@ import { Google_Sans_Flex } from "next/font/google";
 import { QueryProvider } from "@/providers/query-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 import { RegisterServiceWorker } from "@/components/pwa/register-sw";
+import { NativeShell } from "@/components/pwa/native-shell";
 import { FONT_SCALE_BOOTSTRAP } from "@/lib/font-scale";
 import { SIDEBAR_BOOTSTRAP } from "@/lib/sidebar";
 import { THEME_BOOTSTRAP } from "@/lib/theme";
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#4952FF" },
     { media: "(prefers-color-scheme: dark)", color: "#1F1F21" },
@@ -53,6 +55,7 @@ export default function RootLayout({
         <QueryProvider>
           <ToastProvider>{children}</ToastProvider>
           <RegisterServiceWorker />
+          <NativeShell />
         </QueryProvider>
       </body>
     </html>
