@@ -1,8 +1,15 @@
 import type { Job, SalaryRange } from "@/types";
 /** Hiển thị lương của tin tuyển dụng, rơi về chuỗi thô hoặc "Lương thoả thuận". */
 export function formatJobSalary(job: Pick<Job, "salary" | "salaryRaw">): string {
-  if (job.salary) return formatSalary(job.salary);
-  return job.salaryRaw?.trim() || "Lương thoả thuận";
+  if (
+    job.salary &&
+    Number.isFinite(job.salary.min) &&
+    Number.isFinite(job.salary.max)
+  ) {
+    return formatSalary(job.salary);
+  }
+  const raw = job.salaryRaw?.trim();
+  return raw && !/NaN/i.test(raw) ? raw : "Lương thoả thuận";
 }
 /** Định dạng khoảng lương theo tiền tệ và kỳ trả (tháng/năm). */
 export function formatSalary(salary: SalaryRange): string {
