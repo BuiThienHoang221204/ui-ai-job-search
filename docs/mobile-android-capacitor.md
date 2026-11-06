@@ -284,8 +284,59 @@ Với Next SSR, cách B = **một cuộc refactor lớn + đổi mô hình auth*
 
 ---
 
-## 13. Tiếp theo (Phase 2)
+## 13. Phase 2 — tiến độ & việc còn lại (checklist)
 
-Thêm "chất native" trên hướng server.url: icon/splash, nút back, safe-area, mở link ngoài,
-Google Sign-In native, push (FCM), quyền mic/camera, rồi ký release để lên Google Play.
-(iOS là Phase 3 — cần máy Mac.)
+> Tất cả đi theo hướng `server.url`. Nhớ: thay đổi **phía web** (nút back, link ngoài,
+> safe-area, Google native) chỉ có hiệu lực trong app **sau khi deploy FE lên vercel**
+> (hoặc trỏ `CAP_SERVER_URL` sang dev LAN); thay đổi **native** (icon/splash, plugin,
+> quyền, ký release) nằm trong APK, cần **build lại app**.
+
+### ✅ Gói A — ĐÃ LÀM (commit `6e8e634`)
+- [x] **Icon + splash** sinh từ `assets/` bằng `@capacitor/assets` (nguồn: `Careelot_Square.svg`).
+      Làm lại khi đổi logo: sửa ảnh trong `assets/` rồi
+      `npx @capacitor/assets generate --android --iconBackgroundColor '#ffffff' --splashBackgroundColor '#ffffff' --splashBackgroundColorDark '#0f172a' --logoSplashScale 0.42`
+- [x] **NativeShell** (`components/pwa/native-shell.tsx`): nút back vật lý, mở link ngoài bằng
+      trình duyệt hệ thống, status bar style. Chạy có điều kiện `Capacitor.isNativePlatform()`.
+- [x] `viewport-fit=cover` (bật `env(safe-area-*)`).
+- [x] Plugin: `@capacitor/app`, `@capacitor/browser`, `@capacitor/status-bar`.
+
+### ⬜ Việc CÒN LẠI của Phase 2
+
+**A. Kích hoạt + hoàn thiện Gói A**
+- [ ] **Deploy FE lên vercel** → mở lại app để back/link/status bar có hiệu lực (hiện app vẫn tải bản prod CŨ).
+- [ ] Kiểm trên thiết bị: nếu nội dung bị đè lên status bar/tai thỏ thì thêm padding
+      `env(safe-area-inset-*)` cho header dính + đáy trang (ảnh emulator hiện chưa thấy đè trên Android).
+
+**B. Google Sign-In native** (WebView chặn OAuth)
+- [ ] Tạo **OAuth client Android** trong Google Cloud Console, cần **package name** `com.careelot.app`
+      và **SHA-1** của keystore ký app. Lấy SHA-1 debug:
+      `cd android && ./gradlew signingReport` (tìm dòng SHA1 của variant debug).
+- [ ] Thêm plugin (vd `@codetrix-studio/capacitor-google-auth` hoặc `@capgo/capacitor-social-login`),
+      cấu hình clientId, `cap sync`.
+- [ ] FE: khi `isNativePlatform()` thì dùng plugin lấy **idToken**, gọi backend `POST /api/auth/google`
+      (backend đã `verifyIdToken` sẵn — chỉ cần idToken, không cần đổi backend nhiều).
+
+**C. Push native (FCM)**
+- [ ] Tạo **Firebase project**, tải `google-services.json` vào `android/app/`.
+- [ ] Thêm `@capacitor/push-notifications`, xin quyền, đăng ký token.
+- [ ] Backend: thêm nơi nhận device token + gửi FCM (bổ sung cạnh web push hiện có — ADR 0018).
+      ⚠️ Đổi dữ liệu thu thập/tính năng → cập nhật **Chính sách bảo mật + Điều khoản** (quy tắc trong CLAUDE.md).
+
+**D. Quyền thiết bị**
+- [ ] **Mic** cho phỏng vấn giọng (Gemini Live): `RECORD_AUDIO` trong AndroidManifest + xin quyền runtime,
+      kiểm `getUserMedia` trong WebView.
+- [ ] **Camera/ảnh** cho upload CV: thử `<input type=file>` trong WebView trước; thiếu thì thêm `@capacitor/camera`.
+
+**E. Deep links / App Links**
+- [ ] Mở link careelot bằng app (intent-filter + verify domain qua `assetlinks.json`).
+
+**F. Phát hành Google Play**
+- [ ] Tạo **upload keystore**, cấu hình signing release trong `android/app/build.gradle`
+      (giữ keystore + mật khẩu an toàn, KHÔNG commit).
+- [ ] `./gradlew bundleRelease` → ra **AAB** đã ký.
+- [ ] **Google Play Console** (**$25 một lần**): tạo app, Data Safety form, phân loại nội dung,
+      gắn Chính sách bảo mật (đã có trang), internal testing → production.
+
+### Phase 3 — iOS
+- [ ] `npx cap add ios` + Info.plist (mic/camera) + plugin iOS + APNs.
+- [ ] **Cần máy Mac + Xcode** (hoặc CI macOS) và **Apple Developer $99/năm**.

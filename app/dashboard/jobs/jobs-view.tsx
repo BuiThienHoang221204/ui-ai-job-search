@@ -257,7 +257,7 @@ export function JobsView() {
   }
 
   return (
-    <div className="flex flex-col xl:h-[calc(100dvh-3rem)]">
+    <div className="flex flex-col xl:h-full">
       <JobFilterBar
         value={{ ...filter, q: draftQuery }}
         filters={filters.data}

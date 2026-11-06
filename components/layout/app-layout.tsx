@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Header } from "@/components/layout/header";
+import { useScrollLock } from "@/hooks/use-scroll-lock";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -12,8 +13,12 @@ interface AppLayoutProps {
 export function AppLayout({ children, sidebar }: AppLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Khung cao đúng màn hình, nội dung cuộn bên trong `<main>` → khoá cuộn trang để không còn
+  // scrollbar ngoài.
+  useScrollLock(true);
+
   return (
-    <div className="flex min-h-screen bg-surface">
+    <div className="flex h-screen overflow-hidden bg-surface">
       <div className="fixed inset-y-0 left-0 z-40 hidden lg:block">{sidebar}</div>
 
       {mobileOpen && (
@@ -35,9 +40,9 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
         </div>
       )}
 
-      <div className="sidebar-offset flex min-w-0 flex-1 flex-col">
+      <div className="sidebar-offset flex h-screen min-w-0 flex-1 flex-col">
         <Header onMenuClick={() => setMobileOpen(true)} />
-        <main className="flex-1 p-3 sm:p-4">{children}</main>
+        <main className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4">{children}</main>
       </div>
     </div>
   );
