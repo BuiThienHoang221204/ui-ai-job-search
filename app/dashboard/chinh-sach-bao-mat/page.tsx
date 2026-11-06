@@ -106,7 +106,7 @@ const COLLECTED = [
 const VENDORS = [
   {
     name: "Nhà cung cấp AI",
-    kind: "Google Gemini, OpenRouter, Groq…",
+    kind: "Google Gemini, OpenRouter, Groq, MotAPIs…",
     gets: "Chữ của CV, hồ sơ, tin tuyển dụng, câu trả lời và âm thanh phỏng vấn — để phân tích, viết lại, chấm điểm, phỏng vấn thử.",
   },
   { name: "Cloudflare R2", kind: "Lưu trữ", gets: "File CV bạn tải lên." },
