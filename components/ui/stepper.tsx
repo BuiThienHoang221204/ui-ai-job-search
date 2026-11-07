@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 
@@ -11,6 +12,7 @@ interface StepperProps {
   current: number;
   onStepClick?: (index: number) => void;
   className?: string;
+  animated?: boolean;
 }
 
 const labelColors = {
@@ -20,10 +22,17 @@ const labelColors = {
 };
 
 /** Thanh các bước tiến trình, bấm được để quay lại bước đã qua. */
-export function Stepper({ steps, current, onStepClick, className }: StepperProps) {
+export function Stepper({ steps, current, onStepClick, className, animated }: StepperProps) {
   const last = steps.length - 1;
   return (
-    <ol className={cn("flex w-full items-start", className)}>
+    <ol className={cn("flex w-full items-start", animated && "relative", className)}>
+      {animated && (
+        <span
+          aria-hidden
+          style={{ "--spark-to": `${10 + Math.min(current, last) * 20}%` } as CSSProperties}
+          className="animate-journey-spark pointer-events-none absolute top-[1.125rem] size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white ring-2 ring-primary-400 shadow-[0_0_12px_3px_var(--color-primary-400)]"
+        />
+      )}
       {steps.map((step, index) => {
         let state: "done" | "active" | "todo" = "todo";
         if (index < current) state = "done";

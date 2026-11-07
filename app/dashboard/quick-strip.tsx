@@ -43,6 +43,8 @@ function JourneyIllustration() {
       <circle cx="128" cy="84" r="6" strokeWidth="2.5" className="fill-white stroke-primary-600" />
       <path d="M156 42 V14" strokeWidth="2" className="stroke-slate-600" />
       <path d="M156 14 L176 20 L156 27 Z" className="fill-amber-500" />
+      <circle r="8" opacity="0.5" className="animate-journey-climb fill-primary-300" />
+      <circle r="4" strokeWidth="2" className="animate-journey-climb fill-white stroke-primary-500" />
     </svg>
   );
 }
@@ -107,7 +109,7 @@ export function QuickStrip() {
         <JourneyIllustration />
       </div>
 
-      <Stepper steps={steps} current={current} className="mt-7" />
+      <Stepper steps={steps} current={current} className="mt-7" animated />
     </Card>
   );
 }
