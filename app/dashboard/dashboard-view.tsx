@@ -1,11 +1,11 @@
 "use client";
 
-import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
-import { SkillResources } from "@/components/ads/affiliate-inline";
+// import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
+// import { SkillResources } from "@/components/ads/affiliate-inline";
 import { PageError } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 import { Skeleton, SkeletonGrid, SkeletonPage } from "@/components/ui/skeleton";
-import { suggestionSkill } from "@/lib/affiliate";
+// import { suggestionSkill } from "@/lib/affiliate";
 import { FirstRun } from "./first-run";
 import { MarketCard } from "./market-card";
 import { onboardingLevel } from "@/lib/onboarding";
@@ -30,7 +30,7 @@ export function DashboardView() {
     return <QuickStartOnboarding firstName={firstName} />;
   }
 
-  const adSkills = data.suggestions.flatMap((suggestion) => suggestionSkill(suggestion) ?? []);
+  // const adSkills = data.suggestions.flatMap((suggestion) => suggestionSkill(suggestion) ?? []);
 
   return (
     <div className="space-y-5 pb-6">
@@ -43,10 +43,10 @@ export function DashboardView() {
             <MarketCard />
             <ScoreBreakdown />
           </Card>
-          <ResponsiveBannerAd align="start" />
+          {/* <ResponsiveBannerAd align="start" /> */}
           <div className="grid items-stretch gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(18.75rem,1fr)]">
             <div className="grid min-w-0 content-start gap-5">
-              <SkillResources placement="dashboard" occupation={data.occupationCode} skills={adSkills} />
+              {/* <SkillResources placement="dashboard" occupation={data.occupationCode} skills={adSkills} /> */}
               <TopMatches />
             </div>
             <ProgressPanel />

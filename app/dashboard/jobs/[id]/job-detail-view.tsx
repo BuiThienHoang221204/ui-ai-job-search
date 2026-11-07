@@ -23,9 +23,9 @@ import { useJobDetail } from "@/hooks/use-job-detail";
 import { RepostCard } from "./repost-card";
 import { SalaryGuidePanel } from "./salary-guide-panel";
 import { JobActionCards } from "@/components/jobs/job-action-cards";
-import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
-import { SkillResources } from "@/components/ads/affiliate-inline";
-import { missingSkillsOf } from "@/lib/affiliate";
+// import { ResponsiveBannerAd } from "@/components/ads/ad-slot";
+// import { SkillResources } from "@/components/ads/affiliate-inline";
+// import { missingSkillsOf } from "@/lib/affiliate";
 import { useLoginModal } from "@/hooks/use-login-modal";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "@/hooks/use-session";
@@ -156,7 +156,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
         </button>
       )}
 
-      <ResponsiveBannerAd align="start" />
+      {/* <ResponsiveBannerAd align="start" /> */}
 
       <JobDetailHeader
         card={card}
@@ -183,11 +183,11 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
 
       <div className={embedded ? "space-y-6" : "grid gap-6 lg:grid-cols-3"}>
         <div className={embedded ? "space-y-6" : "space-y-6 lg:col-span-2"}>
-          <SkillResources
+          {/* <SkillResources
             jobId={job.id}
             occupation={job.occupationCode}
             skills={user ? missingSkillsOf(job.systemMatch) : []}
-          />
+          /> */}
 
           <div id="mo-ta" className="scroll-mt-20">
             <JobDescriptionCard

@@ -2,11 +2,11 @@ export const PRIVACY_PATH = "/dashboard/chinh-sach-bao-mat";
 
 export const TERMS_PATH = "/dashboard/dieu-khoan-su-dung";
 
-export const LEGAL_EFFECTIVE_DATE = "06/11/2026";
+export const LEGAL_EFFECTIVE_DATE = "07/11/2026";
 
 export const OPERATOR = {
-  name: "[Họ tên người vận hành]",
+  name: "Bùi Thiên Hoàng",
   email: "careelot00@gmail.com",
-  city: "[Tỉnh/thành]",
-  backendHost: "[nơi đặt máy chủ backend]",
+  city: "TP Hồ Chí Minh",
+  backendHost: "Oracle Cloud",
 };

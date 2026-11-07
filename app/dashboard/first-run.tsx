@@ -6,7 +6,7 @@ import { jobsService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 import { toJobCardFromRecord } from "@/lib/adapters";
-import { SkillResources } from "@/components/ads/affiliate-inline";
+// import { SkillResources } from "@/components/ads/affiliate-inline";
 import { DashSection } from "@/components/ui/dash-section";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -150,7 +150,7 @@ export function FirstRun() {
         </Card>
       </div>
 
-      <SkillResources placement="dashboard" occupation={data.occupationCode} />
+      {/* <SkillResources placement="dashboard" occupation={data.occupationCode} /> */}
     </>
   );
 }

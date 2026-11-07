@@ -22,8 +22,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { SearchInput } from "@/components/ui/search-input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SponsoredRailCard } from "@/components/ads/affiliate-inline";
-import { AFFILIATE_OFFERS, pickOffer } from "@/lib/affiliate";
+// import { SponsoredRailCard } from "@/components/ads/affiliate-inline";
+// import { AFFILIATE_OFFERS, pickOffer } from "@/lib/affiliate";
 import { QuestionRow } from "./question-row";
 import { cn } from "@/lib/cn";
 import type {
@@ -58,9 +58,9 @@ export function QuestionBankBrowser({
   initial: QuestionPage;
 }) {
   const bank = useQuestionBank(initialFacets, initial);
-  const [railOpen, setRailOpen] = useState(
-    () => pickOffer(AFFILIATE_OFFERS, "question-bank") !== null,
-  );
+  // const [railOpen, setRailOpen] = useState(
+  //   () => pickOffer(AFFILIATE_OFFERS, "question-bank") !== null,
+  // );
   const [sheetOpen, setSheetOpen] = useState(false);
 
   let results: ReactNode;
@@ -214,7 +214,7 @@ export function QuestionBankBrowser({
       <div
         className={cn(
           "grid items-start gap-6",
-          railOpen && "xl:grid-cols-[minmax(0,1fr)_300px]",
+          // railOpen && "xl:grid-cols-[minmax(0,1fr)_300px]",
         )}
       >
         <div className="min-w-0 space-y-5">
@@ -233,11 +233,11 @@ export function QuestionBankBrowser({
             disabled={bank.pending}
           />
         </div>
-        {railOpen && (
+        {/* {railOpen && (
           <aside className="hidden self-stretch xl:block">
             <SponsoredRailCard onClose={() => setRailOpen(false)} />
           </aside>
-        )}
+        )} */}
       </div>
     </div>
   );
