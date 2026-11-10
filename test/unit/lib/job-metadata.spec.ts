@@ -36,4 +36,11 @@ describe("metadataForJob", () => {
     expect(metadata.description).toBe("Công ty A tuyển Kế toán tổng hợp.");
     expect(metadata.robots).toEqual({ index: false, follow: false });
   });
+
+  test("ảnh chia sẻ là logo công ty, không có logo thì dùng ảnh chung", () => {
+    const logo = "https://cdn.example.test/logo.png";
+
+    expect(metadataForJob({ ...job, companyLogo: logo }).openGraph?.images).toEqual([logo]);
+    expect(metadataForJob(job).openGraph?.images).toEqual(["/opengraph-image.png"]);
+  });
 });

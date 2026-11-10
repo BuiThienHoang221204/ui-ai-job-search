@@ -5,18 +5,20 @@ const API = `${process.env.BACKEND_URL ?? "http://localhost:4000"}/api`;
 const REVALIDATE_SECONDS = 300;
 const METADATA_TIMEOUT_MS = 3_000;
 const NO_INDEX = { index: false, follow: false };
+const DEFAULT_IMAGE = "/opengraph-image.png";
 
-/** Tiêu đề và mô tả hiện khi dán link tin vào Zalo, Facebook. */
+/** Tiêu đề, mô tả và logo công ty hiện khi dán link tin vào Zalo, Facebook. */
 export function metadataForJob(job: PublicJobDetail): Metadata {
   const title = `${job.title} — ${job.company}`;
   let description = `${job.company} tuyển ${job.title}.`;
   if (job.location) {
     description = `${job.company} tuyển ${job.title} tại ${job.location}.`;
   }
+  const image = job.companyLogo ?? DEFAULT_IMAGE;
   return {
     title: `${title} | Careelot`,
     description,
-    openGraph: { title, description, type: "website" },
+    openGraph: { title, description, type: "website", images: [image] },
     robots: NO_INDEX,
   };
 }
