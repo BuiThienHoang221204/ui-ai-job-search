@@ -4,6 +4,12 @@ export interface AuthResult {
   user: AuthUser;
 }
 
+/** Đăng ký, hoặc đăng nhập tài khoản chưa xác minh: chưa có phiên, cần nhập mã gửi tới `email`. */
+export interface VerificationRequired {
+  verificationRequired: true;
+  email: string;
+}
+
 export interface QueuedResult {
   queued: true;
   queueJobId?: string | null;

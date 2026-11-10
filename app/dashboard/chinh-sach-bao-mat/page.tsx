@@ -60,7 +60,7 @@ const SUMMARY = [
     icon: Globe,
     tone: "sky" as const,
     title: "Máy chủ ở nước ngoài",
-    text: "Dịch vụ AI và lưu trữ đặt ngoài Việt Nam.",
+    text: "Dịch vụ AI, lưu trữ và gửi email đặt ngoài Việt Nam.",
   },
   {
     icon: Clock,
@@ -80,7 +80,7 @@ const COLLECTED = [
   {
     icon: UserCircle,
     title: "Tài khoản",
-    text: "Email, tên, mật khẩu đã mã hoá một chiều, mã Google nếu đăng nhập bằng Google, thời điểm bạn đồng ý điều khoản.",
+    text: "Email, tên, mật khẩu đã mã hoá một chiều, mã Google nếu đăng nhập bằng Google, thời điểm bạn đồng ý điều khoản và thời điểm bạn xác minh email.",
     when: "Khi đăng ký",
   },
   {
@@ -116,6 +116,11 @@ const VENDORS = [
     gets: "Thông tin đăng nhập, nếu bạn chọn Google.",
   },
   {
+    name: "Resend",
+    kind: "Gửi email",
+    gets: "Địa chỉ email của bạn, để gửi mã xác minh email.",
+  },
+  {
     name: "Dịch vụ thông báo của trình duyệt",
     kind: "Thông báo đẩy",
     gets: "Nội dung thông báo, khi bạn bật.",
@@ -131,6 +136,10 @@ const RETENTION = [
   {
     when: "Tới khi bạn xoá",
     what: "Tài khoản, hồ sơ, CV, tài liệu. Xoá là mất ngay; bản sao lưu của nhà cung cấp hạ tầng tự hết hạn trong 30 ngày.",
+  },
+  {
+    when: "1 ngày",
+    what: "Thông tin đăng ký chưa nhập mã xác minh xong (email, tên, mật khẩu đã mã hoá một chiều).",
   },
   { when: "90 ngày", what: "Nhật ký lượt gọi AI; bộ đếm lượt của khách." },
   {

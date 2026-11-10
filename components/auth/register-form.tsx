@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { UserPlus, WarningCircle } from "@phosphor-icons/react/ssr";
+import { EmailCodeStep } from "@/components/auth/email-code-step";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
@@ -33,6 +34,7 @@ export function RegisterForm({
   const [duplicate, setDuplicate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
 
   /** Kiểm tra dữ liệu, gọi API đăng ký và xử lý lỗi trùng email. */
   async function handleSubmit(event: React.FormEvent) {
@@ -51,8 +53,14 @@ export function RegisterForm({
 
     setLoading(true);
     try {
-      await authService.register(email, password, name, referral);
-      onSuccess();
+      const pending = await authService.register(
+        email,
+        password,
+        name,
+        referral,
+      );
+      setPendingEmail(pending.email);
+      setLoading(false);
     } catch (err) {
       if (apiErrorStatus(err) === 409) {
         setDuplicate(true);
@@ -63,8 +71,23 @@ export function RegisterForm({
     }
   }
 
+  if (pendingEmail) {
+    return (
+      <div className="space-y-4">
+        <Steps current={2} />
+        <EmailCodeStep
+          email={pendingEmail}
+          purpose="signup"
+          onVerified={onSuccess}
+          onEditEmail={() => setPendingEmail(null)}
+        />
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <Steps current={1} />
       <div className="space-y-1.5">
         <Label htmlFor="name">Họ và tên</Label>
         <Input
@@ -182,7 +205,7 @@ export function RegisterForm({
         disabled={!accepted}
       >
         {!loading && <UserPlus className="size-4.5" />}
-        Tạo tài khoản
+        Tiếp tục
       </Button>
 
       <div className="flex items-center gap-3 text-xs text-slate-400">
@@ -202,5 +225,19 @@ export function RegisterForm({
         />
       </div>
     </form>
+  );
+}
+
+function Steps({ current }: { current: 1 | 2 }) {
+  return (
+    <div className="flex gap-1.5" aria-label={`Bước ${current} trên 2`}>
+      <span className="bg-primary-600 h-1 flex-1 rounded-full" />
+      <span
+        className={cn(
+          "h-1 flex-1 rounded-full",
+          current === 2 ? "bg-primary-600" : "bg-slate-100",
+        )}
+      />
+    </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { SignIn, WarningCircle } from "@phosphor-icons/react/ssr";
+import { EmailCodeStep } from "@/components/auth/email-code-step";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
@@ -16,6 +17,7 @@ export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
 
   /** Gửi thông tin đăng nhập, gọi `onSuccess` khi thành công hoặc hiện lỗi. */
   async function handleSubmit(event: React.FormEvent) {
@@ -24,7 +26,11 @@ export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
     setLoading(true);
 
     try {
-      await authService.login(email, password);
+      const result = await authService.login(email, password);
+      if ("verificationRequired" in result) {
+        setPendingEmail(result.email);
+        return;
+      }
       onSuccess();
     } catch (error) {
       setError(
@@ -35,6 +41,16 @@ export function LoginForm({ onSuccess }: { onSuccess: () => void }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (pendingEmail) {
+    return (
+      <EmailCodeStep
+        email={pendingEmail}
+        purpose="login"
+        onVerified={onSuccess}
+      />
+    );
   }
 
   return (

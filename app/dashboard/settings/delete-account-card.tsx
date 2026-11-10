@@ -7,6 +7,7 @@ import { Input, Label } from "@/components/ui/form";
 import { Modal } from "@/components/ui/modal";
 import { useSession } from "@/hooks/use-session";
 import { apiErrorMessage } from "@/lib/axios";
+import { fold } from "@/lib/text";
 import { authService } from "@/services";
 
 const CONFIRM_WORD = "XOÁ";
@@ -85,7 +86,7 @@ export function DeleteAccountCard() {
           <Button
             variant="danger"
             loading={deleting}
-            disabled={typed.trim().toUpperCase() !== CONFIRM_WORD}
+            disabled={fold(typed.trim()) !== fold(CONFIRM_WORD)}
             onClick={() => void handleDelete()}
           >
             Xoá vĩnh viễn

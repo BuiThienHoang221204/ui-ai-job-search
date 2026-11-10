@@ -88,6 +88,13 @@ export async function responseErrorMessage(response: Response): Promise<string> 
   return "Máy chủ đang gặp sự cố, thử lại sau ít phút.";
 }
 
+/** Mã lý do máy đọc được (`reason`) backend gửi kèm một số lỗi, để giao diện đổi trạng thái thay vì so chữ. */
+export function apiErrorReason(error: unknown): string | undefined {
+  if (!(error instanceof AxiosError)) return undefined;
+  const reason: unknown = error.response?.data?.reason;
+  return typeof reason === "string" ? reason : undefined;
+}
+
 /** Trạng thái HTTP, để giao diện phân biệt "sai mật khẩu" với "máy chủ hỏng". */
 export const apiErrorStatus = (error: unknown): number | undefined =>
   error instanceof AxiosError ? error.response?.status : undefined;
