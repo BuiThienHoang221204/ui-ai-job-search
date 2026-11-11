@@ -43,7 +43,7 @@ pnpm add -D @capacitor/cli
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const SERVER_URL =
-  process.env.CAP_SERVER_URL ?? "https://ui-ai-job-search.vercel.app";
+  process.env.CAP_SERVER_URL ?? "https://careelot.me";
 
 const config: CapacitorConfig = {
   appId: "com.careelot.app",

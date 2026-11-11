@@ -4,7 +4,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 // nguyên toàn bộ SSR/auth của Next. Đổi URL khi chạy bằng biến CAP_SERVER_URL
 // trước lệnh `cap sync` (vd staging, hoặc LAN IP của máy dev để thử bản local).
 const SERVER_URL =
-  process.env.CAP_SERVER_URL ?? "https://ui-ai-job-search.vercel.app";
+  process.env.CAP_SERVER_URL ?? "https://careelot.me";
 
 const config: CapacitorConfig = {
   appId: "com.careelot.app",
