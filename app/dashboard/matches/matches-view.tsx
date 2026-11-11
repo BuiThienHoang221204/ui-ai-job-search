@@ -8,6 +8,7 @@ import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 import { toJobCard } from "@/lib/adapters";
 import { JobCard } from "./job-card";
+import { MatchRow } from "./match-row";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageError } from "@/components/ui/alert";
 import { EmptyHint } from "@/components/ui/empty-state";
@@ -15,6 +16,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { SkeletonGrid } from "@/components/ui/skeleton";
 import type { MatchSort } from "@/types";
+import { cn } from "@/lib/cn";
 
 const PAGE_SIZE = 12;
 
@@ -66,7 +68,12 @@ export function MatchesView() {
   } else {
     content = (
       <>
-        <div className={GRID}>
+        <ul className="-mx-3 border-y border-slate-200 bg-white sm:hidden">
+          {matches.map((match) => (
+            <MatchRow key={match.jobId} match={match} />
+          ))}
+        </ul>
+        <div className={cn(GRID, "hidden sm:grid")}>
           {matches.map((match) => (
             <JobCard key={match.jobId} job={toJobCard(match)} />
           ))}
@@ -84,25 +91,45 @@ export function MatchesView() {
     );
   }
 
+  const changeSort = (next: MatchSort) => {
+    setSort(next);
+    setOffset(0);
+  };
+
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Đã chấm bằng AI"
-        subtitle="Những tin bạn đã bấm chấm điểm bằng AI"
-        actions={
-          <SelectMenu
-            label="Sắp xếp"
-            icon={SortDescending}
-            align="right"
-            value={sort}
-            options={SORT_OPTIONS}
-            onChange={(next) => {
-              setSort(next);
-              setOffset(0);
-            }}
-          />
-        }
-      />
+    <div className="space-y-3 sm:space-y-6">
+      <div className="hidden sm:block">
+        <PageHeader
+          title="Đã chấm bằng AI"
+          subtitle="Những tin bạn đã bấm chấm điểm bằng AI"
+          actions={
+            <SelectMenu
+              label="Sắp xếp"
+              icon={SortDescending}
+              align="right"
+              value={sort}
+              options={SORT_OPTIONS}
+              onChange={changeSort}
+            />
+          }
+        />
+      </div>
+      <div className="flex items-center justify-between gap-3 sm:hidden">
+        <span className="text-sm text-slate-600">
+          <b className="text-slate-900 tabular-nums">
+            {(page.data?.total ?? 0).toLocaleString("vi-VN")}
+          </b>{" "}
+          tin đã chấm
+        </span>
+        <SelectMenu
+          label="Sắp xếp"
+          variant="text"
+          align="right"
+          value={sort}
+          options={SORT_OPTIONS}
+          onChange={changeSort}
+        />
+      </div>
 
       {content}
     </div>

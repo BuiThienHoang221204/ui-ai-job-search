@@ -115,7 +115,7 @@ export function JobSearchBox({
   return (
     <div
       ref={root}
-      className="relative flex min-w-0 flex-1 basis-full items-center gap-2.5 px-4 sm:basis-auto"
+      className="relative col-start-1 row-start-1 flex min-w-0 flex-1 items-center gap-2.5 px-4"
     >
       <MagnifyingGlass className="size-4.5 shrink-0 text-slate-400" />
       <input

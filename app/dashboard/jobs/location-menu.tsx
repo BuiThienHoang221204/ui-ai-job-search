@@ -45,7 +45,7 @@ export function LocationMenu({
   return (
     <div
       ref={root}
-      className="relative flex flex-1 border-t border-slate-200 sm:w-64 sm:flex-none sm:border-t-0"
+      className="relative col-start-1 row-start-2 flex min-w-0 border-t border-slate-200 sm:w-64 sm:flex-none sm:border-t-0"
     >
       <button
         type="button"
@@ -74,7 +74,7 @@ export function LocationMenu({
       </button>
 
       {open && (
-        <div className="absolute top-full right-0 z-30 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+        <div className="absolute top-full left-0 z-30 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-2xl sm:right-0 sm:left-auto border border-slate-200 bg-white p-2 shadow-xl">
           <label className="focus-within:border-primary-400 flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-3 text-sm">
             <MagnifyingGlass className="size-4 text-slate-400" />
             <input

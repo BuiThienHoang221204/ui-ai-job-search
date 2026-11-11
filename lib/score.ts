@@ -36,6 +36,12 @@ const TONE_CLASSES: Record<ScoreTone, ToneClasses> = {
   },
 };
 
+export const MATCH_VERDICTS: Record<ScoreTone, string> = {
+  good: "Rất phù hợp",
+  mid: "Khá phù hợp",
+  low: "Ít phù hợp",
+};
+
 /** Ngưỡng của điểm phù hợp giữa hồ sơ và một tin tuyển dụng. */
 export function matchTone(score: number): ScoreTone {
   if (score >= 80) return "good";

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { X } from "@phosphor-icons/react/ssr";
 import { Header } from "@/components/layout/header";
 
 interface AppLayoutProps {
@@ -26,17 +27,19 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
             {sidebar}
             <button
               onClick={() => setMobileOpen(false)}
-              className="ml-4 self-center rounded-lg bg-white/10 px-3 py-1 text-xl text-white"
+              className="mt-3 ml-3 grid size-10 cursor-pointer place-items-center self-start rounded-lg bg-white/10 text-white"
               aria-label="Đóng menu"
             >
-              ✕
+              <X className="size-5" />
             </button>
           </div>
         </div>
       )}
 
       <div className="sidebar-offset flex h-screen min-w-0 flex-1 flex-col">
-        <Header onMenuClick={() => setMobileOpen(true)} />
+        <Suspense>
+          <Header onMenuClick={() => setMobileOpen(true)} />
+        </Suspense>
         <main className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4">{children}</main>
       </div>
     </div>

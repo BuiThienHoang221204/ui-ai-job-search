@@ -75,13 +75,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
   };
 
   const handleApply = async () => {
-    if (!user) {
-      openLogin({
-        reason: "Đăng nhập để ứng tuyển và lưu tin vào lịch sử ứng tuyển.",
-      });
-      return;
-    }
-    if (job?.application) {
+    if (!user || job?.application) {
       if (job?.url) window.open(job.url, "_blank", "noopener");
       return;
     }
@@ -167,7 +161,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
         onApply={handleApply}
       />
 
-      <JobSectionNav jobId={jobId} />
+      <JobSectionNav jobId={jobId} embedded={embedded} />
 
       <MatchPanel jobId={jobId} />
 

@@ -16,24 +16,26 @@ describe("displayLocation", () => {
     expect(place.full).toBeUndefined();
   });
 
-  test("địa điểm dài bị cắt và giữ nguyên văn ở full", () => {
+  test("địa chỉ dài giữ phần cuối (quận, tỉnh) và nguyên văn ở full", () => {
     const raw =
       "Century Tower, Phố Minh Khai, Khu đô thị Times City, Vĩnh Tuy, Hai Bà Trưng, Hà Nội, GIA BINH AIRPORT, Gia Binh, Bắc Ninh";
     const place = displayLocation(raw);
 
-    expect(place.text.length).toBeLessThan(raw.length);
-    expect(place.text.endsWith("…")).toBe(true);
+    expect(place.text).toBe("…Gia Binh, Bắc Ninh");
     expect(place.full).toBe(raw);
+    expect(displayLocation("Phường An Khánh, TP. Hồ Chí Minh").text).toBe(
+      "…TP. Hồ Chí Minh",
+    );
   });
 
   test("không cắt giữa một chữ", () => {
     const place = displayLocation(
       "Tháp B, Khu thương mại dịch vụ kết hợp nhà ở cao tầng tại lô đất 1-13",
     );
-    // Bỏ dấu … rồi so với nguyên văn: phần hiện phải là một tiền tố kết thúc ở
+    // Bỏ dấu … rồi so với nguyên văn: phần hiện phải là một đoạn của nguyên văn, kết thúc ở
     // ranh giới từ, chứ không phải "…dịch v…".
     const shown = place.text.slice(0, -1);
-    expect(place.full?.startsWith(shown)).toBe(true);
+    expect(place.full?.includes(shown)).toBe(true);
     expect(shown.endsWith(" ")).toBe(false);
   });
 

@@ -29,7 +29,7 @@ export function JobSortMenu({
         onClick={() => setOpen((now) => !now)}
         aria-expanded={open}
         aria-label="Sắp xếp"
-        className="flex cursor-pointer items-center gap-1 rounded-lg px-1.5 py-1 font-semibold text-slate-900 hover:bg-slate-100"
+        className="flex min-h-10 cursor-pointer items-center gap-1 rounded-lg px-2 font-semibold text-slate-900 hover:bg-slate-100"
       >
         {current?.label}
         <CaretDown
@@ -40,7 +40,7 @@ export function JobSortMenu({
         />
       </button>
       {open && (
-        <div className="absolute top-9 right-0 z-30 w-48 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl">
+        <div className="absolute top-11 right-0 z-30 w-48 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl">
           {SORT_OPTIONS.map((option) => (
             <button
               key={option.value}

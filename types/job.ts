@@ -83,7 +83,7 @@ export interface JobMatchWithJob {
 
 export type JobMatchCard = Pick<
   JobMatchWithJob,
-  "jobId" | "status" | "overallScore" | "strengths" | "job"
+  "jobId" | "status" | "overallScore" | "strengths" | "evaluatedAt" | "job"
 >;
 
 export interface JobMatchState {

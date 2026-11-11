@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { List } from "@phosphor-icons/react/ssr";
 import { pageTitle } from "@/components/layout/nav-items";
 import { useSession } from "@/hooks/use-session";
@@ -13,9 +13,10 @@ interface HeaderProps {
 export function Header({ onMenuClick }: HeaderProps) {
   const { user } = useSession();
   const pathname = usePathname();
+  const query = useSearchParams().toString();
 
   const title =
-    !user && pathname === "/dashboard" ? "Trang chủ" : pageTitle(pathname);
+    !user && pathname === "/dashboard" ? "Trang chủ" : pageTitle(pathname, query);
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-slate-200/80 bg-white/90 px-4 backdrop-blur-md lg:hidden">

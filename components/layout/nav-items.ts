@@ -35,7 +35,9 @@ export const navItems = [
 ];
 
 /** Lấy tiêu đề trang từ mục điều hướng khớp với đường dẫn hiện tại. */
-export function pageTitle(pathname: string): string {
+export function pageTitle(pathname: string, query = ""): string {
+  const exact = navItems.find((item) => item.href === `${pathname}?${query}`);
+  if (query && exact) return exact.label;
   const matched = navItems
     .filter((item) => !item.href.includes("?"))
     .filter(

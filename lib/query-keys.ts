@@ -60,7 +60,7 @@ export const keys = {
 } as const;
 
 const AFFECTED: Record<string, readonly (readonly string[])[]> = {
-  saveJob: [keys.jobLists(), keys.dashboard()],
+  saveJob: [keys.jobLists(), keys.dashboard(), keys.matches()],
   applicationStatus: [keys.applications(), keys.dashboard(), keys.jobLists()],
   saveProfile: [keys.dashboard(), keys.skillGaps(), keys.jobLists(), keys.learning()],
   quickStart: [

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Bookmark, MapPin } from "@phosphor-icons/react/ssr";
 import { LocationText } from "@/components/jobs/location-text";
 import type { Job } from "@/types";
@@ -10,15 +11,12 @@ import { Card } from "@/components/ui/card";
 import { CompanyLogo } from "@/components/jobs/company-logo";
 import { JobTime } from "@/components/jobs/job-time";
 import { cn } from "@/lib/cn";
+import { afterSaveJob } from "@/lib/job-cache";
 import { formatJobSalary } from "@/lib/salary";
 import { matchToneClasses } from "@/lib/score";
+import { jobsService } from "@/services";
 
 const MAX_TAGS = 3;
-
-interface JobCardProps {
-  job: Job;
-  onSavedChange?: (jobId: string, saved: boolean) => void;
-}
 
 /** Ô điểm AI ở góc phải thẻ, màu theo mức điểm. */
 function AiScore({ score }: { score: number }) {
@@ -59,17 +57,22 @@ function Reason({ text }: { text: string }) {
 }
 
 /** Thẻ việc làm: logo và tiêu đề ở hàng đầu, phần thân dùng hết bề rộng thẻ. */
-export function JobCard({ job, onSavedChange }: JobCardProps) {
+export function JobCard({ job }: { job: Job }) {
+  const queryClient = useQueryClient();
   const [pending, setPending] = useState<boolean | null>(null);
   const saved = pending ?? job.saved;
+  if (pending !== null && pending === job.saved) setPending(null);
 
-  const toggleSave = () => {
+  const toggleSave = async () => {
     const next = !saved;
     setPending(next);
-    onSavedChange?.(job.id, next);
+    try {
+      await (next ? jobsService.save(job.id) : jobsService.unsave(job.id));
+      afterSaveJob(queryClient, job.id, next);
+    } catch {
+      setPending(null);
+    }
   };
-
-  if (pending !== null && pending === job.saved) setPending(null);
 
   const fit = job.systemMatch && job.systemMatch.total > 0 ? job.systemMatch : null;
   const extraTags = job.tags.length - MAX_TAGS;
@@ -146,12 +149,15 @@ export function JobCard({ job, onSavedChange }: JobCardProps) {
         <Button
           size="sm"
           variant="outline"
-          onClick={toggleSave}
+          onClick={() => void toggleSave()}
           aria-label={saved ? "Bỏ lưu việc làm" : "Lưu việc làm"}
           title={saved ? "Đã lưu" : "Lưu"}
           className="shrink-0 px-2.5"
         >
-          <Bookmark className={cn("size-4", saved && "fill-primary-600 text-primary-600")} />
+          <Bookmark
+            weight={saved ? "fill" : "regular"}
+            className={cn("size-4", saved && "text-primary-600")}
+          />
         </Button>
         <Link href={`/dashboard/jobs/${job.id}`} className="min-w-0 flex-1">
           <Button size="sm" variant="primary" className="w-full justify-center">

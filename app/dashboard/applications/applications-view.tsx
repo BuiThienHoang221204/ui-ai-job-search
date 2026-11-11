@@ -151,8 +151,8 @@ export function ApplicationsView() {
               <TableHead className="hidden w-40 lg:table-cell">
                 Địa điểm
               </TableHead>
-              <TableHead className="w-24 sm:w-28">Trạng thái</TableHead>
-              <TableHead className="w-36 sm:w-48">Cập nhật</TableHead>
+              <TableHead className="hidden w-28 sm:table-cell">Trạng thái</TableHead>
+              <TableHead className="w-32 sm:w-48">Cập nhật</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -175,6 +175,12 @@ export function ApplicationsView() {
                       <p className="truncate text-xs text-slate-400">
                         {application.job.company}
                       </p>
+                      <Badge
+                        variant={APPLICATION_STATUS_VARIANTS[application.status]}
+                        className="mt-1 sm:hidden"
+                      >
+                        {APPLICATION_STATUS_LABELS[application.status]}
+                      </Badge>
                     </div>
                   </div>
                 </TableCell>
@@ -242,7 +248,7 @@ export function ApplicationsView() {
                     className="max-w-full"
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden sm:table-cell">
                   <Badge
                     variant={APPLICATION_STATUS_VARIANTS[application.status]}
                   >

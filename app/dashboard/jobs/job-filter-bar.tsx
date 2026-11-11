@@ -32,11 +32,16 @@ import { JobSortMenu } from "./job-sort-menu";
 import { LocationMenu } from "./location-menu";
 import { OccupationPicker } from "./occupation-picker";
 
-const VIEW_TABS: { value: string; label: string; icon?: PhosphorIcon }[] = [
+const VIEW_TABS: {
+  value: string;
+  label: string;
+  short?: string;
+  icon?: PhosphorIcon;
+}[] = [
   { value: "all", label: "Tất cả" },
   { value: "saved", label: "Đã lưu", icon: Bookmark },
   { value: "applied", label: "Đã ứng tuyển", icon: PaperPlaneRight },
-  { value: "followed", label: "Công ty theo dõi", icon: Buildings },
+  { value: "followed", label: "Công ty theo dõi", short: "Theo dõi", icon: Buildings },
 ];
 
 /** Thanh tìm việc ở "Tất cả việc làm", hai hàng: khung "ngành nghề + cái gì + ở đâu" cạnh Tất cả bộ lọc; hàng tab kèm bộ lọc đang bật, số kết quả và sắp xếp. */
@@ -129,7 +134,7 @@ export function JobFilterBar({
               writeRecent(addRecent(readRecent(), draft));
               onChange({ ...value, q: draft.trim() });
             }}
-            className="focus-within:border-primary-400 focus-within:ring-primary-100 flex min-w-0 flex-1 basis-full flex-wrap items-stretch rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-2 sm:basis-0 sm:flex-nowrap"
+            className="focus-within:border-primary-400 focus-within:ring-primary-100 grid min-w-0 flex-1 basis-full grid-cols-[minmax(0,1fr)_auto] rounded-xl border border-slate-200 bg-white shadow-sm focus-within:ring-2 sm:flex sm:basis-0 sm:items-stretch"
           >
             <span className="hidden shrink-0 items-stretch rounded-l-[11px] border-r border-slate-200 bg-slate-50 sm:flex">
               <button
@@ -187,15 +192,28 @@ export function JobFilterBar({
               onToggle={toggleProvince}
               onClear={() => set("province", [])}
             />
-            <Button type="submit" className="m-1 h-auto">
+            <Button type="submit" className="col-start-2 row-start-1 m-1 h-auto">
               <MagnifyingGlass className="size-4" />
               Tìm
             </Button>
+            <button
+              type="button"
+              onClick={() => setSheetOpen(true)}
+              className="col-start-2 row-start-2 flex cursor-pointer items-center justify-center gap-1.5 border-t border-l border-slate-200 px-4 text-sm font-medium text-slate-800 sm:hidden"
+            >
+              <SlidersHorizontal className="size-4.5 text-slate-400" />
+              Lọc
+              {active > 0 && (
+                <span className="bg-primary-600 rounded-full px-1.5 text-xs font-bold text-white">
+                  {active}
+                </span>
+              )}
+            </button>
           </form>
 
           <Button
             variant="outline"
-            className="h-11 shrink-0 bg-white"
+            className="hidden h-11 shrink-0 bg-white sm:inline-flex"
             onClick={() => setSheetOpen(true)}
           >
             <SlidersHorizontal className="size-4.5 text-slate-400" />
@@ -208,89 +226,105 @@ export function JobFilterBar({
           </Button>
         </div>
 
-        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 shadow-[inset_0_-1px_0_var(--color-slate-200)]">
-          {user && (
-            <div role="tablist" className="flex gap-1 overflow-x-auto">
-              {VIEW_TABS.map((tab) => {
-                const selected = tab.value === view;
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.value}
-                    type="button"
-                    role="tab"
-                    aria-selected={selected}
-                    onClick={() =>
-                      onChange({
-                        ...value,
-                        saved: tab.value === "saved",
-                        applied: tab.value === "applied",
-                        followed: tab.value === "followed",
-                      })
-                    }
-                    className={cn(
-                      "flex shrink-0 cursor-pointer items-center gap-1.5 border-b-2 px-3 py-2.5 text-sm whitespace-nowrap transition-colors",
-                      selected
-                        ? "border-primary-600 font-semibold text-slate-900"
-                        : "border-transparent text-slate-500 hover:text-slate-800",
-                    )}
-                  >
-                    {Icon && <Icon className="size-4.5" />}
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+        {(user || active > 0) && (
+          <div
+            className={cn(
+              "mt-2 flex flex-wrap items-center gap-x-3 gap-y-2",
+              user && "shadow-[inset_0_-1px_0_var(--color-slate-200)]",
+            )}
+          >
+            {user && (
+              <div role="tablist" className="flex gap-1 overflow-x-auto">
+                {VIEW_TABS.map((tab) => {
+                  const selected = tab.value === view;
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.value}
+                      type="button"
+                      role="tab"
+                      aria-selected={selected}
+                      onClick={() =>
+                        onChange({
+                          ...value,
+                          saved: tab.value === "saved",
+                          applied: tab.value === "applied",
+                          followed: tab.value === "followed",
+                        })
+                      }
+                      className={cn(
+                        "flex shrink-0 cursor-pointer items-center gap-1.5 border-b-2 px-2.5 py-2.5 text-sm whitespace-nowrap transition-colors sm:px-3",
+                        selected
+                          ? "border-primary-600 font-semibold text-slate-900"
+                          : "border-transparent text-slate-500 hover:text-slate-800",
+                      )}
+                    >
+                      {Icon && <Icon className="hidden size-4.5 sm:block" />}
+                      <span className="sm:hidden">{tab.short ?? tab.label}</span>
+                      <span className="hidden sm:inline">{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
-          <div className="ml-auto flex min-h-11 flex-wrap items-center justify-end gap-2 pb-0.5">
-            {remoteOn && (
-              <FilterChip
-                label="Từ xa"
-                onRemove={() => toggleProvince(remoteCode)}
-              />
-            )}
-            {value.salaryMin > 0 && (
-              <FilterChip
-                label={`Từ ${value.salaryMin / 1_000_000} triệu`}
-                onRemove={() => set("salaryMin", 0)}
-              />
-            )}
-            {postedLabel && (
-              <FilterChip
-                label={postedLabel}
-                onRemove={() => set("postedWithin", 0)}
-              />
-            )}
-            {active > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() =>
-                  onChange({ ...EMPTY_FILTER, q: value.q, sort: value.sort })
-                }
-              >
-                Xoá lọc
-              </Button>
-            )}
-            {active > 0 && <span className="h-4.5 w-px bg-slate-300" />}
-            <span className="flex items-center gap-1.5 text-sm whitespace-nowrap text-slate-500">
-              <b data-testid="job-total" className="font-semibold text-slate-900">
-                {total.toLocaleString("vi-VN")}
-              </b>
-              việc làm
-              {user && (
-                <>
-                  <span>·</span>
-                  <JobSortMenu
-                    value={value.sort}
-                    onChange={(next) => set("sort", next)}
-                  />
-                </>
+            <div
+              className={cn(
+                "flex flex-wrap items-center gap-2",
+                user &&
+                  "pb-0.5 sm:ml-auto sm:min-h-11 sm:justify-end",
               )}
-            </span>
+            >
+              {remoteOn && (
+                <FilterChip
+                  label="Từ xa"
+                  onRemove={() => toggleProvince(remoteCode)}
+                />
+              )}
+              {value.salaryMin > 0 && (
+                <FilterChip
+                  label={`Từ ${value.salaryMin / 1_000_000} triệu`}
+                  onRemove={() => set("salaryMin", 0)}
+                />
+              )}
+              {postedLabel && (
+                <FilterChip
+                  label={postedLabel}
+                  onRemove={() => set("postedWithin", 0)}
+                />
+              )}
+              {active > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    onChange({ ...EMPTY_FILTER, q: value.q, sort: value.sort })
+                  }
+                >
+                  Xoá lọc
+                </Button>
+              )}
+              {active > 0 && (
+              <span className="hidden h-4.5 w-px bg-slate-300 sm:block" />
+            )}
+              <span className="hidden items-center gap-1.5 text-sm whitespace-nowrap text-slate-500 sm:flex">
+                <b data-testid="job-total" className="font-semibold text-slate-900">
+                  {total.toLocaleString("vi-VN")}
+                </b>
+                việc làm
+                {user && (
+                  <>
+                    <span>·</span>
+                    <JobSortMenu
+                      value={value.sort}
+                      onChange={(next) => set("sort", next)}
+                    />
+                  </>
+                )}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );

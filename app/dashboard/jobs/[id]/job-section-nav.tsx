@@ -23,7 +23,13 @@ interface Section {
 }
 
 /** Thanh mục lục dính trên trang chi tiết tin: bấm để cuộn tới phần đó, mục đang xem tự sáng. */
-export function JobSectionNav({ jobId }: { jobId: string }) {
+export function JobSectionNav({
+  jobId,
+  embedded,
+}: {
+  jobId: string;
+  embedded?: boolean;
+}) {
   const { user } = useSession();
   const { data } = useJobDetail(jobId);
   const match = data?.match ?? null;
@@ -94,7 +100,12 @@ export function JobSectionNav({ jobId }: { jobId: string }) {
   }, [ids]);
 
   return (
-    <nav className="sticky top-0 z-10 -mt-2 flex gap-7 overflow-x-auto overflow-y-hidden bg-paper/95 shadow-[inset_0_-1px_0_var(--color-slate-200)] backdrop-blur [scrollbar-width:none]">
+    <nav
+      className={cn(
+        "sticky z-10 -mt-2 flex gap-7 overflow-x-auto overflow-y-hidden bg-paper shadow-[inset_0_-1px_0_var(--color-slate-200)] [scrollbar-width:none]",
+        embedded ? "top-0" : "-top-3 sm:-top-4",
+      )}
+    >
       {sections.map((section) => (
         <button
           key={section.id}

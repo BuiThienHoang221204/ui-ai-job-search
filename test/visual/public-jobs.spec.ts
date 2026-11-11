@@ -53,11 +53,13 @@ test("khach mo link tin dang chon thi thay du cac khoi, bam nut thi mo modal dan
   await expect(detail.getByText(/có trong hồ sơ/)).toHaveCount(0);
   await expect(detail.getByText(/Đáp ứng \d+\/\d+ bắt buộc/)).toHaveCount(0);
 
+  const portal = page.waitForEvent("popup");
   await detail.getByRole("button", { name: "Ứng tuyển ngay" }).click();
+  await (await portal).close();
 
   await expect(
     page.getByRole("heading", { name: "Đăng nhập để tiếp tục" }),
-  ).toBeVisible();
+  ).toHaveCount(0);
   await expect(page).toHaveURL(new RegExp(`/dashboard/jobs\\?job=${id}$`));
 });
 

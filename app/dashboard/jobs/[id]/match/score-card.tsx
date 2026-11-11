@@ -6,14 +6,8 @@ import { Progress } from "@/components/ui/progress";
 import { ProgressCircle } from "@/components/ui/progress-circle";
 import { SCORE_ROWS } from "@/lib/match-labels";
 import { cn } from "@/lib/cn";
-import { matchTone, matchToneClasses, scoreBarClass } from "@/lib/score";
+import { MATCH_VERDICTS, matchTone, matchToneClasses, scoreBarClass } from "@/lib/score";
 import { relativeTime } from "@/lib/date";
-
-const VERDICTS = {
-  good: "Rất phù hợp",
-  mid: "Khá phù hợp",
-  low: "Ít phù hợp",
-} as const;
 
 /** Khối tổng quan điểm AI: điểm tổng, kết luận, nhận xét và bốn chiều đánh giá. */
 export function ScoreCard({
@@ -49,7 +43,7 @@ export function ScoreCard({
         <div className="min-w-0 flex-1 space-y-3">
           <div className="flex flex-wrap items-center gap-2.5">
             <h2 className={cn("text-2xl font-bold tracking-tight", tone.text)}>
-              {VERDICTS[matchTone(overallScore)]}
+              {MATCH_VERDICTS[matchTone(overallScore)]}
             </h2>
             {match.evaluatedAt && (
               <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500">

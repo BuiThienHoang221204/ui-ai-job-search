@@ -24,6 +24,7 @@ import { Skeleton, SkeletonGrid, SkeletonPage } from "@/components/ui/skeleton";
 import { JobDetailView } from "./[id]/job-detail-view";
 import { JobList } from "./job-list";
 import { JobsEmpty } from "./jobs-empty";
+import { JobSortMenu } from "./job-sort-menu";
 import { cn } from "@/lib/cn";
 import { useSession } from "@/hooks/use-session";
 import { useLoginModal } from "@/hooks/use-login-modal";
@@ -268,6 +269,22 @@ export function JobsView() {
                 Phân tích CV, không cần tài khoản →
               </span>
             </Link>
+          )}
+          {!scored && (
+            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 py-0.5 pr-1.5 pl-3.5 text-xs text-slate-500 sm:hidden">
+              <span>
+                <b className="font-semibold text-slate-900">
+                  {list.total.toLocaleString("vi-VN")}
+                </b>{" "}
+                việc làm
+              </span>
+              {user && (
+                <JobSortMenu
+                  value={filter.sort}
+                  onChange={(next) => push({ ...filter, sort: next }, 0, selected)}
+                />
+              )}
+            </div>
           )}
           {scored && (
             <p className="shrink-0 border-b border-slate-100 px-3.5 py-2 text-xs text-slate-500">

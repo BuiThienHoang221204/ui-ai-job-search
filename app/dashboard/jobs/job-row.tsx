@@ -80,7 +80,7 @@ export function JobRow({
                 onClick={toggleSave}
                 aria-label={saved ? "Bỏ lưu việc làm" : "Lưu việc làm"}
                 aria-pressed={saved}
-                className="relative z-10 -m-1 shrink-0 rounded-md p-1 text-slate-300 transition-colors hover:bg-white hover:text-primary-600"
+                className="relative z-10 -m-2.5 grid size-10 shrink-0 place-items-center rounded-lg text-slate-300 transition-colors hover:bg-white hover:text-primary-600"
               >
                 <Bookmark
                   weight={saved ? "fill" : "regular"}
@@ -95,13 +95,13 @@ export function JobRow({
               <MapPin className="size-3.5 text-slate-400" />
               <LocationText location={job.location} />
             </span>
-            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono font-medium text-slate-700">
+            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-700">
               {user ? formatJobSalary(job) : "Đăng nhập để xem lương"}
             </span>
             {job.systemMatch?.kind === "REQUIREMENTS" &&
-              job.systemMatch.total > 0 && (
+              job.systemMatch.met > 0 && (
                 <span
-                  className="rounded bg-teal-50 px-1.5 py-0.5 font-mono font-semibold text-teal-700"
+                  className="rounded bg-teal-50 px-1.5 py-0.5 font-semibold text-teal-700"
                   title={`Hồ sơ có ${job.systemMatch.met}/${job.systemMatch.total} kỹ năng tin nêu ra (${job.systemMatch.percent}% có trọng số, tính cả số năm kinh nghiệm)`}
                 >
                   Khớp {job.systemMatch.met}/{job.systemMatch.total}

@@ -22,7 +22,7 @@ interface SelectMenuProps<T extends string | number> {
   align?: "left" | "right";
   side?: "bottom" | "top";
   className?: string;
-  variant?: "chip" | "field";
+  variant?: "chip" | "field" | "text";
   searchPlaceholder?: string;
   id?: string;
 }
@@ -147,6 +147,8 @@ export function SelectMenu<T extends string | number>({
           active && !field
             ? "border-primary-400 text-primary-700"
             : "border-slate-200 text-slate-700",
+          variant === "text" &&
+            "border-transparent bg-transparent px-2 font-semibold text-slate-900 shadow-none hover:bg-slate-100 focus:border-transparent",
         )}
       >
         {Icon && (
