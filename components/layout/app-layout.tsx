@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Header } from "@/components/layout/header";
-import { useScrollLock } from "@/hooks/use-scroll-lock";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -13,12 +12,8 @@ interface AppLayoutProps {
 export function AppLayout({ children, sidebar }: AppLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Khung cao đúng màn hình, nội dung cuộn bên trong `<main>` → khoá cuộn trang để không còn
-  // scrollbar ngoài.
-  useScrollLock(true);
-
   return (
-    <div className="flex h-screen overflow-hidden bg-surface">
+    <div data-app-shell className="flex h-screen overflow-hidden bg-surface">
       <div className="fixed inset-y-0 left-0 z-40 hidden lg:block">{sidebar}</div>
 
       {mobileOpen && (

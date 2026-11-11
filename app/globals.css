@@ -127,6 +127,12 @@ html {
   transform: translateY(1px);
 }
 
+/* Khung dashboard cao đúng màn hình, nội dung cuộn trong `<main>`. Khoá bằng CSS (không bằng JS) để có hiệu lực
+   từ HTML đầu tiên và không bị modal gỡ khi đóng; thiếu nó thì widget extension chèn cuối body sinh thanh cuộn thứ hai. */
+html:has([data-app-shell]) {
+  overflow: hidden;
+}
+
 /* Thin scrollbar for sidebar / overflow areas */
 .scrollbar-thin {
   scrollbar-width: thin;
