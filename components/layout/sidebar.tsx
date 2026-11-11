@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useMemo } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -59,11 +60,18 @@ export function Sidebar() {
         <button
           type="button"
           onClick={toggleSidebar}
-          className="ml-auto hidden size-9 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition-colors collapsed:ml-0 hover:bg-slate-100 hover:text-slate-900 lg:flex"
+          className="group ml-auto hidden size-9 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition-colors collapsed:ml-0 hover:bg-slate-100 hover:text-slate-900 lg:flex"
           aria-label="Thu gọn hoặc mở rộng thanh bên"
           title="Thu gọn / mở rộng thanh bên"
         >
-          <SidebarSimple className="size-5.5" />
+          <Image
+            src="/Careelot_Square.svg"
+            alt=""
+            width={28}
+            height={28}
+            className="hidden size-7 collapsed:block collapsed:group-hover:hidden collapsed:group-focus-visible:hidden"
+          />
+          <SidebarSimple className="size-5.5 collapsed:hidden collapsed:group-hover:block collapsed:group-focus-visible:block" />
         </button>
       </div>
 

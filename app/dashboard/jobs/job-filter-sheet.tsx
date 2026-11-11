@@ -1,37 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { Briefcase } from "@phosphor-icons/react/ssr";
-import type { FilterOption, JobFilterValue, OccupationOption } from "@/types";
+import { Briefcase, HouseLine } from "@phosphor-icons/react/ssr";
+import type { JobFilterValue } from "@/types";
 import {
   BottomSheet,
   SheetChip,
   SheetSection,
 } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
+import {
+  optionName,
+  provinceChoices,
+  subOptionName,
+} from "@/lib/job-filter-url";
+import { useSession } from "@/hooks/use-session";
+import { useJobFilters } from "@/hooks/use-job-filters";
 import { OccupationPicker } from "./occupation-picker";
 import { EMPTY_FILTER, POSTED_STEPS, SALARY_STEPS } from "./job-filter-options";
 
-const subLabelOf = (groups: OccupationOption[], code: string) =>
-  groups.flatMap((group) => group.subs ?? []).find((sub) => sub.code === code)
-    ?.name ?? code;
-
-/** Bottom sheet chọn bộ lọc việc làm trên mobile: gom hết bộ lọc dạng chip, chỉ áp dụng khi bấm "Áp dụng". */
+/** "Tất cả bộ lọc": gom mọi bộ lọc dạng chip, chỉ áp dụng khi bấm "Áp dụng"; bottom sheet trên mobile, ngăn kéo phải từ `sm`. */
 export function JobFilterSheet({
   value,
-  provinceOptions,
-  occupations,
-  showAccount,
   onApply,
   onClose,
 }: {
   value: JobFilterValue;
-  provinceOptions: FilterOption[];
-  occupations: OccupationOption[];
-  showAccount: boolean;
   onApply: (next: JobFilterValue) => void;
   onClose: () => void;
 }) {
+  const { user } = useSession();
+  const filters = useJobFilters().data;
+  const occupations = filters?.occupations ?? [];
+  const remoteCode = filters?.remote.code ?? "";
   const [draft, setDraft] = useState(value);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -44,17 +45,20 @@ export function JobFilterSheet({
     }));
 
   const occLabels = [
-    ...draft.occupation.map(
-      (code) => occupations.find((group) => group.code === code)?.name ?? code,
-    ),
-    ...draft.subOccupation.map((code) => subLabelOf(occupations, code)),
+    ...draft.occupation.map((code) => optionName(occupations, code)),
+    ...draft.subOccupation.map((code) => subOptionName(occupations, code)),
   ];
+  const provinceOptions = provinceChoices(
+    filters?.provinces ?? [],
+    draft.province,
+  );
 
   return (
     <>
       <BottomSheet
-        title="Bộ lọc"
+        title="Tất cả bộ lọc"
         onClose={onClose}
+        drawer
         footer={
           <div className="flex gap-2.5">
             <Button
@@ -78,31 +82,19 @@ export function JobFilterSheet({
           </div>
         }
       >
-        <SheetSection title="Địa điểm">
-          {provinceOptions.map((option) => (
+        {remoteCode && (
+          <SheetSection title="Hình thức">
             <SheetChip
-              key={option.code}
-              active={draft.province.includes(option.code)}
-              onClick={() => toggleProvince(option.code)}
+              active={draft.province.includes(remoteCode)}
+              onClick={() => toggleProvince(remoteCode)}
             >
-              {option.name}
+              <HouseLine className="size-4" />
+              Chỉ việc làm từ xa
             </SheetChip>
-          ))}
-        </SheetSection>
+          </SheetSection>
+        )}
 
-        <SheetSection title="Ngành nghề">
-          {occLabels.map((label) => (
-            <SheetChip key={label} active onClick={() => setPickerOpen(true)}>
-              {label}
-            </SheetChip>
-          ))}
-          <SheetChip onClick={() => setPickerOpen(true)}>
-            <Briefcase className="size-4" />
-            {occLabels.length > 0 ? "Chỉnh ngành nghề" : "Chọn ngành nghề"}
-          </SheetChip>
-        </SheetSection>
-
-        {showAccount && (
+        {user && (
           <SheetSection title="Mức lương">
             <SheetChip
               active={draft.salaryMin === 0}
@@ -144,28 +136,29 @@ export function JobFilterSheet({
           ))}
         </SheetSection>
 
-        {showAccount && (
-          <SheetSection title="Lọc nhanh">
-            <SheetChip
-              active={draft.saved}
-              onClick={() => setDraft((c) => ({ ...c, saved: !c.saved }))}
-            >
-              Đã lưu
+        <SheetSection title="Ngành nghề">
+          {occLabels.map((label) => (
+            <SheetChip key={label} active onClick={() => setPickerOpen(true)}>
+              {label}
             </SheetChip>
+          ))}
+          <SheetChip onClick={() => setPickerOpen(true)}>
+            <Briefcase className="size-4" />
+            {occLabels.length > 0 ? "Chỉnh ngành nghề" : "Chọn ngành nghề"}
+          </SheetChip>
+        </SheetSection>
+
+        <SheetSection title="Địa điểm">
+          {provinceOptions.map((option) => (
             <SheetChip
-              active={draft.applied}
-              onClick={() => setDraft((c) => ({ ...c, applied: !c.applied }))}
+              key={option.code}
+              active={draft.province.includes(option.code)}
+              onClick={() => toggleProvince(option.code)}
             >
-              Đã ứng tuyển
+              {option.name}
             </SheetChip>
-            <SheetChip
-              active={draft.followed}
-              onClick={() => setDraft((c) => ({ ...c, followed: !c.followed }))}
-            >
-              Công ty theo dõi
-            </SheetChip>
-          </SheetSection>
-        )}
+          ))}
+        </SheetSection>
       </BottomSheet>
 
       {pickerOpen && (

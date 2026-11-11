@@ -83,10 +83,8 @@ export function JobRow({
                 className="relative z-10 -m-1 shrink-0 rounded-md p-1 text-slate-300 transition-colors hover:bg-white hover:text-primary-600"
               >
                 <Bookmark
-                  className={cn(
-                    "size-4.5",
-                    saved && "fill-primary-600 text-primary-600",
-                  )}
+                  weight={saved ? "fill" : "regular"}
+                  className={cn("size-4.5", saved && "text-primary-600")}
                 />
               </button>
             )}

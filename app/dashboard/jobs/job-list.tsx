@@ -2,7 +2,6 @@
 
 import type { Job } from "@/types";
 import { JobRow } from "./job-row";
-import { EmptyHint } from "@/components/ui/empty-state";
 /** Danh sách thẻ việc làm. */
 export function JobList({
   jobs,
@@ -15,14 +14,6 @@ export function JobList({
   onSelect: (jobId: string) => void;
   onSavedChange?: (jobId: string, saved: boolean) => void;
 }) {
-  if (jobs.length === 0) {
-    return (
-      <EmptyHint className="rounded-2xl border-slate-200 bg-white p-12">
-        Không tìm thấy việc làm nào khớp với bộ lọc hiện tại.
-      </EmptyHint>
-    );
-  }
-
   return (
     <ul className="divide-y divide-slate-100">
       {jobs.map((job) => (

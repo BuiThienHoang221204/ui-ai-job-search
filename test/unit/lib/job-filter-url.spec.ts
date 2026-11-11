@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_SORT, readFilter, writeFilter } from "@/lib/job-filter-url";
+import {
+  DEFAULT_SORT,
+  matchOccupations,
+  provinceChoices,
+  readFilter,
+  subOptionName,
+  summarizeNames,
+  writeFilter,
+} from "@/lib/job-filter-url";
 import type { JobFilterValue } from "@/types";
 
 const empty = (): JobFilterValue => ({
@@ -108,5 +116,35 @@ describe("khứ hồi", () => {
     const scoredFilter: JobFilterValue = { ...empty(), q: "backend" };
 
     expect(roundTrip(scoredFilter, true)).toEqual(scoredFilter);
+  });
+});
+
+describe("nhãn và lựa chọn của bộ lọc", () => {
+  const groups = [
+    { code: "FIN", name: "Kế toán / Kiểm toán", count: 686, subs: [{ code: "ACC", name: "Kế toán", count: 464 }] },
+    { code: "IT", name: "Công nghệ thông tin", count: 900, subs: [] },
+  ];
+
+  it("rút gọn tên, tìm tên nghề con và lọc tỉnh có tin", () => {
+    expect(summarizeNames([])).toBe("");
+    expect(summarizeNames(["Hà Nội", "Bắc Ninh", "Huế"])).toBe("Hà Nội +2");
+    expect(subOptionName(groups, "ACC")).toBe("Kế toán");
+    expect(subOptionName(groups, "X")).toBe("X");
+    const provinces = [
+      { code: "HN", name: "Hà Nội", count: 10 },
+      { code: "HUE", name: "Huế", count: 0 },
+      { code: "HCM", name: "HCM", count: 20 },
+    ];
+    expect(provinceChoices(provinces, []).map((p) => p.code)).toEqual(["HCM", "HN"]);
+    expect(provinceChoices(provinces, ["HUE"]).map((p) => p.code)).toEqual(["HCM", "HN", "HUE"]);
+  });
+
+  it("khớp ngành không dấu, nhiều tin trước, có giới hạn", () => {
+    expect(matchOccupations(groups, "ke toan", 3)).toEqual([
+      { code: "FIN", name: "Kế toán / Kiểm toán", count: 686, sub: false },
+      { code: "ACC", name: "Kế toán", count: 464, sub: true },
+    ]);
+    expect(matchOccupations(groups, "ke toan", 1)).toHaveLength(1);
+    expect(matchOccupations(groups, "  ", 3)).toEqual([]);
   });
 });

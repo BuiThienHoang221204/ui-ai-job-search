@@ -145,7 +145,7 @@ export function ApplicationsView() {
               <TableHead className="hidden w-44 md:table-cell">
                 CV đã nộp
               </TableHead>
-              <TableHead className="hidden w-24 md:table-cell">
+              <TableHead className="hidden w-28 whitespace-nowrap md:table-cell">
                 Ngày nộp
               </TableHead>
               <TableHead className="hidden w-40 lg:table-cell">

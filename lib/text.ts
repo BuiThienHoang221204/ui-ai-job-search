@@ -2,6 +2,19 @@
 export const fold = (value: string): string =>
   value.toLowerCase().replace(/đ/g, "d").normalize("NFD").replace(/[̀-ͯ]/g, "");
 
+/** Vị trí `[đầu, cuối)` của `needle` trong `text`, so khớp không dấu; null khi không có hoặc khi bỏ dấu làm lệch độ dài. */
+export function matchRange(
+  text: string,
+  needle: string,
+): [number, number] | null {
+  const folded = Array.from(text, fold).join("");
+  const target = fold(needle.trim());
+  if (!target || folded.length !== text.length) return null;
+  const start = folded.indexOf(target);
+  if (start < 0) return null;
+  return [start, start + target.length];
+}
+
 /** Rút markdown thành chữ trơn cho đoạn xem trước: bỏ **đậm**, `code`, tiêu đề #, dấu đầu dòng và gộp xuống dòng thành khoảng trắng. */
 export function plainPreview(value: string): string {
   return value

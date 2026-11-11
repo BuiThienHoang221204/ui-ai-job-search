@@ -5,25 +5,30 @@ import { X } from "@phosphor-icons/react/ssr";
 import { useScrollLock } from "@/hooks/use-scroll-lock";
 import { cn } from "@/lib/cn";
 
-/** Bảng trượt lên từ đáy màn hình cho mobile: nền mờ, thanh kéo, tiêu đề, nội dung cuộn và chân cố định tuỳ chọn. */
+/** Bảng trượt lên từ đáy màn hình cho mobile: nền mờ, thanh kéo, tiêu đề, nội dung cuộn và chân cố định tuỳ chọn; `drawer` biến nó thành ngăn kéo bên phải từ `sm`. */
 export function BottomSheet({
   title,
   onClose,
   children,
   footer,
   heightClass = "h-[50dvh]",
+  drawer = false,
 }: {
   title: string;
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
   heightClass?: string;
+  drawer?: boolean;
 }) {
   useScrollLock(true);
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col justify-end"
+      className={cn(
+        "fixed inset-0 z-50 flex flex-col justify-end",
+        drawer && "sm:flex-row",
+      )}
       role="dialog"
       aria-modal="true"
     >
@@ -35,10 +40,17 @@ export function BottomSheet({
         className={cn(
           "animate-sheet-up relative flex flex-col rounded-t-2xl bg-white",
           heightClass,
+          drawer &&
+            "sheet-drawer sm:h-full sm:w-[26rem] sm:rounded-none sm:rounded-l-2xl",
         )}
       >
         <div className="shrink-0 px-5 pt-2">
-          <div className="mx-auto h-1 w-10 rounded-full bg-slate-300" />
+          <div
+            className={cn(
+              "mx-auto h-1 w-10 rounded-full bg-slate-300",
+              drawer && "sm:hidden",
+            )}
+          />
           <div className="mt-3 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
             <button

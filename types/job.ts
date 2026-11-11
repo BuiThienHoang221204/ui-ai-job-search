@@ -185,6 +185,16 @@ export interface OccupationOption extends FilterOption {
   subs?: FilterOption[];
 }
 
+export interface SuggestionCount {
+  text: string;
+  count: number;
+}
+
+export interface JobSuggestions {
+  titles: SuggestionCount[];
+  companies: SuggestionCount[];
+}
+
 export interface JobFilters {
   provinces: FilterOption[];
   occupations: OccupationOption[];

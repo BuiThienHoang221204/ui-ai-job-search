@@ -30,26 +30,28 @@ export function Pagination({
   const pages = Math.ceil(total / limit);
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-4 py-3">
-      <p className="text-xs text-slate-500">
+    <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-1.5">
+      <p className="truncate text-xs text-slate-500">
         <span className="font-mono font-semibold text-slate-700">
           {formatCount(from)}–{formatCount(to)}
         </span>{" "}
-        trên tổng {formatCount(total)} {noun}
+        / {formatCount(total)} {noun}
       </p>
 
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-1.5">
         <Button
           variant="outline"
-          size="sm"
+          size="icon"
+          className="size-8"
+          aria-label="Trang trước"
+          title="Trang trước"
           disabled={disabled || offset === 0}
           onClick={() => onOffsetChange(Math.max(0, offset - limit))}
         >
           <CaretLeft className="size-4" />
-          Trước
         </Button>
-        <span className="font-mono text-xs text-slate-500">
-          {page} / {pages}
+        <span className="text-xs whitespace-nowrap text-slate-500 tabular-nums">
+          Trang {page}/{pages}
         </span>
         <Button
           variant="outline"

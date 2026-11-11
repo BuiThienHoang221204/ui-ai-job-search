@@ -9,6 +9,7 @@ export const keys = {
   jobFilters: () => ["jobs", "filters"] as const,
   publicJobList: (filter: unknown) => ["public-jobs", "list", filter] as const,
   publicJob: (id: string) => ["public-jobs", id] as const,
+  jobSuggest: (q: string) => ["public-jobs", "suggest", q] as const,
   job: (jobId: string) => ["job", jobId] as const,
   companyBrief: (jobId: string) => ["company-brief", jobId] as const,
 

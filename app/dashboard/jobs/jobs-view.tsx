@@ -1,39 +1,36 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Job, JobListItem, JobSort, JobFilterValue } from "@/types";
+import type { Job, JobListItem, JobFilterValue } from "@/types";
 import { jobsService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
-import { useDebounce } from "@/hooks/use-debounce";
 import { DEFAULT_SORT, readFilter, writeFilter } from "@/lib/job-filter-url";
 import { keys } from "@/lib/query-keys";
 import { toJobCardFromPublic, toJobCardFromRecord } from "@/lib/adapters";
 import { squeezeSidebar } from "@/lib/sidebar";
 import { JobFilterBar } from "./job-filter-bar";
-import { Sparkle, SortDescending, FileMagnifyingGlass } from "@phosphor-icons/react/ssr";
-import { SelectMenu } from "@/components/ui/select-menu";
+import {
+  CursorClick,
+  FileMagnifyingGlass,
+  Sparkle,
+} from "@phosphor-icons/react/ssr";
 import { Alert } from "@/components/ui/alert";
 import Link from "next/link";
-import { EmptyHint, EmptyState } from "@/components/ui/empty-state";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton, SkeletonGrid, SkeletonPage } from "@/components/ui/skeleton";
 import { JobDetailView } from "./[id]/job-detail-view";
 import { JobList } from "./job-list";
+import { JobsEmpty } from "./jobs-empty";
 import { cn } from "@/lib/cn";
 import { useSession } from "@/hooks/use-session";
 import { useLoginModal } from "@/hooks/use-login-modal";
 import { afterSaveJob } from "@/lib/job-cache";
 import { formatClock } from "@/lib/date";
 
-const SORT_OPTIONS: { value: JobSort; label: string }[] = [
-  { value: "newest", label: "Mới nhất" },
-  { value: "salary", label: "Lương cao nhất" },
-  { value: "match", label: "Điểm AI Match" },
-];
 const PAGE_SIZE = 20;
-const SEARCH_DEBOUNCE_MS = 500;
 
 /** Màn tìm việc: bộ lọc trên URL, ô tìm kiếm debounce và danh sách phân trang. */
 export function JobsView() {
@@ -57,14 +54,6 @@ export function JobsView() {
   }, [params, user]);
   const offset = Number(params.get("offset") ?? 0) || 0;
   const selected = params.get("job");
-  const [draftQuery, setDraftQuery] = useState(filter.q);
-  const [syncedQuery, setSyncedQuery] = useState(filter.q);
-  const debouncedQuery = useDebounce(draftQuery, SEARCH_DEBOUNCE_MS);
-  if (syncedQuery !== filter.q) {
-    setSyncedQuery(filter.q);
-    if (filter.q !== debouncedQuery) setDraftQuery(filter.q);
-  }
-
   const push = useCallback(
     (next: JobFilterValue, nextOffset: number, nextSelected?: string | null) => {
       router.push(
@@ -75,27 +64,11 @@ export function JobsView() {
     [router, scored],
   );
   const handleFilterChange = useCallback(
-    (next: JobFilterValue) => {
-      if (next.q !== draftQuery) {
-        setDraftQuery(next.q);
-        return;
-      }
-      push(next, 0, null);
-    },
-    [push, draftQuery],
+    (next: JobFilterValue) => push(next, 0, null),
+    [push],
   );
 
-  useEffect(() => {
-    if (debouncedQuery !== draftQuery) return;
-    if (debouncedQuery === filter.q) return;
-    push({ ...filter, q: debouncedQuery }, 0);
-  }, [debouncedQuery, draftQuery, filter, push]);
-
   useEffect(() => squeezeSidebar(), []);
-  const filters = useApiQuery(keys.jobFilters(), jobsService.filters, {
-    errorMessage: "Không tải được danh mục bộ lọc",
-    staleTime: Infinity,
-  });
 
   const page = useApiQuery(
     keys.jobList({ ...filter, offset, scored }),
@@ -257,13 +230,29 @@ export function JobsView() {
   }
 
   return (
-    <div className="flex flex-col xl:h-full">
-      <JobFilterBar
-        value={{ ...filter, q: draftQuery }}
-        filters={filters.data}
-        onChange={handleFilterChange}
-      />
-      <div className="grid min-h-0 flex-1 items-start gap-4 xl:grid-cols-[360px_minmax(0,1fr)] xl:overflow-hidden 2xl:grid-cols-[400px_minmax(0,1fr)]">
+    <div data-jobs-split className="flex flex-col xl:h-full">
+      {!scored && (
+        <JobFilterBar
+          value={filter}
+          total={list.total}
+          onChange={handleFilterChange}
+        />
+      )}
+      {list.jobs.length === 0 && (
+        <div className="rounded-2xl border border-slate-200 bg-white px-6 py-10">
+          <JobsEmpty
+            filter={filter}
+            scored={scored}
+            onChange={handleFilterChange}
+          />
+        </div>
+      )}
+      <div
+        className={cn(
+          "grid min-h-0 flex-1 items-start gap-4 xl:grid-cols-[360px_minmax(0,1fr)] xl:overflow-hidden 2xl:grid-cols-[400px_minmax(0,1fr)]",
+          list.jobs.length === 0 && "hidden",
+        )}
+      >
         <div
           data-testid="job-list-pane"
           className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white xl:h-full"
@@ -279,6 +268,14 @@ export function JobsView() {
                 Phân tích CV, không cần tài khoản →
               </span>
             </Link>
+          )}
+          {scored && (
+            <p className="shrink-0 border-b border-slate-100 px-3.5 py-2 text-xs text-slate-500">
+              <b data-testid="job-total" className="font-semibold text-slate-900">
+                {list.total.toLocaleString("vi-VN")}
+              </b>{" "}
+              tin · đúng ngành và kinh nghiệm, mới đăng trước
+            </p>
           )}
           {filter.since && (
             <div className="border-primary-100 bg-primary-50 text-primary-700 flex shrink-0 items-center gap-2 border-b px-3.5 py-2.5 text-[13px]">
@@ -296,32 +293,6 @@ export function JobsView() {
               </button>
             </div>
           )}
-          <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3.5 py-2">
-            <span className="text-xs text-slate-500">
-              {list.total} tin
-              {scored && (
-                <span className="text-primary-600 ml-1 font-medium">
-                  · Đúng ngành và kinh nghiệm
-                </span>
-              )}
-            </span>
-            {scored && (
-              <span className="text-xs text-slate-500">Mới đăng trước</span>
-            )}
-            {!scored && !user && (
-              <span className="text-xs text-slate-500">Mới nhất</span>
-            )}
-            {!scored && user && (
-              <SelectMenu
-                label="Sắp xếp"
-                icon={SortDescending}
-                align="right"
-                value={filter.sort}
-                options={SORT_OPTIONS}
-                onChange={(next) => push({ ...filter, sort: next }, 0, selected)}
-              />
-            )}
-          </div>
           <div
             className={cn(
               "min-h-0 flex-1 scrollbar-thin xl:overflow-y-auto",
@@ -336,7 +307,7 @@ export function JobsView() {
             />
           </div>
 
-          <div className="shrink-0 border-t border-slate-100">
+          <div className="shrink-0">
             <Pagination
               offset={offset}
               limit={PAGE_SIZE}
@@ -355,9 +326,12 @@ export function JobsView() {
           {selected ? (
             <JobDetailView key={selected} jobId={selected} embedded />
           ) : (
-            <EmptyHint className="rounded-2xl border-slate-200 bg-white p-16 text-center">
-              Chọn một việc làm ở danh sách bên trái để xem chi tiết.
-            </EmptyHint>
+            <EmptyState
+              icon={CursorClick}
+              title="Chọn một việc làm để xem chi tiết"
+              description="Điểm phù hợp, yêu cầu của tin và các bước ứng tuyển sẽ hiện ở đây."
+              className="rounded-2xl border border-slate-200 bg-white"
+            />
           )}
         </div>
       </div>

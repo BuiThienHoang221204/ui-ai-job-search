@@ -32,19 +32,19 @@ test("thanh lọc, phân trang và trạng thái trên URL", async ({ page }) =>
   await login(page);
   await page.goto("/dashboard/jobs");
   const list = page.getByTestId("job-list-pane");
-  const count = list.getByText(/^\d+ tin/).first();
+  const count = page.getByTestId("job-total");
   const firstJob = list.locator("li").first();
   await expect(firstJob).toBeVisible({ timeout: 20_000 });
   await waitForImages(page);
   await page.screenshot({ path: `${SHOTS}/07-jobs-default.png`, fullPage: true });
 
   // Menu chọn tỉnh mở ra, có ô lọc nhanh và số tin từng mục.
-  await page.getByRole("button", { name: /Địa điểm/ }).click();
-  await expect(page.getByPlaceholder("Nhập Tỉnh/Thành phố")).toBeVisible();
+  await page.getByRole("button", { name: /Toàn quốc/ }).click();
+  await expect(page.getByPlaceholder("Tìm tỉnh, thành phố")).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/08-jobs-province-menu.png` });
 
   await page.getByRole("button", { name: /^Hà Nội/ }).click();
-  await page.getByRole("button", { name: "Áp dụng" }).click();
+  await page.getByRole("button", { name: "Xong" }).click();
 
   // Bộ lọc phải nằm trên URL, nếu không thì không chia sẻ được và Back sẽ hỏng.
   await expect(page).toHaveURL(/province=HN/);
@@ -88,8 +88,11 @@ test("xoá ô tìm kiếm thì từ khoá không quay lại", async ({ page }) =
   await login(page);
   await page.goto("/dashboard/jobs");
 
-  const search = page.getByPlaceholder("Vị trí tuyển dụng, tên công ty");
+  const search = page.getByRole("combobox", { name: "Tìm việc làm" });
   await search.pressSequentially("Front", { delay: 120 });
+  await page.waitForTimeout(800);
+  expect(page.url()).not.toContain("q=");
+  await search.press("Enter");
   await page.waitForURL(/[?&]q=Front/);
 
   await page.getByRole("button", { name: "Xoá tìm kiếm" }).click();

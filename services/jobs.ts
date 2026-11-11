@@ -3,6 +3,7 @@ import type {
   JobFilters,
   JobListItem,
   JobListParams,
+  JobSuggestions,
   JobRecord,
   Paginated,
   PublicJob,
@@ -22,6 +23,11 @@ export const jobsService = {
   publicList: (params: PublicJobListParams) =>
     api
       .get<Paginated<PublicJob>>("/public/jobs", { params })
+      .then((r) => r.data),
+
+  suggest: (q: string) =>
+    api
+      .get<JobSuggestions>("/public/jobs/suggest", { params: { q } })
       .then((r) => r.data),
 
   publicGet: (id: string) =>

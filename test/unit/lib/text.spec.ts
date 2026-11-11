@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { capitalize, htmlToText, plainPreview } from "@/lib/text";
+import { capitalize, htmlToText, matchRange, plainPreview } from "@/lib/text";
 
 describe("capitalize", () => {
   test("viết hoa chữ đầu, kể cả chữ có dấu", () => {
@@ -49,5 +49,13 @@ describe("htmlToText", () => {
     expect(htmlToText("Mô tả công việc bình thường.")).toBe(
       "Mô tả công việc bình thường.",
     );
+  });
+});
+
+describe("matchRange", () => {
+  test("tìm vị trí khớp không dấu để tô đậm, không khớp thì null", () => {
+    expect(matchRange("Kế toán tổng hợp", "ke to")).toEqual([0, 5]);
+    expect(matchRange("Công ty Kế toán Việt Á", "KẾ TOÁN")).toEqual([8, 15]);
+    expect(matchRange("Hà Nội", "kế")).toBeNull();
   });
 });
