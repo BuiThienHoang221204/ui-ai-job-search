@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { MapPin } from "@phosphor-icons/react/ssr";
+import { ChartLineUp } from "@phosphor-icons/react/ssr";
+import { Button } from "@/components/ui/button";
 import { DashSection } from "@/components/ui/dash-section";
+import { EmptyState } from "@/components/ui/empty-state";
+import { UnderlineTabs } from "@/components/ui/underline-tabs";
+import { MeterRow } from "@/components/ui/meter-row";
 import { useDashboard } from "@/hooks/use-dashboard";
-import { cn } from "@/lib/cn";
 
 type View = "province" | "sub";
 
@@ -25,57 +28,42 @@ export function MarketCard() {
   const hrefOf = (code: string) =>
     `/dashboard/jobs?scored=1&${view === "province" ? "province" : "subOccupation"}=${code}`;
 
-  const switcher = (
-    <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5">
-      {VIEWS.map((item) => (
-        <button
-          key={item.value}
-          type="button"
-          onClick={() => setView(item.value)}
-          aria-pressed={view === item.value}
-          className={cn(
-            "cursor-pointer rounded-md px-2.5 py-1 text-xs",
-            view === item.value ? "bg-white font-semibold text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-700",
-          )}
-        >
-          {item.label}
-        </button>
-      ))}
-    </div>
-  );
 
   return (
-    <DashSection title="Ngành của bạn tuần này" icon={MapPin} action={switcher}>
-      <p className="flex flex-wrap items-baseline gap-x-2.5">
-        <span className="text-3xl font-bold tracking-tight text-slate-900 tabular-nums">{market.total}</span>
-        <span className="text-sm text-slate-500">tin mới trong {market.days} ngày</span>
-      </p>
-
+    <DashSection
+      title="Ngành của bạn tuần này"
+      action={<UnderlineTabs tabs={VIEWS} value={view} onChange={setView} label="Xem theo" />}
+      className="flex flex-col"
+    >
       {rows.length === 0 ? (
-        <p className="mt-4 text-sm text-slate-500">Chưa có tin mới nào trong {market.days} ngày qua.</p>
+        <EmptyState
+          icon={ChartLineUp}
+          title={`Chưa có tin mới trong ${market.days} ngày qua`}
+          description="Mỗi đêm hệ thống quét tin mới đúng ngành của bạn. Xem thị trường để biết nghề nào đang tuyển nhiều."
+          className="flex-1 justify-center py-6"
+          action={
+            <Link href="/dashboard/market">
+              <Button variant="outline" size="sm">Xem thị trường việc làm</Button>
+            </Link>
+          }
+        />
       ) : (
-        <ul className="mt-4">
-          {rows.map((row, index) => (
-            <li key={row.code}>
-              <Link
-                href={hrefOf(row.code)}
-                className="group grid grid-cols-[minmax(5.5rem,8rem)_minmax(0,1fr)_2.25rem] items-center gap-3.5 py-1.5"
-              >
-                <span className="truncate text-sm text-slate-700 group-hover:text-primary-600">{row.name}</span>
-                <span className="h-2 overflow-hidden rounded-full bg-slate-100">
-                  <span
-                    className={cn("block h-full rounded-full", index === 0 ? "bg-primary-600" : "bg-primary-200")}
-                    style={{ width: `${Math.max(3, (row.count / max) * 100)}%` }}
-                  />
-                </span>
-                <span className="text-right text-sm font-semibold text-slate-800 tabular-nums">{row.count}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+        <>
+          <p className="text-sm text-slate-600">
+            <b className="font-semibold text-slate-900 tabular-nums">{market.total}</b> tin mới trong {market.days} ngày
+          </p>
 
-      <p className="mt-3 text-xs text-slate-400">Theo tin Careelot thu thập từ các trang tuyển dụng. Bấm một dòng để xem việc đã lọc sẵn.</p>
+          <ul className="mt-3 grid gap-1">
+            {rows.map((row) => (
+              <li key={row.code}>
+                <Link href={hrefOf(row.code)} className="block rounded-lg py-1.5">
+                  <MeterRow label={row.name} value={row.count} percent={Math.max(3, (row.count / max) * 100)} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </DashSection>
   );
 }

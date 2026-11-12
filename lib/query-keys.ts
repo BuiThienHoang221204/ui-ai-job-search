@@ -21,6 +21,7 @@ export const keys = {
   applications: () => ["applications"] as const,
   applicationList: (status: string, offset: number) =>
     ["applications", "list", status, offset] as const,
+  applicationRecent: (status: string) => ["applications", "recent", status] as const,
 
   profile: () => ["profile"] as const,
   profileCv: () => ["profile-cv"] as const,

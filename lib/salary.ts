@@ -65,9 +65,3 @@ export function parseMonthlySalary(input: string): number | null {
   return amount < 1000 ? amount * SALARY_MILLION : amount;
 }
 
-/** Chuỗi xem trước số tiền đầy đủ cho ô nhập lương, không hợp lệ thì null. */
-export function formatSalaryInput(input: string): string | null {
-  const amount = parseMonthlySalary(input);
-  if (amount === null) return null;
-  return `= ${amount.toLocaleString("vi-VN")} ₫/tháng`;
-}

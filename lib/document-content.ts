@@ -99,18 +99,6 @@ export function parseCvContent(content: unknown): CvContent {
   };
 }
 
-/** CV đã DONE nhưng không đọc được gì dùng được. */
-export function isCvContentEmpty(cv: CvContent): boolean {
-  return (
-    !cv.profileStatement &&
-    cv.coreCompetencies.length === 0 &&
-    cv.experiences.length === 0 &&
-    cv.projects.length === 0 &&
-    cv.educations.length === 0 &&
-    cv.skillGroups.length === 0
-  );
-}
-
 export interface CoverLetterContent {
   salutation: string | null;
   opening: string | null;

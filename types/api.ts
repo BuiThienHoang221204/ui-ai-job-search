@@ -29,3 +29,11 @@ export interface Paginated<T> {
 }
 
 export type AiFailureKind = "SCHEMA" | "TIMEOUT" | "UPSTREAM" | "OTHER";
+
+export interface AsyncData<T> {
+  data: T | null;
+  error: string | null;
+  errorStatus: number | null;
+  loading: boolean;
+  reload: () => void;
+}

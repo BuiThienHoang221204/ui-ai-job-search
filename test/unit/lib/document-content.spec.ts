@@ -4,7 +4,6 @@ import {
   coverLetterPlainText,
   isApplicationEmailEmpty,
   isCoverLetterEmpty,
-  isCvContentEmpty,
   parseApplicationEmailContent,
   parseCoverLetterContent,
   parseCvContent,
@@ -36,7 +35,6 @@ describe("parseCvContent", () => {
       educations: [],
       skillGroups: [],
     });
-    expect(isCvContentEmpty(cv)).toBe(true);
   });
 
   /// Trường hợp docblock của tệp nguồn nêu tên trực tiếp: một lượt sinh hỏng nửa
@@ -179,18 +177,6 @@ describe("parseCvContent", () => {
 
       expect(cv.skillGroups).toEqual([{ label: null, items: ["Docker"] }]);
     });
-  });
-
-  /// Phân biệt "DONE nhưng nội dung vô dụng" với "đang chạy" - hai trạng thái đó
-  /// cần hai thông báo khác nhau trên giao diện.
-  test("isCvContentEmpty false ngay khi có đúng một trường dùng được", () => {
-    expect(isCvContentEmpty(parseCvContent({ profileStatement: "Xin chào" })))
-      .toBe(false);
-    expect(isCvContentEmpty(parseCvContent({ coreCompetencies: ["React"] })))
-      .toBe(false);
-    expect(
-      isCvContentEmpty(parseCvContent({ projects: [{ name: "MCP Server" }] })),
-    ).toBe(false);
   });
 });
 

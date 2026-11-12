@@ -62,3 +62,11 @@ export interface DashboardOverview {
   applications: { total: number; active: number };
   todayScore: TodayScore;
 }
+
+export interface JourneyStep {
+  label: string;
+  description: string;
+  done: boolean;
+  action: string;
+  href: string;
+}

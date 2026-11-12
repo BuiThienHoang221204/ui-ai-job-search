@@ -123,23 +123,3 @@ export function parseMarkdown(input: string): MarkdownBlock[] {
   return blocks;
 }
 
-/** Bỏ hết cú pháp markdown, giữ lại chữ để hiện trên một dòng. */
-export function toPlainText(input: string): string {
-  return input
-    .replace(/```[\s\S]*?```/g, " ")
-    .split("\n")
-    .filter((line) => !isDivider(line.trim()))
-    .map((line) => {
-      const trimmed = line.trim();
-      if (isTableRow(trimmed)) return cells(trimmed).filter(Boolean).join(" · ");
-      return trimmed
-        .replace(/^#{1,6}\s+/, "")
-        .replace(/^([-*+]|\d+[.)])\s+/, "")
-        .replace(/^-{3,}$/, "");
-    })
-    .join(" ")
-    .replace(/\*\*/g, "")
-    .replace(/`/g, "")
-    .replace(/\s{2,}/g, " ")
-    .trim();
-}

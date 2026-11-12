@@ -3,7 +3,6 @@ import {
   answerOf,
   indexedStarAnswers,
   indexedToughQuestions,
-  interviewQuestions,
   isInterviewPrepEmpty,
   parseStarAnswers,
   parseToughQuestions,
@@ -126,47 +125,6 @@ describe("parseToughQuestions", () => {
 
   test("chuỗi rỗng coi như thiếu", () => {
     expect(parseToughQuestions([{ question: "   " }])).toEqual([]);
-  });
-});
-
-describe("interviewQuestions", () => {
-  /// Đây là danh sách mà chế độ luyện tập bằng giọng nói sẽ dùng sau này, nên nó
-  /// phải gộp được cả hai nguồn và không lặp.
-  test("gộp câu hỏi từ cả hai khối", () => {
-    const questions = interviewQuestions(
-      prep({
-        starAnswers: [{ question: "Kể về một dự án khó." }],
-        toughQuestions: [{ question: "Điểm yếu lớn nhất của bạn?" }],
-      }),
-    );
-
-    expect(questions).toEqual([
-      "Kể về một dự án khó.",
-      "Điểm yếu lớn nhất của bạn?",
-    ]);
-  });
-
-  test("bỏ câu trùng giữa hai khối", () => {
-    const questions = interviewQuestions(
-      prep({
-        starAnswers: [{ question: "Vì sao chọn công ty này?" }],
-        toughQuestions: [{ question: "Vì sao chọn công ty này?" }],
-      }),
-    );
-
-    expect(questions).toEqual(["Vì sao chọn công ty này?"]);
-  });
-
-  test("bỏ qua khối STAR không có câu hỏi", () => {
-    const questions = interviewQuestions(
-      prep({ starAnswers: [{ competency: "Lãnh đạo" }] }),
-    );
-
-    expect(questions).toEqual([]);
-  });
-
-  test("bản ghi rỗng cho danh sách rỗng", () => {
-    expect(interviewQuestions(prep())).toEqual([]);
   });
 });
 

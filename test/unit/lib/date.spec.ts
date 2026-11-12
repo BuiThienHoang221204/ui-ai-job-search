@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatClock, postedWeeks } from "@/lib/date";
+import { formatClock, postedWeeks, weekdayIndex } from "@/lib/date";
 
 describe("formatClock", () => {
   it("hiện giờ và ngày theo giờ Việt Nam, kể cả khi giờ UTC còn ở ngày hôm trước", () => {
@@ -21,5 +21,12 @@ describe("postedWeeks", () => {
     expect(weeks[12]).toBe(true);
     expect(weeks[9]).toBe(true);
     expect(weeks.filter(Boolean)).toHaveLength(2);
+  });
+});
+
+describe("weekdayIndex", () => {
+  it("tính theo giờ Việt Nam: 17h UTC Chủ nhật đã là thứ Hai ở Việt Nam", () => {
+    expect(weekdayIndex(new Date("2026-11-08T17:30:00Z"))).toBe(0);
+    expect(weekdayIndex(new Date("2026-11-08T10:00:00Z"))).toBe(6);
   });
 });

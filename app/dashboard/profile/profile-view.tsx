@@ -2,7 +2,7 @@
 
 import { PageError } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
-import { Tabs } from "@/components/ui/tabs";
+import { UnderlineTabs } from "@/components/ui/underline-tabs";
 import { EditModal } from "./edit-modal";
 import { ImprovePanel } from "./improve-panel";
 import { unansweredWishes } from "@/lib/profile-form";
@@ -25,7 +25,7 @@ export function ProfileView() {
   if (!profile) return <ProfileSkeleton />;
 
   const open = unansweredWishes(profile);
-  const tabs = [
+  const tabs: { value: ProfileTab; label: string }[] = [
     { value: "cv", label: "Hồ sơ nghề nghiệp" },
     {
       value: "wish",
@@ -41,12 +41,8 @@ export function ProfileView() {
 
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(18.75rem,1fr)]">
         <Card className="min-w-0 overflow-hidden">
-          <div className="border-b border-slate-100 p-3">
-            <Tabs
-              tabs={tabs}
-              value={tab}
-              onChange={(value) => setTab(value as ProfileTab)}
-            />
+          <div className="border-b border-slate-100 px-5 pt-4">
+            <UnderlineTabs tabs={tabs} value={tab} onChange={setTab} label="Phần hồ sơ" />
           </div>
           {tab === "cv" ? (
             <div className="divide-y divide-slate-100">

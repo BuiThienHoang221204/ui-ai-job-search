@@ -84,6 +84,7 @@ Biến thể `collapsed:` **chỉ áp từ 64rem trở lên**. Dưới ngưỡng
 
 ## Motion
 - Stance: motion-cut (fast, crisp opacity & transform micro-transitions, <= 150ms)
+- Ngoại lệ duy nhất: minh hoạ ở hero trang Tổng quan (`app/dashboard/hero-art/`) chạy timeline GSAP dài ~4 s rồi lặp nhẹ — ruy băng canvas, thẻ CV đếm điểm. Nó tự dừng khi ra khỏi màn hình và hiện thẳng trạng thái cuối khi `prefers-reduced-motion`. Nút, menu, chuyển trạng thái vẫn ≤ 150ms.
 
 ## Microinteractions stance
 - Status pills with status dots instead of generic badges
@@ -114,4 +115,4 @@ tự đóng nó.
 - The accent color and its placement (<= 5% per viewport)
 - The display + body + mono fonts
 - Hairline borders (`border-slate-200/80` or `border-rule`)
-- Anti-slop rule: **No blurred gradient clouds or blur blobs**
+- Anti-slop rule: **No blurred gradient clouds or blur blobs** — ngoại lệ duy nhất là hero trang Tổng quan (`dashboard-hero.tsx`): nền gradient primary nhạt kèm hai quầng sáng mờ, chủ dự án duyệt ngày 2026-11-12. Chỗ khác vẫn không dùng.

@@ -9,9 +9,11 @@ import { Skeleton, SkeletonGrid, SkeletonPage } from "@/components/ui/skeleton";
 import { FirstRun } from "./first-run";
 import { MarketCard } from "./market-card";
 import { onboardingLevel } from "@/lib/onboarding";
-import { ProgressPanel } from "./progress-panel";
+import { WeeklyGoals } from "./weekly-goals";
 import { QuickStartOnboarding } from "./quick-start-onboarding";
-import { QuickStrip } from "./quick-strip";
+import { DashboardHero } from "./dashboard-hero";
+import { JourneyCard } from "./journey-card";
+import { ApplicationsCard } from "./applications-card";
 import { ScoreBreakdown } from "./score-breakdown";
 import { TopMatches } from "./top-matches";
 import { useDashboard } from "@/hooks/use-dashboard";
@@ -33,24 +35,30 @@ export function DashboardView() {
   // const adSkills = data.suggestions.flatMap((suggestion) => suggestionSkill(suggestion) ?? []);
 
   return (
-    <div className="space-y-5 pb-6">
+    <div className="space-y-4 pb-6">
       {onboardingLevel(data) === "takeover" ? (
         <FirstRun />
       ) : (
         <>
-          <QuickStrip />
-          <Card className="grid divide-y divide-slate-100 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
-            <MarketCard />
-            <ScoreBreakdown />
-          </Card>
+          <DashboardHero />
           {/* <ResponsiveBannerAd align="start" /> */}
-          <div className="grid items-stretch gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(18.75rem,1fr)]">
-            <div className="grid min-w-0 content-start gap-5">
+          <div className="grid gap-4 lg:grid-cols-3">
+            <Card className="min-w-0 lg:col-span-2 lg:row-span-2">
               {/* <SkillResources placement="dashboard" occupation={data.occupationCode} skills={adSkills} /> */}
               <TopMatches />
-            </div>
-            <ProgressPanel />
+            </Card>
+            <Card className="border-primary-100 bg-[linear-gradient(160deg,var(--color-primary-50),#fff_70%)]">
+              <ScoreBreakdown />
+            </Card>
+            <Card className="border-amber-200/70 bg-[linear-gradient(160deg,var(--color-amber-50),#fff_70%)]">
+              <WeeklyGoals />
+            </Card>
           </div>
+          <Card className="grid divide-y divide-slate-100 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+            <JourneyCard />
+            <MarketCard />
+            <ApplicationsCard />
+          </Card>
         </>
       )}
     </div>

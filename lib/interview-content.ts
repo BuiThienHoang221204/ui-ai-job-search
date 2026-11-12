@@ -52,18 +52,6 @@ export function parseToughQuestions(value: unknown): ToughQuestion[] {
   return objectList(value, parseToughQuestion);
 }
 
-/** Gom bộ câu hỏi đọc được từ một bản ghi chuẩn bị phỏng vấn. */
-export function interviewQuestions(prep: InterviewPrepRecord): string[] {
-  const fromStar = parseStarAnswers(prep.starAnswers)
-    .map((answer) => answer.question)
-    .filter((question): question is string => question !== null);
-  const fromTough = parseToughQuestions(prep.toughQuestions).map(
-    (item) => item.question,
-  );
-
-  return [...new Set([...fromStar, ...fromTough])];
-}
-
 /** Bản ghi chuẩn bị phỏng vấn đã DONE nhưng không đọc được gì dùng được. */
 export function isInterviewPrepEmpty(prep: InterviewPrepRecord): boolean {
   return (

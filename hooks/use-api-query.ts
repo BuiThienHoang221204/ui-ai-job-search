@@ -6,7 +6,7 @@ import {
   type QueryKey,
 } from "@tanstack/react-query";
 import { apiErrorMessage, apiErrorStatus } from "@/lib/axios";
-import type { AsyncData } from "@/hooks/use-async-data";
+import type { AsyncData } from "@/types";
 
 /** Bọc useQuery thành dạng AsyncData, kèm thông báo lỗi và mã HTTP đã chuẩn hoá. */
 export function useApiQuery<T>(

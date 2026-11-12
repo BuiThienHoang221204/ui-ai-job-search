@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { parseInline, parseMarkdown, toPlainText } from "@/lib/markdown-blocks";
+import { parseInline, parseMarkdown } from "@/lib/markdown-blocks";
 
 /**
  * Đầu vào ở đây là văn bản do MODEL viết, nên nguyên tắc giống hệt bộ đọc JSON
@@ -118,19 +118,3 @@ describe("parseInline", () => {
   });
 });
 
-describe("toPlainText", () => {
-  test("bỏ hết cú pháp, bảng thành các ô nối bằng dấu chấm giữa", () => {
-    const plain = toPlainText(REAL_OUTPUT);
-
-    expect(plain).not.toContain("|--");
-    expect(plain).not.toContain("**");
-    expect(plain).not.toContain("##");
-    expect(plain).toContain("Kỹ Năng · 85/100 · MISA, Excel");
-  });
-
-  test("bỏ hẳn khối mã thay vì đổ nguyên lệnh vào một dòng", () => {
-    expect(toPlainText("Chạy lệnh:\n```bash\ncd cv\n```\nxong.")).toBe(
-      "Chạy lệnh: xong.",
-    );
-  });
-});

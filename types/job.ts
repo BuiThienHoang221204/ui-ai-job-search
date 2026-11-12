@@ -275,3 +275,5 @@ export type EvaluateResult =
     };
 
 export type MatchSort = "newest" | "score_desc" | "score_asc";
+
+export type ShortlistView = "newest" | "saved";

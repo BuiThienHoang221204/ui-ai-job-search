@@ -2,7 +2,6 @@ import { describe, expect, test } from "vitest";
 import {
   formatJobSalary,
   formatSalary,
-  formatSalaryInput,
   parseMonthlySalary,
 } from "@/lib/salary";
 
@@ -102,17 +101,3 @@ describe("parseMonthlySalary", () => {
   });
 });
 
-describe("formatSalaryInput", () => {
-  test("hiện lại đúng số tiền hệ thống đã hiểu", () => {
-    expect(formatSalaryInput("12")).toBe("= 12.000.000 ₫/tháng");
-    expect(formatSalaryInput("12000000")).toBe("= 12.000.000 ₫/tháng");
-  });
-
-  test("gõ thiếu số 0 thì con số hiện ra đủ nhỏ để người dùng nhận ra", () => {
-    expect(formatSalaryInput("12.000")).toBe("= 12.000 ₫/tháng");
-  });
-
-  test("chưa gõ gì thì không hiện gì", () => {
-    expect(formatSalaryInput("")).toBeNull();
-  });
-});

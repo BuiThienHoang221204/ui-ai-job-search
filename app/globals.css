@@ -343,27 +343,6 @@ html:has([data-app-shell]) {
 }
 .animate-scan { animation: scan-y 2.4s ease-in-out infinite; }
 
-/* Hành trình (Tổng quan): điểm sáng chạy nối các chặng đã qua, và điểm sáng leo lối mòn lên tới cờ — tự lặp. */
-@keyframes journey-spark {
-  0% { left: 10%; opacity: 0; }
-  14% { opacity: 1; }
-  86% { opacity: 1; }
-  100% { left: var(--spark-to, 90%); opacity: 0; }
-}
-.animate-journey-spark { animation: journey-spark 2.8s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
-@keyframes journey-climb {
-  0% { offset-distance: 0%; opacity: 0; }
-  14% { opacity: 1; }
-  82% { opacity: 1; }
-  100% { offset-distance: 100%; opacity: 0; }
-}
-.animate-journey-climb {
-  offset-path: path("M24 146 C70 136, 64 118, 98 112 S 128 84, 146 64 S 152 48, 156 42");
-  offset-rotate: 0deg;
-  animation: journey-climb 2.6s ease-in-out infinite;
-  will-change: offset-distance;
-}
-
 /* Nền lưới mờ dần ra mép cho ô tải CV; lưới nằm ở ::before nên chữ và nút phía trên không bị phủ. */
 .cv-grid {
   background-color: var(--color-slate-50);

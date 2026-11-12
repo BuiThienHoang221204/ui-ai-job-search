@@ -58,14 +58,17 @@ export function LegalPage({
           className="from-primary-100/60 pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-radial to-transparent to-70%"
         />
         <div className="relative">
-          <div className="inline-flex gap-1 rounded-xl bg-slate-100 p-1 text-xs font-semibold sm:text-sm">
+          <div className="flex gap-4 text-sm">
             {SWITCH.map((item) => (
               <Link
                 key={item.key}
                 href={item.href}
+                aria-current={item.key === current ? "page" : undefined}
                 className={cn(
-                  "rounded-lg px-2.5 py-1.5 whitespace-nowrap text-slate-500 hover:text-slate-900 sm:px-3.5",
-                  item.key === current && "bg-white text-slate-900 shadow-sm",
+                  "border-b-2 pb-1 whitespace-nowrap transition-colors",
+                  item.key === current
+                    ? "border-primary-600 font-semibold text-slate-900"
+                    : "border-transparent text-slate-500 hover:text-slate-800",
                 )}
               >
                 {item.label}

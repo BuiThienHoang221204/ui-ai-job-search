@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ChartBar } from "@phosphor-icons/react/ssr";
 import type { DashboardOverview } from "@/types";
 import { DashSection } from "@/components/ui/dash-section";
 import { useDashboard } from "@/hooks/use-dashboard";
-import { cn } from "@/lib/cn";
+import { MeterRow } from "@/components/ui/meter-row";
 
 const GOOD_SCORE = 70;
 
@@ -29,7 +28,7 @@ function weakestKey(score: TodayScore) {
   return weakest;
 }
 
-/** Điểm phù hợp gần đây: một con số lớn và bốn chiều điểm dạng thanh mảnh, có vạch mốc 70. */
+/** Điểm phù hợp gần đây: một con số lớn và bốn chiều điểm, chiều thấp nhất tô cam, vạch mốc 70. */
 export function ScoreBreakdown() {
   const { data } = useDashboard();
   if (!data) return null;
@@ -39,55 +38,46 @@ export function ScoreBreakdown() {
 
   const action = (
     <Link href="/dashboard/cv-optimizer" className="text-xs font-semibold text-primary-600 hover:text-primary-700">
-      Mở CV Optimizer →
+      Mở Tối ưu CV
     </Link>
   );
 
   return (
-    <DashSection title="Điểm phù hợp gần đây" icon={ChartBar} action={action}>
+    <DashSection title="Điểm phù hợp gần đây" action={action}>
       {overall === null ? (
         <p className="text-sm text-slate-500">Chưa có lần chấm nào. Mở một tin và bấm chấm điểm để thấy phân tích ở đây.</p>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-[9.5rem_minmax(0,1fr)]">
-          <div>
-            <p className="flex items-baseline gap-1">
-              <span className="text-5xl font-bold tracking-tight text-slate-900 tabular-nums">{overall}</span>
-              <span className="text-lg text-slate-400">/100</span>
-            </p>
-            <p className="mt-2 text-sm text-slate-500">
-              Trung bình {todayScore.sampleSize} lần chấm gần nhất.
-              {overall < GOOD_SCORE && ` Cần thêm khoảng ${GOOD_SCORE - overall} điểm để đạt mốc ${GOOD_SCORE}.`}
-            </p>
-          </div>
-
-          <div className="grid gap-3.5 pt-1">
+        <>
+          <p className="flex items-baseline gap-1">
+            <span className="text-5xl font-bold tracking-tight text-slate-900 tabular-nums">{overall}</span>
+            <span className="text-lg text-slate-500">/100</span>
+          </p>
+          <p className="mt-1.5 text-xs text-slate-600">
+            Trung bình {todayScore.sampleSize} lần chấm gần nhất.
+            {overall < GOOD_SCORE && ` Cần thêm khoảng ${GOOD_SCORE - overall} điểm để đạt mốc ${GOOD_SCORE}.`}
+          </p>
+          <div className="mt-4 grid gap-3">
             {SCORE_ROWS.map((row) => {
               const value = todayScore[row.key];
               const isWeakest = row.key === weakest;
               return (
-                <div key={row.key} className="grid grid-cols-[minmax(0,1fr)_1.75rem] items-center gap-x-3 gap-y-1.5">
-                  <span className="col-span-2 flex justify-between gap-2 text-sm text-slate-700">
-                    {row.label}
-                    <span className={cn("text-xs text-slate-400", isWeakest && "text-amber-600")}>
-                      {row.weight}
-                      {isWeakest && " · thấp nhất"}
-                    </span>
-                  </span>
-                  <span className="relative h-1.5 rounded-full bg-slate-100">
-                    <span
-                      className={cn("absolute inset-y-0 left-0 rounded-full", isWeakest ? "bg-amber-500" : "bg-primary-200")}
-                      style={{ width: `${value ?? 0}%` }}
-                    />
-                    <span className="absolute -inset-y-1 w-px bg-slate-400" style={{ left: `${GOOD_SCORE}%` }} />
-                  </span>
-                  <span className={cn("text-right text-sm font-semibold tabular-nums", isWeakest ? "text-amber-600" : "text-slate-800")}>
-                    {value ?? "—"}
-                  </span>
-                </div>
+                <MeterRow
+                  key={row.key}
+                  label={row.label}
+                  hint={isWeakest ? `${row.weight} · thấp nhất` : row.weight}
+                  value={value ?? "—"}
+                  percent={value ?? 0}
+                  warn={isWeakest}
+                  mark={GOOD_SCORE}
+                />
               );
             })}
           </div>
-        </div>
+          <p className="mt-3 flex items-center gap-1.5 text-xs text-slate-500">
+            <span className="h-3 w-0.5 rounded-full bg-slate-700" />
+            Vạch dọc là mốc {GOOD_SCORE}
+          </p>
+        </>
       )}
     </DashSection>
   );

@@ -18,7 +18,7 @@ export function DashSection({
 }) {
   return (
     <section className={cn("min-w-0 p-5", className)}>
-      <div className="mb-3.5 flex items-center justify-between gap-3">
+      <div className="mb-3.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
         <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-900">
           {TitleIcon && <TitleIcon className="size-4.5 text-primary-600" />}
           {title}

@@ -24,7 +24,7 @@ import { Card } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs } from "@/components/ui/tabs";
+import { UnderlineTabs } from "@/components/ui/underline-tabs";
 import { InterviewDate } from "./interview-date";
 import { JobMockSessions } from "./job-mock-sessions";
 import { PracticeQuestion } from "./practice-question";
@@ -260,13 +260,14 @@ function PrepContent({ prep }: { prep: InterviewPrepRecord }) {
 
   return (
     <Card className="p-4 sm:p-5">
-      <Tabs
+      <UnderlineTabs
         tabs={available.map((key) => ({
           value: key,
           label: `${TAB_COPY[key].label} (${counts[key]})`,
         }))}
         value={tab}
-        onChange={(value) => setChosen(value as TabKey)}
+        onChange={setChosen}
+        label="Phần chuẩn bị"
       />
       <p className="mt-3 mb-4 text-sm text-slate-500">{TAB_COPY[tab].description}</p>
 

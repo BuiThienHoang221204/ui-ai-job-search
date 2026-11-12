@@ -58,3 +58,9 @@ export function postedWeeks(dates: string[], now: Date): boolean[] {
   }
   return weeks;
 }
+
+/** Ngày thứ mấy trong tuần theo giờ Việt Nam như backend: 0 = thứ Hai … 6 = Chủ nhật. */
+export function weekdayIndex(date: Date): number {
+  const name = new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: "Asia/Ho_Chi_Minh" }).format(date);
+  return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].indexOf(name);
+}
