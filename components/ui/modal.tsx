@@ -43,11 +43,11 @@ export function Modal({ open, onClose, title, children, className, bodyClassName
         aria-modal="true"
         aria-label={title}
         className={cn(
-          "animate-modal-in relative w-full max-w-md rounded-2xl bg-white shadow-xl",
+          "animate-modal-in relative flex max-h-full w-full max-w-md flex-col rounded-2xl bg-white shadow-xl",
           className,
         )}
       >
-        <div className="flex items-center justify-between px-6 pt-6 pb-4">
+        <div className="flex shrink-0 items-center justify-between px-6 pt-6 pb-4">
           <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
           <button
             type="button"
@@ -58,7 +58,7 @@ export function Modal({ open, onClose, title, children, className, bodyClassName
             <X className="size-5.5" />
           </button>
         </div>
-        <div className={cn("px-6 pb-6", bodyClassName)}>{children}</div>
+        <div className={cn("min-h-0 overflow-y-auto overscroll-contain px-6 pb-6", bodyClassName)}>{children}</div>
       </div>
     </div>
   );
