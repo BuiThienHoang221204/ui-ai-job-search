@@ -32,6 +32,7 @@ import { afterSaveJob } from "@/lib/job-cache";
 import { formatClock } from "@/lib/date";
 
 const PAGE_SIZE = 20;
+const WIDE_QUERY = "(min-width: 1280px)";
 
 /** Màn tìm việc: bộ lọc trên URL, ô tìm kiếm debounce và danh sách phân trang. */
 export function JobsView() {
@@ -55,6 +56,12 @@ export function JobsView() {
   }, [params, user]);
   const offset = Number(params.get("offset") ?? 0) || 0;
   const selected = params.get("job");
+  const referral = params.get("ref");
+  useEffect(() => {
+    if (!selected || window.matchMedia(WIDE_QUERY).matches) return;
+    const query = referral ? `?ref=${encodeURIComponent(referral)}` : "";
+    router.replace(`/dashboard/jobs/${selected}${query}`);
+  }, [selected, referral, router]);
   const push = useCallback(
     (next: JobFilterValue, nextOffset: number, nextSelected?: string | null) => {
       router.push(
@@ -85,6 +92,8 @@ export function JobsView() {
           : {}),
         ...(filter.salaryMin ? { salaryMin: filter.salaryMin } : {}),
         ...(filter.postedWithin ? { postedWithin: filter.postedWithin } : {}),
+        ...(filter.maxYears !== null ? { maxYears: filter.maxYears } : {}),
+        ...(filter.seniority.length ? { seniority: filter.seniority } : {}),
         ...(filter.saved ? { saved: true } : {}),
         ...(filter.applied ? { applied: true } : {}),
         ...(filter.followed ? { followed: true } : {}),
@@ -112,6 +121,8 @@ export function JobsView() {
           ? { subOccupation: filter.subOccupation }
           : {}),
         ...(filter.postedWithin ? { postedWithin: filter.postedWithin } : {}),
+        ...(filter.maxYears !== null ? { maxYears: filter.maxYears } : {}),
+        ...(filter.seniority.length ? { seniority: filter.seniority } : {}),
       }),
     {
       errorMessage: "Không tải được danh sách việc làm",
@@ -125,7 +136,7 @@ export function JobsView() {
     (jobId: string) => {
       const wide =
         typeof window !== "undefined" &&
-        window.matchMedia("(min-width: 1280px)").matches;
+        window.matchMedia(WIDE_QUERY).matches;
       if (wide) {
         window.history.pushState(
           null,

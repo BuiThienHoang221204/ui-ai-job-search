@@ -15,12 +15,15 @@ export function readFilter(
   params: URLSearchParams,
 ): JobFilterValue {
   const sort = params.get("sort");
+  const years = Number.parseInt(params.get("maxYears") ?? "", 10);
   return {
     q: params.get("q") ?? "",
     province: params.getAll("province"),
     occupation: params.getAll("occupation"),
     salaryMin: Number(params.get("salaryMin") ?? 0) || 0,
     postedWithin: Number(params.get("postedWithin") ?? 0) || 0,
+    maxYears: Number.isNaN(years) ? null : years,
+    seniority: params.getAll("seniority"),
     sort: SORTS.includes(sort as JobSort)
       ? (sort as JobSort)
       : DEFAULT_SORT,
@@ -49,6 +52,8 @@ export function writeFilter(
   if (filter.salaryMin) params.set("salaryMin", String(filter.salaryMin));
   if (filter.postedWithin)
     params.set("postedWithin", String(filter.postedWithin));
+  if (filter.maxYears !== null) params.set("maxYears", String(filter.maxYears));
+  for (const level of filter.seniority) params.append("seniority", level);
   if (filter.saved) params.set("saved", "1");
   if (filter.applied) params.set("applied", "1");
   if (filter.followed) params.set("followed", "1");

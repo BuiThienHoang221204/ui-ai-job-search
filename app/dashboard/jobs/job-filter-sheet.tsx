@@ -17,7 +17,13 @@ import {
 import { useSession } from "@/hooks/use-session";
 import { useJobFilters } from "@/hooks/use-job-filters";
 import { OccupationPicker } from "./occupation-picker";
-import { EMPTY_FILTER, POSTED_STEPS, SALARY_STEPS } from "./job-filter-options";
+import {
+  EMPTY_FILTER,
+  EXPERIENCE_STEPS,
+  POSTED_STEPS,
+  SALARY_STEPS,
+  SENIORITY_OPTIONS,
+} from "./job-filter-options";
 
 /** "Tất cả bộ lọc": gom mọi bộ lọc dạng chip, chỉ áp dụng khi bấm "Áp dụng"; bottom sheet trên mobile, ngăn kéo phải từ `sm`. */
 export function JobFilterSheet({
@@ -132,6 +138,43 @@ export function JobFilterSheet({
               }
             >
               {step.label}
+            </SheetChip>
+          ))}
+        </SheetSection>
+
+        <SheetSection title="Kinh nghiệm">
+          <SheetChip
+            active={draft.maxYears === null}
+            onClick={() => setDraft((c) => ({ ...c, maxYears: null }))}
+          >
+            Mọi mức
+          </SheetChip>
+          {EXPERIENCE_STEPS.map((step) => (
+            <SheetChip
+              key={step.value}
+              active={draft.maxYears === step.value}
+              onClick={() => setDraft((c) => ({ ...c, maxYears: step.value }))}
+            >
+              {step.label}
+            </SheetChip>
+          ))}
+        </SheetSection>
+
+        <SheetSection title="Cấp bậc">
+          {SENIORITY_OPTIONS.map((option) => (
+            <SheetChip
+              key={option.value}
+              active={draft.seniority.includes(option.value)}
+              onClick={() =>
+                setDraft((c) => ({
+                  ...c,
+                  seniority: c.seniority.includes(option.value)
+                    ? c.seniority.filter((level) => level !== option.value)
+                    : [...c.seniority, option.value],
+                }))
+              }
+            >
+              {option.label}
             </SheetChip>
           ))}
         </SheetSection>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { applicationsService } from "@/services";
 import { PaperPlaneTilt } from "@phosphor-icons/react/ssr";
+import { CompanyLogo } from "@/components/jobs/company-logo";
 import { Button } from "@/components/ui/button";
 import { DashSection } from "@/components/ui/dash-section";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -57,8 +58,9 @@ export function ApplicationsCard() {
         {viewed?.items.map((application) => (
           <li
             key={application.id}
-            className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-slate-100 py-2.5 first:border-t-0"
+            className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-t border-slate-100 py-2.5 first:border-t-0"
           >
+            <CompanyLogo src={application.job.companyLogo} size="sm" className="size-9" />
             <Link href={`/dashboard/jobs/${application.jobId}`} className="min-w-0">
               <span className="block truncate text-sm font-semibold text-slate-900 hover:text-primary-600">
                 {application.job.title}

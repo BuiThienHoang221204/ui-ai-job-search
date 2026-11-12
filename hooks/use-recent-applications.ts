@@ -4,9 +4,9 @@ import { applicationsService } from "@/services";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 
-const RECENT_VIEWED = 2;
+const RECENT_VIEWED = 5;
 
-/** Hai đơn "đã xem" gần nhất kèm tổng số, và tổng số đơn đã nộp — cho thẻ Đơn ứng tuyển ở trang Tổng quan. */
+/** Năm đơn "đã xem" gần nhất kèm tổng số, và tổng số đơn đã nộp — cho thẻ Đơn ứng tuyển ở trang Tổng quan. */
 export function useRecentApplications() {
   const viewed = useApiQuery(
     keys.applicationRecent("VIEWED"),

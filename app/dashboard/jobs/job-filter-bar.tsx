@@ -25,7 +25,12 @@ import {
 import { addRecent, readRecent, writeRecent } from "@/lib/recent-searches";
 import { useSession } from "@/hooks/use-session";
 import { useJobFilters } from "@/hooks/use-job-filters";
-import { EMPTY_FILTER, POSTED_STEPS } from "./job-filter-options";
+import {
+  EMPTY_FILTER,
+  EXPERIENCE_STEPS,
+  POSTED_STEPS,
+  SENIORITY_OPTIONS,
+} from "./job-filter-options";
 import { JobFilterSheet } from "./job-filter-sheet";
 import { JobSearchBox } from "./job-search-box";
 import { JobSortMenu } from "./job-sort-menu";
@@ -89,11 +94,19 @@ export function JobFilterBar({
   const postedLabel = POSTED_STEPS.find(
     (step) => step.value === value.postedWithin,
   )?.label;
+  const experienceLabel = EXPERIENCE_STEPS.find(
+    (step) => step.value === value.maxYears,
+  )?.label;
+  const levels = SENIORITY_OPTIONS.filter((option) =>
+    value.seniority.includes(option.value),
+  );
   const active =
     value.province.length +
     occupationNames.length +
     (value.salaryMin ? 1 : 0) +
-    (value.postedWithin ? 1 : 0);
+    (value.postedWithin ? 1 : 0) +
+    (value.maxYears !== null ? 1 : 0) +
+    value.seniority.length;
 
   let view = "all";
   if (value.saved) view = "saved";
@@ -293,6 +306,24 @@ export function JobFilterBar({
                   onRemove={() => set("postedWithin", 0)}
                 />
               )}
+              {experienceLabel && (
+                <FilterChip
+                  label={experienceLabel}
+                  onRemove={() => set("maxYears", null)}
+                />
+              )}
+              {levels.map((option) => (
+                <FilterChip
+                  key={option.value}
+                  label={option.label}
+                  onRemove={() =>
+                    set(
+                      "seniority",
+                      value.seniority.filter((level) => level !== option.value),
+                    )
+                  }
+                />
+              ))}
               {active > 0 && (
                 <Button
                   variant="ghost"

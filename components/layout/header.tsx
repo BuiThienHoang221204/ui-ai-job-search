@@ -22,11 +22,11 @@ export function Header({ onMenuClick }: HeaderProps) {
   const pathname = usePathname();
   const params = useSearchParams();
   const query = params.toString();
-  const pagesSeen = useRef(0);
+  const historyAtStart = useRef(Infinity);
 
   useEffect(() => {
-    pagesSeen.current += 1;
-  }, [pathname, query]);
+    historyAtStart.current = window.history.length;
+  }, []);
 
   const title =
     !user && pathname === "/dashboard" ? "Trang chủ" : pageTitle(pathname, query);
@@ -36,7 +36,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   else if (DETAIL_PARAMS.some((name) => params.has(name))) parent = pathname;
 
   const goBack = () => {
-    if (pagesSeen.current > 1) router.back();
+    if (window.history.length > historyAtStart.current) router.back();
     else if (parent) router.push(parent);
   };
 

@@ -167,6 +167,8 @@ export interface JobListParams {
   workMode?: string[];
   salaryMin?: number;
   postedWithin?: number;
+  maxYears?: number;
+  seniority?: string[];
   sort?: JobSort;
   scored?: boolean;
   saved?: boolean;
@@ -230,6 +232,8 @@ export type PublicJobListParams = Pick<
   | "occupation"
   | "subOccupation"
   | "postedWithin"
+  | "maxYears"
+  | "seniority"
 >;
 
 export interface JobDetailData {
@@ -243,6 +247,8 @@ export interface JobFilterValue {
   occupation: string[];
   salaryMin: number;
   postedWithin: number;
+  maxYears: number | null;
+  seniority: string[];
   sort: JobSort;
   saved: boolean;
   applied: boolean;
