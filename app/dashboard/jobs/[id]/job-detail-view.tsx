@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "@phosphor-icons/react/ssr";
@@ -14,6 +14,7 @@ import { Alert } from "@/components/ui/alert";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
 import { CompanyBriefPanel } from "./company-brief/company-brief-panel";
 import { JobDescriptionCard } from "./job-description-card";
+import { ApplyBar } from "./apply-bar";
 import { JobDetailHeader } from "./job-detail-header";
 import { MatchInsights } from "./match/match-insights";
 import { MatchPanel } from "./match/match-panel";
@@ -41,6 +42,7 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [savePending, setSavePending] = useState<boolean | null>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const toast = useToast();
   const { user } = useSession();
   const openLogin = useLoginModal((s) => s.open);
@@ -138,12 +140,12 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
   });
 
   return (
-    <div className="space-y-6">
+    <div className={embedded ? "space-y-6" : "space-y-6 max-lg:pb-20"}>
       {!embedded && (
         <button
           type="button"
           onClick={() => router.back()}
-          className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
+          className="hidden cursor-pointer items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 lg:inline-flex"
         >
           <ArrowLeft className="size-4.5" />
           Quay lại danh sách việc làm
@@ -152,14 +154,25 @@ export function JobDetailView({ jobId, embedded }: JobDetailViewProps) {
 
       {/* <ResponsiveBannerAd align="start" /> */}
 
-      <JobDetailHeader
-        card={card}
-        job={job}
-        match={match}
-        saved={saved}
-        onToggleSave={toggleSave}
-        onApply={handleApply}
-      />
+      <div ref={headerRef}>
+        <JobDetailHeader
+          card={card}
+          job={job}
+          match={match}
+          saved={saved}
+          onToggleSave={toggleSave}
+          onApply={handleApply}
+        />
+      </div>
+      {!embedded && (
+        <ApplyBar
+          watch={headerRef}
+          submitted={job.application?.status === "APPLIED"}
+          saved={saved}
+          onApply={handleApply}
+          onToggleSave={toggleSave}
+        />
+      )}
 
       <JobSectionNav jobId={jobId} embedded={embedded} />
 

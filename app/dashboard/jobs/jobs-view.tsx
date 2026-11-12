@@ -271,7 +271,7 @@ export function JobsView() {
             </Link>
           )}
           {!scored && (
-            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 py-0.5 pr-1.5 pl-3.5 text-xs text-slate-500 sm:hidden">
+            <div className="flex min-h-11 shrink-0 items-center justify-between border-b border-slate-100 py-0.5 pr-1.5 pl-3.5 text-xs text-slate-500 sm:hidden">
               <span>
                 <b className="font-semibold text-slate-900">
                   {list.total.toLocaleString("vi-VN")}

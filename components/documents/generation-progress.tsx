@@ -24,7 +24,7 @@ export function GenerationProgress({
 
   return (
     <div className="grid items-start gap-6 xl:grid-cols-[22rem_minmax(0,1fr)]">
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold text-primary-700">
           <Sparkle className="size-3.5" />
           AI đang viết

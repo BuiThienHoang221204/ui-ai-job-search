@@ -50,7 +50,7 @@ export function CvRail({ jobId }: { jobId: string | null }) {
           </button>
         ))}
       </div>
-      <div className="p-5">{panel}</div>
+      <div className="p-4 sm:p-5">{panel}</div>
     </Card>
   );
 }

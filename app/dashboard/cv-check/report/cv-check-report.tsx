@@ -104,7 +104,7 @@ export function CvCheckReport({
         </Alert>
       )}
       <Card className="overflow-hidden">
-        <div className="from-primary-50 grid items-center gap-6 bg-linear-to-br to-transparent p-6 lg:grid-cols-[auto_minmax(0,1fr)_auto]">
+        <div className="from-primary-50 grid items-center gap-6 bg-linear-to-br to-transparent p-4 sm:p-6 lg:grid-cols-[auto_minmax(0,1fr)_auto]">
           <ProgressCircle value={result.score} size={120} strokeWidth={10}>
             <span className="text-center">
               <span className="font-display block text-4xl leading-none text-slate-900">

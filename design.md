@@ -82,6 +82,15 @@ Biến thể `collapsed:` **chỉ áp từ 64rem trở lên**. Dưới ngưỡng
 ## Spacing
 4-point named scale (`--spacing-xs`, `--spacing-sm`, `--spacing-md`, `--spacing-lg`, `--spacing-xl`)
 
+## Mobile
+
+Chốt 2026-11-13 sau một đợt chạy thử 26 trang ở cỡ iPhone 13. Sửa cho mobile thì desktop phải giữ nguyên: đổi giá trị gốc kèm biến thể `sm:` giữ giá trị cũ, hoặc dùng `max-sm:`.
+
+- **Trang chi tiết có nút ← trên thanh đầu trang** thay cho ☰: đường dẫn sâu hơn mục điều hướng (`/dashboard/jobs/abc`) hoặc mở một tài liệu qua `?doc=`, `?jobId=` (`components/layout/header.tsx`). Nút "Quay lại…" trong trang chỉ hiện từ `lg`.
+- **Mỗi khối một khung.** Thẻ ngoài cùng dùng lề trong 16px dưới 640px (`p-4 sm:p-6`). Khung con nằm trong thẻ (ô nền nhạt, thẻ con trong danh sách) thêm `MOBILE_FLAT` từ `components/ui/card.tsx`: bỏ viền, nền, lề ngang, chỉ giữ đường kẻ trên. Giữ khung cho thứ người dùng bấm chọn hoặc nhập, alert và bong bóng chat. Đừng đổi lề mặc định của `CardContent`/`CardHeader`: nơi gọi hay đè một cạnh (`pt-3`, `p-0 pb-4`) và `sm:p-5` sẽ thắng lớp đè đó ở desktop.
+- **Cột trang trí nhường chỗ cho chữ.** Lưới có cột ảnh/chữ viết tắt cạnh đoạn văn dài thì ẩn cột đó dưới 640px; nút cạnh đoạn chữ thì cho xuống dòng (`max-sm:basis-full`).
+- **`<main>` cuộn chứ không phải cửa sổ**, nên trình duyệt không tự nhớ vị trí khi back — `ScrollMemory` nhớ theo URL. Phần tử `fixed` cần bám đáy màn hình (thanh "Ứng tuyển ngay") gắn bằng portal vào `body`, vì khung trang tạo khối chứa riêng làm `bottom-0` lệch.
+
 ## Motion
 - Stance: motion-cut (fast, crisp opacity & transform micro-transitions, <= 150ms)
 - Ngoại lệ duy nhất: minh hoạ ở hero trang Tổng quan (`app/dashboard/hero-art/`) chạy timeline GSAP dài ~4 s rồi lặp nhẹ — ruy băng canvas, thẻ CV đếm điểm. Nó tự dừng khi ra khỏi màn hình và hiện thẳng trạng thái cuối khi `prefers-reduced-motion`. Nút, menu, chuyển trạng thái vẫn ≤ 150ms.

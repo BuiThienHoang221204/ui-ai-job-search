@@ -9,6 +9,7 @@ import { Tabs } from "@/components/ui/tabs";
 import { useCvByJob } from "@/hooks/use-letters";
 import { usePastedJob } from "@/hooks/use-pasted-job";
 import type { LetterGenerate, LetterKind } from "@/types";
+import { MOBILE_FLAT } from "@/components/ui/card";
 import { cn } from "@/lib/cn";
 
 type Source = "pick" | "paste";
@@ -60,7 +61,7 @@ export function LetterBuilder({
   };
 
   return (
-    <div className="space-y-4 rounded-2xl border border-primary-100 bg-primary-50/70 p-4 sm:p-5">
+    <div className={cn("space-y-4 rounded-2xl border border-primary-100 bg-primary-50/70 p-4 sm:p-5", MOBILE_FLAT)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-semibold text-slate-900">
           1. Bạn ứng tuyển tin nào?
@@ -121,20 +122,20 @@ export function LetterBuilder({
               aria-pressed={active}
               onClick={() => setKind(item.kind)}
               className={cn(
-                "grid cursor-pointer grid-cols-[4rem_minmax(0,1fr)_1.125rem] items-center gap-3.5 rounded-xl border bg-white p-3.5 sm:p-4 text-left transition",
+                "grid cursor-pointer grid-cols-[2.5rem_minmax(0,1fr)_1.125rem] items-center gap-3 sm:grid-cols-[4rem_minmax(0,1fr)_1.125rem] sm:gap-3.5 rounded-xl border bg-white p-3.5 sm:p-4 text-left transition",
                 active
                   ? "border-primary-600 ring-3 ring-primary-50"
                   : "border-slate-200 hover:border-slate-300",
               )}
             >
-              <span className="flex size-16 shrink-0 items-center justify-center">
+              <span className="flex size-10 shrink-0 items-center justify-center sm:size-16">
                 <Image
                   src={item.imageSrc}
                   alt={item.title}
                   width={64}
                   height={64}
                   unoptimized
-                  className="size-16 object-contain"
+                  className="size-10 object-contain sm:size-16"
                 />
               </span>
               <div>

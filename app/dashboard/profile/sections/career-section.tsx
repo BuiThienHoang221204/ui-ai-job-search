@@ -33,7 +33,7 @@ export function Question({
   return (
     <section
       id={id}
-      className="scroll-mt-24 border-t border-slate-100 p-5 first:border-t-0"
+      className="scroll-mt-24 border-t border-slate-100 p-4 first:border-t-0 sm:p-5"
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>

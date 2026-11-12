@@ -73,7 +73,7 @@ export function ParsedFields({
   ];
 
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       <h3 className="text-sm font-semibold text-slate-900">ATS đọc ra gì</h3>
       <p className="text-xs text-slate-500">
         Thông tin máy lọc tách từ CV để điền vào hồ sơ ứng viên. Ô nào trống thì

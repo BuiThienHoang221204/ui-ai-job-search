@@ -34,17 +34,20 @@ export const navItems = [
   { label: "Tài khoản", href: "/dashboard/settings", icon: Gear },
 ];
 
-/** Lấy tiêu đề trang từ mục điều hướng khớp với đường dẫn hiện tại. */
-export function pageTitle(pathname: string, query = ""): string {
-  const exact = navItems.find((item) => item.href === `${pathname}?${query}`);
-  if (query && exact) return exact.label;
-  const matched = navItems
+/** Mục điều hướng sâu nhất chứa đường dẫn (bỏ qua mục có query); trang chi tiết như `/dashboard/jobs/abc` khớp `/dashboard/jobs`. */
+export function navMatch(pathname: string) {
+  return navItems
     .filter((item) => !item.href.includes("?"))
     .filter(
       (item) =>
         pathname === item.href || pathname.startsWith(`${item.href}/`),
     )
     .sort((a, b) => b.href.length - a.href.length)[0];
+}
 
-  return matched?.label ?? "";
+/** Lấy tiêu đề trang từ mục điều hướng khớp với đường dẫn hiện tại. */
+export function pageTitle(pathname: string, query = ""): string {
+  const exact = navItems.find((item) => item.href === `${pathname}?${query}`);
+  if (query && exact) return exact.label;
+  return navMatch(pathname)?.label ?? "";
 }

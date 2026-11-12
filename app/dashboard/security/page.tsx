@@ -32,7 +32,7 @@ const FORBIDDEN = [
 export default function SecurityPolicyPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <header className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+      <header className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 sm:p-8">
         <span className="bg-primary-50 text-primary-600 grid size-11 place-items-center rounded-xl">
           <ShieldCheck className="size-6" />
         </span>
@@ -47,7 +47,7 @@ export default function SecurityPolicyPage() {
         </p>
       </header>
 
-      <section className="rounded-2xl border border-emerald-200 bg-white p-6">
+      <section className="rounded-2xl border border-emerald-200 bg-white p-4 sm:p-6">
         <h2 className="flex items-center gap-2 font-semibold text-emerald-700">
           <CheckCircle weight="fill" className="size-5" />
           Được phép
@@ -65,7 +65,7 @@ export default function SecurityPolicyPage() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-rose-200 bg-white p-6">
+      <section className="rounded-2xl border border-rose-200 bg-white p-4 sm:p-6">
         <h2 className="flex items-center gap-2 font-semibold text-rose-700">
           <Prohibit weight="fill" className="size-5" />
           Không được phép
@@ -83,7 +83,7 @@ export default function SecurityPolicyPage() {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6">
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6">
         <h2 className="font-semibold text-slate-900">Báo lỗi và cam kết</h2>
         <p className="mt-2 leading-relaxed text-slate-700">
           Gửi lỗi tìm được tới{" "}
@@ -99,7 +99,7 @@ export default function SecurityPolicyPage() {
         </p>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+      <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-6">
         <h2 className="text-sm font-semibold text-slate-900">
           Authorization (English, for automated tools)
         </h2>

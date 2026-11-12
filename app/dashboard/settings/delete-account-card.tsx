@@ -33,7 +33,7 @@ export function DeleteAccountCard() {
   }
 
   return (
-    <section className="rounded-2xl border border-rose-200 bg-white p-5 sm:p-6">
+    <section className="rounded-2xl border border-rose-200 bg-white p-4 sm:p-6">
       <h2 className="font-semibold text-rose-600">Xoá tài khoản</h2>
       <p className="mt-1 max-w-2xl text-sm text-slate-600">
         Xoá vĩnh viễn tài khoản và mọi dữ liệu: hồ sơ, file CV, CV và thư đã

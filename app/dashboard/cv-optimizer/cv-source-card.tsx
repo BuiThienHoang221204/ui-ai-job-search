@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/form";
 import { Tabs } from "@/components/ui/tabs";
 import type { CvGenerate, CvLanguage } from "@/types";
+import { MOBILE_FLAT } from "@/components/ui/card";
 import { cn } from "@/lib/cn";
 
 const NO_JOB = "";
@@ -19,9 +20,9 @@ const NO_JOB = "";
 type Source = "pick" | "paste" | "url";
 
 const SOURCES = [
-  { value: "pick", label: "Chọn tin đã có" },
-  { value: "paste", label: "Dán mô tả công việc" },
-  { value: "url", label: "Dán link tin tuyển dụng" },
+  { value: "pick", short: "Tin đã có", full: "Chọn tin đã có" },
+  { value: "paste", short: "Dán mô tả", full: "Dán mô tả công việc" },
+  { value: "url", short: "Dán link", full: "Dán link tin tuyển dụng" },
 ];
 
 const LANGUAGES = [
@@ -132,7 +133,7 @@ export function CvSourceCard({
     );
 
   return (
-    <div className="space-y-4 rounded-2xl border border-primary-100 bg-primary-50/70 p-4 sm:p-5">
+    <div className={cn("space-y-4 rounded-2xl border border-primary-100 bg-primary-50/70 p-4 sm:p-5", MOBILE_FLAT)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-semibold text-slate-900">
           Bạn muốn ứng tuyển vị trí nào?
@@ -140,7 +141,15 @@ export function CvSourceCard({
         {!fixedJobId && (
           <Tabs
             mobileFull
-            tabs={SOURCES}
+            tabs={SOURCES.map((item) => ({
+              value: item.value,
+              label: (
+                <>
+                  <span className="sm:hidden">{item.short}</span>
+                  <span className="hidden sm:inline">{item.full}</span>
+                </>
+              ),
+            }))}
             value={source}
             onChange={(value) => setSource(value as Source)}
             className="bg-white"

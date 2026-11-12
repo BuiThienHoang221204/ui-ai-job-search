@@ -16,6 +16,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import type { AnswerKind, PrepAnswer } from "@/types";
+import { MOBILE_FLAT } from "@/components/ui/card";
+import { cn } from "@/lib/cn";
 
 const FEEDBACK_MIN = 20;
 
@@ -95,7 +97,7 @@ export function PracticeQuestion({
   else if (answer) answerLabel = "Sửa câu trả lời";
 
   return (
-    <article className="rounded-xl border border-slate-200/80 p-4">
+    <article className={cn("rounded-xl border border-slate-200/80 p-4", MOBILE_FLAT)}>
       <div className="mb-2 flex flex-wrap items-center gap-1.5 empty:hidden">
         {meta}
         {answer && <Badge variant="success">Đã tự trả lời</Badge>}

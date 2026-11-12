@@ -21,7 +21,7 @@ export function CvHero({
   onGenerate: CvGenerate;
 }) {
   return (
-    <Card className="relative p-6 sm:p-7">
+    <Card className="relative p-4 sm:p-7">
       <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold text-primary-700">
         <Sparkle className="size-3.5" />
         Viết bằng AI · không ghi đè hồ sơ gốc

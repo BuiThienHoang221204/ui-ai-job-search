@@ -17,7 +17,7 @@ export function AtsChecks({
     .filter((item) => multiColumn === null || item.key !== "readingOrder")
     .sort((a, b) => ATS_ORDER[a.status] - ATS_ORDER[b.status]);
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       <h3 className="text-sm font-semibold text-slate-900">
         Máy lọc đọc file thế nào
       </h3>

@@ -23,6 +23,7 @@ import {
 } from "@phosphor-icons/react/ssr";
 import { IconBadge } from "@/components/legal/icon-badge";
 import { LegalPage } from "@/components/legal/legal-page";
+import { MOBILE_FLAT } from "@/components/ui/card";
 import { OPERATOR } from "@/lib/legal";
 import type { LegalSection } from "@/types";
 
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-const CARD = "rounded-xl border border-slate-200 p-4";
+const CARD = `rounded-xl border border-slate-200 p-4 ${MOBILE_FLAT}`;
 const NOTE =
   "mt-3 flex gap-2.5 rounded-xl bg-amber-50 px-3.5 py-3 text-sm text-slate-900";
 
@@ -234,7 +235,7 @@ const SECTIONS: LegalSection[] = [
           {VENDORS.map((vendor) => (
             <div
               key={vendor.name}
-              className="grid gap-1 rounded-xl border border-slate-200 px-4 py-3 text-sm sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-4"
+              className={`grid gap-1 rounded-xl border border-slate-200 px-4 py-3 text-sm sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-4 ${MOBILE_FLAT}`}
             >
               <span>
                 <b className="block">{vendor.name}</b>

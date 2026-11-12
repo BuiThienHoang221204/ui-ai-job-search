@@ -13,7 +13,6 @@ import { applicationsService, documentsService } from "@/services";
 import {
   APPLICATION_STATUS_LABELS,
   APPLICATION_STATUS_VARIANTS,
-  NEXT_STATUSES,
 } from "@/lib/application-status";
 import { PageHeader } from "@/components/ui/page-header";
 import { CompanyLogo } from "@/components/jobs/company-logo";
@@ -24,6 +23,7 @@ import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SelectMenu } from "@/components/ui/select-menu";
+import { StatusMenu } from "./status-menu";
 import {
   Table,
   TableBody,
@@ -152,11 +152,13 @@ export function ApplicationsView() {
                 Địa điểm
               </TableHead>
               <TableHead className="hidden w-28 sm:table-cell">Trạng thái</TableHead>
-              <TableHead className="w-32 sm:w-48">Cập nhật</TableHead>
+              <TableHead className="hidden w-48 sm:table-cell">Cập nhật</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.items.map((application, index) => (
+            {data.items.map((application, index) => {
+              const side = index >= data.items.length - 2 && index >= 2 ? "top" : "bottom";
+              return (
               <TableRow key={application.id}>
                 <TableCell>
                   <div className="flex items-center gap-3">
@@ -168,19 +170,32 @@ export function ApplicationsView() {
                     <div className="min-w-0">
                       <Link
                         href={`/dashboard/jobs/${application.jobId}`}
-                        className="hover:text-primary-600 block truncate font-medium text-slate-900"
+                        className="hover:text-primary-600 line-clamp-2 font-medium text-slate-900 sm:block sm:truncate"
                       >
                         {application.job.title}
                       </Link>
                       <p className="truncate text-xs text-slate-400">
                         {application.job.company}
                       </p>
-                      <Badge
-                        variant={APPLICATION_STATUS_VARIANTS[application.status]}
-                        className="mt-1 sm:hidden"
-                      >
-                        {APPLICATION_STATUS_LABELS[application.status]}
-                      </Badge>
+                      <div className="mt-1 flex items-center gap-1 sm:hidden">
+                        <Badge
+                          variant={APPLICATION_STATUS_VARIANTS[application.status]}
+                        >
+                          {APPLICATION_STATUS_LABELS[application.status]}
+                        </Badge>
+                        <StatusMenu
+                          application={application}
+                          variant="text"
+                          side={side}
+                          saving={savingId === application.id}
+                          onChange={(next) => void changeStatus(application, next)}
+                        />
+                      </div>
+                      {rowError?.id === application.id && (
+                        <p className="mt-1 text-xs text-rose-600 sm:hidden">
+                          {rowError.message}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TableCell>
@@ -255,29 +270,13 @@ export function ApplicationsView() {
                     {APPLICATION_STATUS_LABELS[application.status]}
                   </Badge>
                 </TableCell>
-                <TableCell>
-                  <SelectMenu<"" | ApplicationStatus>
+                <TableCell className="hidden sm:table-cell">
+                  <StatusMenu
+                    application={application}
                     variant="field"
-                    side={
-                      index >= data.items.length - 2 && index >= 2
-                        ? "top"
-                        : "bottom"
-                    }
-                    align="right"
-                    label={
-                      savingId === application.id
-                        ? "Đang lưu…"
-                        : "Đổi trạng thái…"
-                    }
-                    value=""
-                    disabled={savingId === application.id}
-                    options={NEXT_STATUSES[application.status].map((next) => ({
-                      value: next,
-                      label: APPLICATION_STATUS_LABELS[next],
-                    }))}
-                    onChange={(next) => {
-                      if (next) void changeStatus(application, next);
-                    }}
+                    side={side}
+                    saving={savingId === application.id}
+                    onChange={(next) => void changeStatus(application, next)}
                   />
                   {rowError?.id === application.id && (
                     <p className="mt-1 text-xs text-rose-600">
@@ -286,7 +285,8 @@ export function ApplicationsView() {
                   )}
                 </TableCell>
               </TableRow>
-            ))}
+              );
+            })}
           </TableBody>
         </Table>
         {data.items.length === 0 && (
@@ -329,3 +329,4 @@ export function ApplicationsView() {
     </div>
   );
 }
+

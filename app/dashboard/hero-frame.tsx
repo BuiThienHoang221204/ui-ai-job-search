@@ -19,7 +19,7 @@ export function HeroFrame({ score, children }: { score: number; children: ReactN
         className="pointer-events-none absolute -bottom-64 left-[38%] -z-10 h-105 w-130 rounded-full bg-[radial-gradient(circle,var(--color-primary-300)_0%,transparent_70%)] opacity-60 blur-[48px]"
       />
 
-      <div className="flex flex-col justify-center gap-4 p-6 sm:p-8">{children}</div>
+      <div className="flex flex-col justify-center gap-4 p-4 sm:p-8">{children}</div>
 
       <div className="hidden items-center justify-center px-4 lg:flex">
         <div className="w-full max-w-[40rem]">

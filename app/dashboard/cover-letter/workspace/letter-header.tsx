@@ -40,7 +40,7 @@ export function LetterHeader({ documentId }: { documentId: string }) {
   };
 
   return (
-    <Card className="p-5 sm:px-6">
+    <Card className="p-4 sm:p-5 sm:px-6">
       <div className="flex flex-wrap items-center gap-4">
         <span className="flex size-14 shrink-0 items-center justify-center sm:size-16">
           <Image

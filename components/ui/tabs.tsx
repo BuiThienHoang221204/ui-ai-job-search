@@ -45,7 +45,7 @@ export function Tabs({
             className={cn(
               "cursor-pointer rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors",
               mobileFull
-                ? "flex-1 text-center sm:flex-none sm:text-left"
+                ? "flex-1 px-2 text-center whitespace-nowrap sm:flex-none sm:px-3.5 sm:text-left"
                 : "shrink-0",
               active
                 ? "bg-white text-primary-700 shadow-sm"

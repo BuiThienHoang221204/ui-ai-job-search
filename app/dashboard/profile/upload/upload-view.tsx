@@ -61,7 +61,7 @@ export function UploadCvView() {
         </div>
         <Link
           href="/dashboard/profile"
-          className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary-600"
+          className="hidden items-center gap-1.5 text-sm text-slate-500 hover:text-primary-600 lg:inline-flex"
         >
           <ArrowLeft className="size-4" />
           Về hồ sơ

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import type { SkillGapItem } from "@/types";
+import { MOBILE_FLAT } from "@/components/ui/card";
 import { cn } from "@/lib/cn";
 
 /** Một kỹ năng còn thiếu: số tin cần nó, các tin gần đạt, và ba lựa chọn học / đã biết / không quan tâm. */
@@ -29,6 +30,7 @@ export function SkillGapCard({
       className={cn(
         "rounded-xl border p-4",
         learning ? "border-primary-200 bg-primary-50/40" : "border-slate-200/80",
+        MOBILE_FLAT,
       )}
     >
       <div className="flex flex-wrap items-center gap-2">

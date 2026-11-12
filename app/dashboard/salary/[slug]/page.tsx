@@ -34,7 +34,7 @@ export default async function DashboardSalaryPositionPage({ params }: Params) {
         title={`Mức lương ${data.positionName}`}
         subtitle={data.occupationName ?? undefined}
         actions={
-          <Link href="/dashboard/salary">
+          <Link href="/dashboard/salary" className="hidden lg:block">
             <Button variant="outline" size="sm">
               <ArrowLeft className="size-4" />
               Tra cứu lương

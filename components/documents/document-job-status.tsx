@@ -32,7 +32,7 @@ export function DocumentJobStatus({
     if (status === "RUNNING") label = RUNNING_LABELS.RUNNING;
     else if (status === "PENDING") label = RUNNING_LABELS.PENDING;
     return (
-      <Card className="border-primary-200 bg-primary-50/40 p-5">
+      <Card className="border-primary-200 bg-primary-50/40 p-4 sm:p-5">
         <div className="flex items-start gap-3.5">
           <CircleNotch className="text-primary-600 mt-0.5 size-5.5 shrink-0 animate-spin" />
           <div className="space-y-1">

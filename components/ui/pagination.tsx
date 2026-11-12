@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { formatCount } from "@/lib/number";
@@ -22,15 +23,20 @@ export function Pagination({
   noun = "kết quả",
   disabled,
 }: PaginationProps) {
+  const root = useRef<HTMLDivElement>(null);
   if (total <= limit) return null;
 
   const from = offset + 1;
   const to = Math.min(offset + limit, total);
   const page = Math.floor(offset / limit) + 1;
   const pages = Math.ceil(total / limit);
+  const go = (next: number) => {
+    onOffsetChange(next);
+    revealListTop(root.current);
+  };
 
   return (
-    <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-1.5">
+    <div ref={root} className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-1.5">
       <p className="truncate text-xs text-slate-500">
         <span className="font-mono font-semibold text-slate-700">
           {formatCount(from)}–{formatCount(to)}
@@ -46,7 +52,7 @@ export function Pagination({
           aria-label="Trang trước"
           title="Trang trước"
           disabled={disabled || offset === 0}
-          onClick={() => onOffsetChange(Math.max(0, offset - limit))}
+          onClick={() => go(Math.max(0, offset - limit))}
         >
           <CaretLeft className="size-4" />
         </Button>
@@ -57,7 +63,7 @@ export function Pagination({
           variant="outline"
           size="sm"
           disabled={disabled || to >= total}
-          onClick={() => onOffsetChange(offset + limit)}
+          onClick={() => go(offset + limit)}
         >
           Sau
           <CaretRight className="size-4" />
@@ -65,4 +71,15 @@ export function Pagination({
       </div>
     </div>
   );
+}
+
+/** Lật trang khi đang ở cuối danh sách thì đưa đầu khối chứa danh sách lên lại màn hình, thay vì để người dùng đứng ở cuối trang mới. */
+function revealListTop(bar: HTMLElement | null) {
+  const viewTop = bar?.closest("main")?.getBoundingClientRect().top ?? 0;
+  for (let el = bar?.parentElement; el && el.tagName !== "MAIN"; el = el.parentElement) {
+    if (el.getBoundingClientRect().top < viewTop) {
+      el.scrollIntoView({ block: "start" });
+      return;
+    }
+  }
 }

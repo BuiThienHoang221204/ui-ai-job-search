@@ -9,7 +9,7 @@ export function RepostCard({ reposts }: { reposts: JobReposts }) {
   const weeks = postedWeeks(reposts.dates, new Date());
 
   return (
-    <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5">
       <h2 className="flex items-center gap-2 font-semibold text-slate-900">
         <ArrowsClockwise className="size-5 text-amber-600" weight="duotone" />
         Vị trí này được đăng lại nhiều lần

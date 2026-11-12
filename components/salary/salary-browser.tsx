@@ -148,7 +148,7 @@ export function SalaryBrowser({
             <Table className="table-fixed">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-[30%] sm:w-[26%]">Vị trí</TableHead>
+                  <TableHead className="sm:w-[26%]">Vị trí</TableHead>
                   <TableHead className="hidden w-[20%] md:table-cell">
                     Ngành
                   </TableHead>
@@ -171,7 +171,7 @@ export function SalaryBrowser({
                       <Link
                         href={`${basePath}/${p.positionSlug}`}
                         title={p.positionName}
-                        className="hover:text-primary-600 block truncate font-medium text-slate-900"
+                        className="hover:text-primary-600 line-clamp-2 font-medium text-slate-900 sm:block sm:truncate"
                       >
                         {p.positionName}
                       </Link>

@@ -67,7 +67,7 @@ export function SystemMatchCard({ jobId }: { jobId: string }) {
 
   if (system.kind !== "REQUIREMENTS") {
     return (
-      <Card id="doi-chieu" className="scroll-mt-20 p-6 text-sm text-slate-500">
+      <Card id="doi-chieu" className="scroll-mt-20 p-4 sm:p-6 text-sm text-slate-500">
         Tin này chưa được phân tích yêu cầu nên chưa đối chiếu được với hồ sơ.
       </Card>
     );
@@ -80,7 +80,7 @@ export function SystemMatchCard({ jobId }: { jobId: string }) {
   );
 
   return (
-    <Card id="doi-chieu" className="scroll-mt-20 p-6">
+    <Card id="doi-chieu" className="scroll-mt-20 p-4 sm:p-6">
       <div className="mb-2 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold tracking-tight text-slate-900">

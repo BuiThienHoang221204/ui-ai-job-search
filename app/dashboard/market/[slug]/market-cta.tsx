@@ -23,7 +23,7 @@ export function MarketCta() {
 
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 max-sm:basis-full">
         <p className="font-semibold text-slate-900">{cta.title}</p>
         <p className="text-sm text-slate-500">{cta.detail}</p>
       </div>

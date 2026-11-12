@@ -31,7 +31,7 @@ export function LetterChecklistCard({ documentId }: { documentId: string }) {
       : null;
 
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       <h2 className="flex items-center gap-2 text-base font-semibold text-slate-900">
         Trước khi gửi
         {todo > 0 && (

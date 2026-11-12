@@ -5,7 +5,7 @@ import { PencilSimple } from "@phosphor-icons/react/ssr";
 import { useApiQuery } from "@/hooks/use-api-query";
 import { keys } from "@/lib/query-keys";
 import { jobsService } from "@/services";
-import { Card } from "@/components/ui/card";
+import { Card, MOBILE_FLAT } from "@/components/ui/card";
 import { SelectMenu } from "@/components/ui/select-menu";
 import { MultiPickField } from "@/components/ui/multi-pick-field";
 import { Skeleton, SkeletonPage } from "@/components/ui/skeleton";
@@ -47,7 +47,7 @@ export function ProfileHeader() {
   );
 
   return (
-    <Card className="p-5 sm:p-6">
+    <Card className="p-4 sm:p-6">
       <div className="flex items-center gap-4">
         <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary-600 text-lg font-bold text-white">
           {personInitials(user?.name)}
@@ -70,7 +70,7 @@ export function ProfileHeader() {
         </button>
       </div>
 
-      <div id="profile-search" className="mt-5 rounded-2xl bg-primary-50 p-4">
+      <div id="profile-search" className={cn("mt-5 rounded-2xl bg-primary-50 p-4", MOBILE_FLAT)}>
         <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
           <div>
             <p className="text-sm font-semibold text-slate-900">

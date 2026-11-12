@@ -76,7 +76,7 @@ export function DisplayCard() {
                 aria-checked={active}
                 onClick={() => applyTheme(option.id)}
                 className={cn(
-                  "flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full px-2 py-2 text-sm transition",
+                  "flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full px-1.5 py-2 text-sm transition sm:gap-2 sm:px-2",
                   active
                     ? "bg-white font-semibold text-slate-900 shadow-sm"
                     : "text-slate-500 hover:text-slate-700",

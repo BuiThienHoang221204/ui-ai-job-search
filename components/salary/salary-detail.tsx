@@ -221,7 +221,7 @@ function Peers({
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead className="w-12">#</TableHead>
-            <TableHead className="w-[42%] sm:w-[38%]">Vị trí</TableHead>
+            <TableHead className="sm:w-[38%]">Vị trí</TableHead>
             <TableHead className="hidden whitespace-nowrap sm:table-cell">
               Mức tương đối
             </TableHead>
@@ -244,7 +244,7 @@ function Peers({
                 {peer.isCurrent ? (
                   <span
                     title={peer.positionName}
-                    className="text-primary-800 block truncate font-semibold"
+                    className="text-primary-800 line-clamp-2 font-semibold sm:block sm:truncate"
                   >
                     {peer.positionName}
                   </span>
@@ -252,7 +252,7 @@ function Peers({
                   <Link
                     href={`${basePath}/${peer.positionSlug}`}
                     title={peer.positionName}
-                    className="hover:text-primary-600 block truncate text-slate-700"
+                    className="hover:text-primary-600 line-clamp-2 text-slate-700 sm:block sm:truncate"
                   >
                     {peer.positionName}
                   </Link>

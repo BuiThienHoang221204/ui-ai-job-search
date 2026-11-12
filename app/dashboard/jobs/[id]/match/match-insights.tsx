@@ -27,7 +27,7 @@ export function MatchInsights({ jobId }: { jobId: string }) {
   const items = { strengths: match.strengths, gaps: match.gaps };
 
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       <h3 className="mb-3 text-base font-semibold text-slate-900">
         Nhận xét của AI
       </h3>

@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import { X } from "@phosphor-icons/react/ssr";
 import { Header } from "@/components/layout/header";
+import { ScrollMemory } from "@/components/layout/scroll-memory";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -12,6 +13,7 @@ interface AppLayoutProps {
 /** Khung dashboard: sidebar cố định trên desktop, drawer trên mobile, header và nội dung. */
 export function AppLayout({ children, sidebar }: AppLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const main = useRef<HTMLElement>(null);
 
   return (
     <div data-app-shell className="flex h-screen overflow-hidden bg-surface">
@@ -40,7 +42,10 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
         <Suspense>
           <Header onMenuClick={() => setMobileOpen(true)} />
         </Suspense>
-        <main className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4">{children}</main>
+        <main ref={main} className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4">{children}</main>
+        <Suspense>
+          <ScrollMemory target={main} />
+        </Suspense>
       </div>
     </div>
   );

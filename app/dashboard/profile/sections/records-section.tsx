@@ -58,9 +58,9 @@ function RecordList({ type, icon }: { type: RecordType; icon: Icon }) {
               return (
                 <li
                   key={index}
-                  className="grid grid-cols-[2.75rem_minmax(0,1fr)_auto] gap-3.5 border-t border-slate-100 py-3.5 first:border-t-0 first:pt-0"
+                  className="grid grid-cols-[minmax(0,1fr)_auto] gap-3.5 border-t border-slate-100 py-3.5 first:border-t-0 first:pt-0 sm:grid-cols-[2.75rem_minmax(0,1fr)_auto]"
                 >
-                  <span className="flex size-11 items-center justify-center rounded-xl bg-slate-100 text-xs font-bold text-slate-600">
+                  <span className="hidden size-11 items-center justify-center rounded-xl bg-slate-100 text-xs font-bold text-slate-600 sm:flex">
                     {companyInitials(
                       type === "experiences" ? view.sub : view.title,
                     )}

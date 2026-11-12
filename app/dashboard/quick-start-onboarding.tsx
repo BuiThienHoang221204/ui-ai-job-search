@@ -271,7 +271,7 @@ export function QuickStartOnboarding({ firstName }: QuickStartOnboardingProps) {
 
   return (
     <div className="space-y-5">
-      <div className="rounded-xl border border-slate-200/80 bg-white p-5 sm:p-6">
+      <div className="rounded-xl border border-slate-200/80 bg-white p-4 sm:p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h1 className="text-lg font-semibold tracking-tight text-slate-900">

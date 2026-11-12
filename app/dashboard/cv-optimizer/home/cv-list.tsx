@@ -76,7 +76,7 @@ export function CvList() {
   }
 
   return (
-    <Card className="p-6">
+    <Card className="p-4 sm:p-6">
       <div className="mb-3 flex items-center gap-2.5">
         <FileText className="size-5 text-primary-600" />
         <h2 className="flex-1 text-base font-semibold text-slate-900">

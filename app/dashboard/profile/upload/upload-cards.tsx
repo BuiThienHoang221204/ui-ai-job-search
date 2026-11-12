@@ -119,7 +119,7 @@ export function UploadPanel({
   const failed = !reading && draft?.status === "FAILED";
 
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       {failed && (
         <Alert
           tone="danger"

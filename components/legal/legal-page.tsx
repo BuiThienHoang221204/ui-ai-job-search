@@ -52,7 +52,7 @@ export function LegalPage({
 
   return (
     <div className="space-y-6">
-      <header className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+      <header className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 sm:p-8">
         <span
           aria-hidden
           className="from-primary-100/60 pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-radial to-transparent to-70%"
@@ -137,7 +137,7 @@ export function LegalPage({
             <section
               key={section.id}
               id={section.id}
-              className="scroll-mt-4 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"
+              className="scroll-mt-4 rounded-2xl border border-slate-200 bg-white p-4 sm:p-6"
             >
               <div className="flex items-center gap-3">
                 <IconBadge icon={section.icon} tone={section.tone} />
@@ -165,7 +165,7 @@ export function LegalPage({
             </section>
           ))}
 
-          <div className="border-primary-100 from-primary-50 flex flex-wrap items-center justify-between gap-4 rounded-2xl border bg-linear-to-br to-white p-5 sm:p-6">
+          <div className="border-primary-100 from-primary-50 flex flex-wrap items-center justify-between gap-4 rounded-2xl border bg-linear-to-br to-white p-4 sm:p-6">
             <div>
               <h2 className="font-display text-lg text-slate-900">
                 Còn thắc mắc?

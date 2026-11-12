@@ -6,7 +6,7 @@ import { StatusIcon } from "./status-icon";
 /** Điểm từng tiêu chí sau khi chấm, kèm lý do ở tiêu chí chưa đủ điểm. */
 export function RubricChecks({ result }: { result: CvCheckResult }) {
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       <h3 className="text-sm font-semibold text-slate-900">
         Bảng chấm 8 tiêu chí
       </h3>

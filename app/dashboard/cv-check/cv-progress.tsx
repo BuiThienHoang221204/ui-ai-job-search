@@ -46,7 +46,7 @@ export function CvProgress({
   return (
     <div className="space-y-3">
       <Card className="overflow-hidden">
-        <div className="grid items-start gap-7 p-6 sm:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_17.5rem]">
+        <div className="grid items-start gap-7 p-4 sm:p-6 sm:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_17.5rem]">
           <div className="relative hidden aspect-[1/1.414] w-33 overflow-hidden rounded-md border border-slate-300 bg-white px-3 py-3.5 shadow-[0_16px_30px_-20px_rgba(15,23,42,0.45)] sm:block">
             {PAPER_LINES.map((line, index) => (
               <i
@@ -147,7 +147,7 @@ export function CvProgress({
       </Card>
       <div className="grid animate-pulse gap-3 md:grid-cols-2">
         {[0, 1].map((index) => (
-          <Card key={index} className="space-y-2.5 p-5">
+          <Card key={index} className="space-y-2.5 p-4 sm:p-5">
             <Skeleton className="h-3.5 w-1/3" />
             <Skeleton className="h-2.5 w-full" />
             <Skeleton className="h-2.5 w-11/12" />

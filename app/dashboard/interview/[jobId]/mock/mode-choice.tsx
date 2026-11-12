@@ -14,7 +14,7 @@ export function ModeChoice({
   onVoice: () => void;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6">
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6">
       <h2 className="font-display text-xl font-semibold text-slate-900">
         Bắt đầu một buổi luyện
       </h2>

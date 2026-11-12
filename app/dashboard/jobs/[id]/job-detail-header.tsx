@@ -45,7 +45,7 @@ export function JobDetailHeader({
   const submitted = job.application?.status === "APPLIED";
 
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-6">
       <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-3.5 sm:gap-x-4">
         <CompanyLogo
           src={card.companyLogo}

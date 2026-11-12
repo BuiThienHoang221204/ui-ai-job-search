@@ -53,7 +53,7 @@ export function LetterList() {
 
   if (!letters.data || !emails.data) {
     return (
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <Skeleton className="h-40" />
       </Card>
     );
@@ -62,7 +62,7 @@ export function LetterList() {
   const groups = groupByJob([...emails.data.items, ...letters.data.items]);
 
   return (
-    <Card className="p-6">
+    <Card className="p-4 sm:p-6">
       <div className="mb-1 flex items-center gap-2.5">
         <Envelope className="size-5 text-primary-600" />
         <h2 className="flex-1 text-base font-semibold text-slate-900">

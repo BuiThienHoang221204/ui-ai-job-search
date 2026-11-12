@@ -35,7 +35,7 @@ export function CvPicker({
   const { over, dropProps } = useFileDrop(onPick);
 
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       <h2 className="text-base font-semibold tracking-tight text-slate-900">
         Chọn CV
       </h2>

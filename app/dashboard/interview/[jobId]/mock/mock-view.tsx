@@ -103,7 +103,7 @@ export function MockInterviewView({
         title="Phỏng vấn thử"
         subtitle={`${job.data.job.title} · ${job.data.job.company}`}
         actions={
-          <Link href={`/dashboard/interview?job=${jobId}`}>
+          <Link href={`/dashboard/interview?job=${jobId}`} className="hidden lg:block">
             <Button variant="outline" size="sm">
               <ArrowLeft className="size-4" />
               Bộ câu hỏi

@@ -25,7 +25,7 @@ export function WorkspaceHeader({ documentId }: { documentId: string }) {
 
   return (
     <Card className="divide-y divide-slate-100">
-      <div className="flex flex-wrap items-center gap-4 p-5 sm:px-6">
+      <div className="flex flex-wrap items-center gap-4 p-4 sm:p-5 sm:px-6">
         <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary-600 text-white">
           <FileText className="size-7" />
         </span>

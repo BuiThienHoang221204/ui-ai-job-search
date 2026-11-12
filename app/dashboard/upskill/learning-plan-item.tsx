@@ -7,6 +7,7 @@ import { hostOf, resourcesFor } from "@/lib/learning-resources";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import type { LearningItem, WeekDay } from "@/types";
+import { MOBILE_FLAT } from "@/components/ui/card";
 import { cn } from "@/lib/cn";
 
 const milestones = (skill: string) => [
@@ -38,6 +39,7 @@ export function LearningPlanItem({ item }: { item: LearningItem }) {
       className={cn(
         "scroll-mt-6 space-y-3 rounded-xl border p-3.5",
         done ? "border-emerald-200 bg-emerald-50/60" : "border-slate-200/80",
+        MOBILE_FLAT,
       )}
     >
       <div className="flex items-center gap-2">
@@ -93,7 +95,7 @@ export function LearningPlanItem({ item }: { item: LearningItem }) {
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-1 text-xs text-slate-500">
-            <span className="mr-1">Học vào:</span>
+            <span className="mr-1 w-full sm:w-auto">Học vào:</span>
             {WEEK_DAYS.map((day) => (
               <button
                 key={day.value}

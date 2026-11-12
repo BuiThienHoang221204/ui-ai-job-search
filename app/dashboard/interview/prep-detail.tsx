@@ -350,7 +350,7 @@ export function PrepDetail({ jobId }: { jobId: string }) {
     );
   } else if (isPrepBusy(record.status)) {
     content = (
-      <Card className="p-5">
+      <Card className="p-4 sm:p-5">
         <p className="font-medium text-slate-900">Đang soạn bộ câu hỏi…</p>
         <p className="mt-1 text-sm text-slate-500">
           Thường mất khoảng một phút. Bạn có thể rời trang, bộ câu hỏi vẫn được

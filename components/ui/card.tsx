@@ -38,3 +38,6 @@ export function CardDescription({ className, ...props }: HTMLAttributes<HTMLPara
 export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("p-5", className)} {...props} />;
 }
+
+export const MOBILE_FLAT =
+  "max-sm:rounded-none max-sm:border-x-0 max-sm:border-b-0 max-sm:border-t max-sm:border-slate-100 max-sm:bg-transparent max-sm:px-0 max-sm:pb-0 max-sm:shadow-none";

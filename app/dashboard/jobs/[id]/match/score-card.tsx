@@ -25,7 +25,7 @@ export function ScoreCard({
 
   return (
     <Card className="overflow-visible">
-      <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-6 p-4 sm:flex-row sm:p-6 sm:items-center">
         <ProgressCircle
           value={overallScore}
           size={128}
