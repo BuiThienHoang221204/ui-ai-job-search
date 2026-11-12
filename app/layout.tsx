@@ -23,6 +23,7 @@ export const metadata: Metadata = {
   title: "Careelot | Tìm việc làm bằng AI",
   description:
     "Dashboard ứng dụng Careelot: phân tích AI match, tối ưu CV, cover letter và theo dõi quy trình ứng tuyển.",
+  openGraph: { type: "website", siteName: "Careelot", locale: "vi_VN" },
   appleWebApp: { capable: true, title: "Careelot", statusBarStyle: "default" },
   icons: {
     icon: "/Careelot_Square.svg",
