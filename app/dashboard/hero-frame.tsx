@@ -9,7 +9,7 @@ export const SECONDARY_CTA =
 /** Khung hero của trang Tổng quan: nền gradient có quầng sáng, nội dung bên trái và minh hoạ CV đếm tới `score` bên phải. */
 export function HeroFrame({ score, children }: { score: number; children: ReactNode }) {
   return (
-    <section className="relative isolate grid overflow-hidden rounded-[1.25rem] border border-primary-100 bg-[linear-gradient(115deg,#fff_0%,var(--color-primary-50)_38%,var(--color-primary-100)_70%,var(--color-primary-200)_100%)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+    <section className="relative isolate grid overflow-hidden rounded-[1.25rem] border border-primary-100 bg-[linear-gradient(115deg,var(--color-surface-card)_0%,var(--color-primary-50)_38%,var(--color-primary-100)_70%,var(--color-primary-200)_100%)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
       <span
         aria-hidden
         className="pointer-events-none absolute -top-56 -right-32 -z-10 size-140 rounded-full bg-[radial-gradient(circle,var(--color-primary-400)_0%,var(--color-primary-300)_30%,transparent_68%)] opacity-75 blur-[48px]"

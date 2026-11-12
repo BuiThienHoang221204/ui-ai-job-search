@@ -47,10 +47,10 @@ export function DashboardView() {
               {/* <SkillResources placement="dashboard" occupation={data.occupationCode} skills={adSkills} /> */}
               <TopMatches />
             </Card>
-            <Card className="border-primary-100 bg-[linear-gradient(160deg,var(--color-primary-50),#fff_70%)]">
+            <Card className="border-primary-100 bg-[linear-gradient(160deg,var(--color-primary-50),var(--color-surface-card)_70%)]">
               <ScoreBreakdown />
             </Card>
-            <Card className="border-amber-200/70 bg-[linear-gradient(160deg,var(--color-amber-50),#fff_70%)]">
+            <Card className="border-amber-200/70 bg-[linear-gradient(160deg,var(--color-amber-50),var(--color-surface-card)_70%)]">
               <WeeklyGoals />
             </Card>
           </div>

@@ -257,7 +257,7 @@ export function CvHeroArt({ score }: { score: number }) {
                     <stop offset="1" stopColor="#12d6b8" />
                   </linearGradient>
                 </defs>
-                <circle cx="110" cy="110" r="94" fill="#fff" stroke="#eef3ff" strokeWidth={20} />
+                <circle cx="110" cy="110" r="94" className={styles.ringTrack} strokeWidth={20} />
                 <circle
                   data-anim="arc"
                   cx="110"

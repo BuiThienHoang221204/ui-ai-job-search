@@ -33,7 +33,7 @@ export function WeeklyGoals() {
       title="Mục tiêu tuần này"
       action={<span className="text-xs text-slate-600 tabular-nums">{done}/{total} việc</span>}
     >
-      <p className="flex items-center gap-1.5 text-sm font-semibold text-amber-700">
+      <p className="flex items-center gap-1.5 text-sm font-semibold text-amber-700 dark:text-amber-400">
         <Fire weight="fill" className="size-4 text-amber-600" />
         {days ? `${days} ngày liên tiếp` : "Chưa có chuỗi ngày"}
       </p>

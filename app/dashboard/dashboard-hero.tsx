@@ -29,7 +29,7 @@ export function DashboardHero() {
       <h1 className="text-2xl leading-tight font-semibold tracking-tight text-slate-900 sm:text-[1.75rem]">
         Tìm đúng việc, <span className="text-primary-600">chuẩn bị tốt hơn</span>, chinh phục nhà tuyển dụng
       </h1>
-      <p className="max-w-xl text-sm leading-relaxed text-slate-600">
+      <p className="max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
         {jobsLine} Tối ưu CV cho tin hợp nhất trước khi nộp để tăng cơ hội được gọi phỏng vấn.
       </p>
       <div className="flex flex-wrap gap-2.5">
@@ -51,7 +51,7 @@ export function DashboardHero() {
           Xem việc làm phù hợp
         </Link>
       </div>
-      <p className="text-xs text-slate-600">
+      <p className="text-xs text-slate-600 dark:text-slate-400">
         <b className="text-sm text-slate-900">{data.profileCompletion}%</b> hồ sơ hoàn thiện
         {data.profileCompletion < 100 && (
           <>
