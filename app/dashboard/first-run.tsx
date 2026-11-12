@@ -1,156 +1,140 @@
 "use client";
 
 import Link from "next/link";
-import { Check } from "@phosphor-icons/react/ssr";
-import { jobsService } from "@/services";
-import { useApiQuery } from "@/hooks/use-api-query";
-import { keys } from "@/lib/query-keys";
-import { toJobCardFromRecord } from "@/lib/adapters";
-// import { SkillResources } from "@/components/ads/affiliate-inline";
-import { DashSection } from "@/components/ui/dash-section";
+import { ArrowRight, Briefcase, Check, FileText, Lightbulb, Sparkle, Target, UploadSimple } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MarketCard } from "./market-card";
-import { TopMatchRow } from "./top-matches";
+import { DashSection } from "@/components/ui/dash-section";
 import { useDashboard } from "@/hooks/use-dashboard";
-import { cn } from "@/lib/cn";
 import { useSession } from "@/hooks/use-session";
+import { cn } from "@/lib/cn";
+import { HeroFrame, PRIMARY_CTA, SECONDARY_CTA } from "./hero-frame";
+import { MarketCard } from "./market-card";
+import { TopMatches } from "./top-matches";
 
-type Step = { title: string; detail: string; done: boolean; action?: { label: string; href: string } };
+const SAMPLE_SCORE = 85;
 
 const BENEFITS = [
-  { title: "Điểm phù hợp cho từng tin", detail: "So hồ sơ với yêu cầu của tin, biết hợp ở đâu, thiếu ở đâu." },
-  { title: "Gợi ý tối ưu", detail: "Kỹ năng nên học thêm, chỗ nên sửa trong hồ sơ." },
-  { title: "CV và thư xin việc theo từng tin", detail: "Viết lại CV cho đúng tin bạn muốn ứng tuyển." },
+  { icon: Target, title: "Điểm phù hợp cho từng tin", detail: "So hồ sơ với yêu cầu của tin, biết hợp ở đâu, thiếu ở đâu." },
+  { icon: Lightbulb, title: "Gợi ý tối ưu", detail: "Kỹ năng nên học thêm, chỗ nên sửa trong hồ sơ." },
+  { icon: FileText, title: "CV và thư xin việc theo từng tin", detail: "Viết lại CV cho đúng tin bạn muốn ứng tuyển." },
 ];
 
-/** Tổng quan cho tài khoản chưa có lần chấm AI nào: các bước bắt đầu, việc mới trong ngành, số liệu ngành. */
+/** Tổng quan cho tài khoản chưa có lần chấm AI nào: hero kèm các bước bắt đầu, việc mới trong ngành, thẻ mở khoá và số liệu ngành. */
 export function FirstRun() {
   const { user } = useSession();
   const { data } = useDashboard();
-  const jobs = useApiQuery(
-    keys.jobList({ scored: true, limit: 4 }),
-    () => jobsService.list({ scored: true, limit: 4 }),
-    { errorMessage: "Không tải được việc làm trong ngành của bạn" },
-  );
   if (!data) return null;
 
   const firstName = user?.name.split(" ").slice(-2).join(" ") ?? "bạn";
+  const occupation = data.market?.occupationName ?? "trong ngành của bạn";
   const hasProfile = data.profileCompletion > 0;
-  const steps: Step[] = [
+  const steps = [
     { title: "Chọn ngành nghề", detail: data.market?.occupationName ?? "Đã chọn", done: true },
-    {
-      title: "Tải CV lên",
-      detail: "Tự đọc kinh nghiệm, kỹ năng từ file PDF.",
-      done: hasProfile,
-      action: { label: "Tải CV lên", href: "/dashboard/profile/upload" },
-    },
-    {
-      title: "Chấm điểm một tin",
-      detail: "Mở một tin bên dưới và bấm chấm điểm.",
-      done: false,
-      action: { label: "Xem việc làm", href: "/dashboard/jobs?scored=1" },
-    },
+    { title: "Tải CV lên", detail: "Tự đọc kinh nghiệm, kỹ năng từ file PDF", done: hasProfile },
+    { title: "Chấm điểm một tin", detail: "Mở một tin và bấm chấm điểm", done: false },
   ];
   const current = steps.findIndex((step) => !step.done);
+  const unlock = hasProfile
+    ? { title: "Chấm điểm một tin để mở khoá", label: "Chọn một tin để chấm", href: "/dashboard/jobs?scored=1" }
+    : { title: "Tải CV lên để mở khoá", label: "Tải CV lên", href: "/dashboard/profile/upload" };
 
   return (
     <>
-      <Card className="p-6 sm:p-7">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-          Chào {firstName}, đây là việc làm {data.market?.occupationName ?? "trong ngành"} cho bạn
+      <HeroFrame score={SAMPLE_SCORE}>
+        <span className="inline-flex items-center gap-1.5 self-start rounded-full border border-primary-100 bg-white px-3 py-1 text-xs font-semibold text-primary-700">
+          <Sparkle weight="fill" className="size-3.5" />
+          Chào {firstName}
+        </span>
+        <h1 className="text-2xl leading-tight font-semibold tracking-tight text-slate-900 sm:text-[1.75rem]">
+          Bắt đầu với việc làm <span className="text-primary-600">{occupation}</span>
         </h1>
-        <p className="mt-2 max-w-3xl text-sm text-slate-500">
+        <p className="max-w-xl text-sm leading-relaxed text-slate-600">
           {hasProfile
-            ? "Hồ sơ đã có. Chấm điểm một tin để thấy hệ thống so sánh thế nào."
-            : "Bạn đã chọn ngành, xem được việc ngay. Tải CV lên để mỗi tin có điểm phù hợp và lý do vì sao hợp."}
+            ? "Hồ sơ đã có. Chấm điểm một tin để thấy hệ thống so sánh hồ sơ với yêu cầu của tin thế nào."
+            : "Bạn đã chọn ngành nên xem được việc ngay. Tải CV lên để mỗi tin có điểm phù hợp và lý do vì sao hợp."}
         </p>
-        <ol className="mt-6 grid gap-x-10 gap-y-4 border-t border-slate-100 pt-5 sm:grid-cols-3">
+        <div className="flex flex-wrap gap-2.5">
+          {hasProfile ? (
+            <Link href="/dashboard/jobs?scored=1" className={PRIMARY_CTA}>
+              <Briefcase className="size-4.5" />
+              Chọn một tin để chấm
+              <ArrowRight className="size-4" />
+            </Link>
+          ) : (
+            <>
+              <Link href="/dashboard/profile/upload" className={PRIMARY_CTA}>
+                <UploadSimple className="size-4.5" />
+                Tải CV lên
+                <ArrowRight className="size-4" />
+              </Link>
+              <Link href="/dashboard/jobs?scored=1" className={SECONDARY_CTA}>
+                <Briefcase className="size-4.5" />
+                Xem việc làm phù hợp
+              </Link>
+            </>
+          )}
+        </div>
+        <ol className="grid gap-3 border-t border-primary-200/60 pt-4 sm:grid-cols-3">
           {steps.map((step, index) => {
-            let badgeClass = "border border-slate-300 text-slate-400";
-            if (step.done) badgeClass = "bg-slate-900 text-white";
-            else if (index === current) badgeClass = "border border-slate-900 text-slate-900";
+            const isNow = index === current;
             return (
-              <li key={step.title} className="flex gap-3">
+              <li key={step.title} className="flex gap-2.5">
                 <span
                   className={cn(
-                    "flex size-5.5 shrink-0 items-center justify-center rounded-full text-2xs font-semibold",
-                    badgeClass,
+                    "grid size-6 shrink-0 place-items-center rounded-full border-[1.5px] text-2xs font-bold",
+                    step.done && "border-primary-600 bg-primary-600 text-white",
+                    isNow && "border-primary-600 bg-white text-primary-700 ring-4 ring-primary-100",
+                    !step.done && !isNow && "border-slate-300 bg-white text-slate-500",
                   )}
                 >
-                  {step.done ? <Check className="size-3" /> : index + 1}
+                  {step.done ? <Check weight="bold" className="size-3.5" /> : index + 1}
                 </span>
-                <div className="min-w-0">
-                  <p className={cn("text-sm font-semibold", step.done || index === current ? "text-slate-900" : "text-slate-400")}>
+                <span className="min-w-0">
+                  <span className={cn("block text-sm font-semibold", step.done || isNow ? "text-slate-900" : "text-slate-500")}>
                     {step.title}
-                  </p>
-                  <p className="text-xs text-slate-500">{step.detail}</p>
-                  {step.action && index === current && (
-                    <Link href={step.action.href} className="mt-2 inline-block">
-                      <Button size="sm">{step.action.label}</Button>
-                    </Link>
-                  )}
-                </div>
+                  </span>
+                  <span className="block text-xs text-slate-600">{step.detail}</span>
+                </span>
               </li>
             );
           })}
         </ol>
-      </Card>
+      </HeroFrame>
 
-      <Card>
-      <DashSection
-        title="Việc mới hợp với bạn"
-        action={
-          <Link href="/dashboard/jobs?scored=1" className="text-xs text-slate-500 hover:text-slate-900">
-            Xem tất cả →
-          </Link>
-        }
-      >
-        {jobs.data && jobs.data.items.length > 0 ? (
-          <ul>
-            {jobs.data.items.map((item) => {
-              const job = toJobCardFromRecord(item);
-              const fit = job.systemMatch && job.systemMatch.total > 0 ? job.systemMatch : null;
-              return (
-                <TopMatchRow
-                  key={job.id}
-                  job={job}
-                  score={null}
-                  meta={[job.company, job.location, job.postedAt.label].filter(Boolean).join(" · ")}
-                  note={fit ? `Khớp kỹ năng ${fit.met}/${fit.total}` : null}
-                  actionLabel="Chấm điểm AI"
-                />
-              );
-            })}
-          </ul>
-        ) : (
-          <p className="text-sm text-slate-500">{jobs.data ? "Chưa có tin nào trong ngành của bạn." : "Đang tải việc làm…"}</p>
-        )}
-      </DashSection>
-      </Card>
-
-      <div className="grid items-stretch gap-5 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="min-w-0 lg:col-span-2 lg:row-span-2">
+          <TopMatches newcomer />
+        </Card>
+        <Card className="border-primary-100 bg-[linear-gradient(160deg,var(--color-primary-50),#fff_70%)]">
+          <DashSection title={unlock.title}>
+            <ul className="grid gap-3">
+              {BENEFITS.map((item) => {
+                const BenefitIcon = item.icon;
+                return (
+                  <li key={item.title} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-2.5">
+                    <span className="grid size-8 place-items-center rounded-lg border border-primary-100 bg-white text-primary-600">
+                      <BenefitIcon className="size-4" />
+                    </span>
+                    <span>
+                      <span className="block text-sm font-semibold text-slate-900">{item.title}</span>
+                      <span className="block text-xs text-slate-600">{item.detail}</span>
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+            <Link href={unlock.href} className="mt-4 block">
+              <Button variant="outline" className="w-full justify-center">
+                {unlock.label}
+              </Button>
+            </Link>
+          </DashSection>
+        </Card>
         <Card>
           <MarketCard />
         </Card>
-        <Card>
-        <DashSection title={hasProfile ? "Chấm điểm một tin để mở khoá" : "Tải CV lên để mở khoá"}>
-          <ul>
-            {BENEFITS.map((item) => (
-              <li key={item.title} className="border-t border-slate-100 py-2.5 first:border-t-0 first:pt-0">
-                <p className="text-sm font-semibold text-slate-900">{item.title}</p>
-                <p className="text-xs text-slate-500">{item.detail}</p>
-              </li>
-            ))}
-          </ul>
-          <Link href={hasProfile ? "/dashboard/jobs?scored=1" : "/dashboard/profile/upload"} className="mt-4 inline-block">
-            <Button>{hasProfile ? "Chọn một tin để chấm" : "Tải CV lên"}</Button>
-          </Link>
-        </DashSection>
-        </Card>
       </div>
-
-      {/* <SkillResources placement="dashboard" occupation={data.occupationCode} /> */}
     </>
   );
 }

@@ -90,7 +90,7 @@ function OccupationStep({
             ))}
           </div>
 
-          <div className="scrollbar-thin max-h-72 overflow-y-auto py-1.5">
+          <div className="scrollbar-thin max-h-72 overflow-y-auto pb-1.5">
             {subs.length ? (
               <CheckList
                 title="Nghề (chọn nhiều)"
@@ -212,7 +212,7 @@ function ExperienceStep({
       <p className="mb-3 text-xs text-slate-500">
         Không bắt buộc. Bỏ trống thì hiện việc làm ở mọi nơi; tin làm từ xa luôn được hiện.
       </p>
-      <div className="scrollbar-thin max-h-60 overflow-y-auto rounded-xl border border-slate-200 py-1.5">
+      <div className="scrollbar-thin max-h-60 overflow-y-auto rounded-xl border border-slate-200 pb-1.5">
         <CheckList
           title="Tỉnh/thành (chọn nhiều)"
           options={filters?.provinces ?? []}

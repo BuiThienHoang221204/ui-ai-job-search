@@ -42,28 +42,30 @@ export function CheckList({
 
   return (
     <div>
-      <div className="flex items-center justify-between px-3 pt-1 pb-2 text-2xs font-semibold tracking-wide text-slate-400 uppercase">
-        {title}
-        <button
-          type="button"
-          onClick={() => onChange(allPicked ? [] : options.map((option) => option.code))}
-          className="text-primary-600 hover:text-primary-700 cursor-pointer normal-case"
-        >
-          {allPicked ? "Bỏ chọn tất cả" : "Chọn tất cả"}
-        </button>
-      </div>
-
-      {searchPlaceholder && (
-        <div className="relative mx-1.5 mb-1.5">
-          <MagnifyingGlass className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-slate-400" />
-          <input
-            value={needle}
-            onChange={(event) => setNeedle(event.target.value)}
-            placeholder={searchPlaceholder}
-            className="focus:border-primary-500 w-full rounded-lg border border-slate-200 py-1.5 pr-2.5 pl-8 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
-          />
+      <div className="sticky top-0 z-10 bg-white pt-1.5">
+        <div className="flex items-center justify-between px-3 pt-1 pb-2 text-2xs font-semibold tracking-wide text-slate-400 uppercase">
+          {title}
+          <button
+            type="button"
+            onClick={() => onChange(allPicked ? [] : options.map((option) => option.code))}
+            className="text-primary-600 hover:text-primary-700 cursor-pointer normal-case"
+          >
+            {allPicked ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+          </button>
         </div>
-      )}
+
+        {searchPlaceholder && (
+          <div className="relative mx-1.5 mb-1.5">
+            <MagnifyingGlass className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-slate-400" />
+            <input
+              value={needle}
+              onChange={(event) => setNeedle(event.target.value)}
+              placeholder={searchPlaceholder}
+              className="focus:border-primary-500 w-full rounded-lg border border-slate-200 py-1.5 pr-2.5 pl-8 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+            />
+          </div>
+        )}
+      </div>
 
       {visible.map((option) => {
         const on = selected.includes(option.code);

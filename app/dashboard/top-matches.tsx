@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, Bookmark, BookmarkSimple, Compass, Sparkle } from "@phosphor-icons/react/ssr";
+import { ArrowRight, Bookmark, BookmarkSimple, Check, Compass, Sparkle } from "@phosphor-icons/react/ssr";
 import type { Icon } from "@phosphor-icons/react";
 import type { Job, ShortlistView } from "@/types";
 import { jobsService } from "@/services";
@@ -18,7 +18,7 @@ import { useJobShortlist } from "@/hooks/use-job-shortlist";
 import { cn } from "@/lib/cn";
 import { afterSaveJob } from "@/lib/job-cache";
 import { displayLocation } from "@/lib/location";
-import { matchTone, type ScoreTone } from "@/lib/score";
+import { matchTone, skillFitLabel, type ScoreTone } from "@/lib/score";
 
 type Tab = "best" | ShortlistView;
 
@@ -112,18 +112,24 @@ export function TopMatchRow({
           {job.title}
         </Link>
         <p className="truncate text-xs text-slate-500">{meta}</p>
-        {note && <p className="truncate text-xs text-slate-500">{note}</p>}
+        {note && (
+          <p className="mt-1 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-2xs font-semibold text-emerald-700">
+            <Check weight="bold" className="size-3" />
+            {note}
+          </p>
+        )}
       </div>
 
-      <b
-        title={score === null ? undefined : "Điểm phù hợp do AI chấm"}
-        className={cn(
-          "text-right text-base font-semibold tabular-nums",
-          score === null ? "text-slate-300" : SCORE_CLASS[matchTone(score)],
-        )}
-      >
-        {score === null ? "—" : `${score}%`}
-      </b>
+      {score === null ? (
+        <span className="hidden md:block" />
+      ) : (
+        <b
+          title="Điểm phù hợp do AI chấm"
+          className={cn("text-right text-base font-semibold tabular-nums", SCORE_CLASS[matchTone(score)])}
+        >
+          {score}%
+        </b>
+      )}
 
       <div className="col-span-3 flex items-center justify-end gap-2 md:col-span-1">
         <SaveButton jobId={job.id} initial={job.saved} />
@@ -138,14 +144,15 @@ export function TopMatchRow({
   );
 }
 
-/** "Việc đang chờ bạn": tab tin chấm điểm cao nhất chưa nộp, tin mới nhất trong ngành và tin đã lưu. */
-export function TopMatches() {
+/** "Việc đang chờ bạn": tab tin chấm điểm cao nhất chưa nộp, tin mới nhất trong ngành và tin đã lưu. Với người mới (`newcomer`) bỏ tab chấm điểm, mỗi tin kèm "Khớp kỹ năng x/y" và nút chấm điểm AI. */
+export function TopMatches({ newcomer = false }: { newcomer?: boolean }) {
   const { data } = useDashboard();
-  const [tab, setTab] = useState<Tab>("best");
+  const [tab, setTab] = useState<Tab>(newcomer ? "newest" : "best");
   const shortlistView: ShortlistView = tab === "saved" ? "saved" : "newest";
   const shortlist = useJobShortlist(shortlistView, tab !== "best");
   if (!data) return null;
 
+  const tabs = newcomer ? TABS.filter((item) => item.value !== "best") : TABS;
   const current = TABS.find((item) => item.value === tab)!;
   let rows: { job: Job; score: number | null }[] | null = null;
   if (tab === "best") {
@@ -157,8 +164,8 @@ export function TopMatches() {
 
   return (
     <DashSection
-      title="Việc đang chờ bạn"
-      action={<UnderlineTabs tabs={TABS} value={tab} onChange={setTab} label="Lọc tin đang chờ" />}
+      title={newcomer ? "Việc mới hợp với bạn" : "Việc đang chờ bạn"}
+      action={<UnderlineTabs tabs={tabs} value={tab} onChange={setTab} label="Lọc tin" />}
       className="flex h-full flex-col"
     >
       {rows === null && <p className="py-6 text-sm text-slate-500">Đang tải…</p>}
@@ -183,8 +190,8 @@ export function TopMatches() {
               job={job}
               score={score}
               meta={[job.company, displayLocation(job.location).text].filter(Boolean).join(" · ")}
-              note={null}
-              actionLabel="Ứng tuyển"
+              note={newcomer ? skillFitLabel(job.systemMatch) : null}
+              actionLabel={newcomer ? "Chấm điểm AI" : "Ứng tuyển"}
             />
           ))}
         </ul>

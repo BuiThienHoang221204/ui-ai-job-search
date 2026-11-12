@@ -61,3 +61,9 @@ export function scoreBarClass(value: number | null): string {
   if (value >= 70) return "bg-primary-500";
   return "bg-amber-500";
 }
+
+/** Dòng "Khớp kỹ năng x/y" từ đối chiếu bằng luật; `null` khi tin chưa có yêu cầu kỹ năng. */
+export function skillFitLabel(fit: { met: number; total: number } | null): string | null {
+  if (!fit || fit.total === 0) return null;
+  return `Khớp kỹ năng ${fit.met}/${fit.total}`;
+}
